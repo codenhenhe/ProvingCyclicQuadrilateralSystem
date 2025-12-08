@@ -1,0 +1,17 @@
+- Bài 1:
+Cho tứ giác ABCD. Biết AB song song CD. Biết góc D bằng 60. Biết góc C bằng 60. Chứng minh tứ giác ABCD nội tiếp.
+
+- Bài 2:
+Cho tứ giác ABCD. Biết tam giác DAC vuông tại A. Biết tam giác DBC vuông tại B. Chứng minh tứ giác ABCD nội tiếp.
+
+- Bài 3: 
+Cho tứ giác ABCD. Biết tam giác ABC là tam giác đều. Biết tam giác DBC là tam giác đều. Chứng minh tứ giác ABCD nội tiếp.
+
+- Bài 4:
+Cho ΔABC nhọn, các đường cao AD, BE, CF cắt nhau tại H. Chứng minh rằng tứ giác BCEF nội tiếp.
+
+- Bài 5:
+Cho tam giác ABC cân tại A. Đường cao AH. Kẻ HE vuông góc với AB tại E, HF vuông góc với AC tại F. Chứng minh tứ giác AEHF nội tiếp.
+
+- Bài 6:
+Cho tam giác ABC nhọn nội tiếp đường tròn (O). Các đường cao BD, CE cắt nhau tại H. Kẻ tiếp tuyến Ax với (O). Chứng minh tứ giác ADHE nội tiếp.

@@ -1,0 +1,7364 @@
+[
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho tam giác ABC nhọn có các đường cao BD và CE cắt nhau tại H. Chứng minh rằng tứ giác BCDE và tứ giác ADHE là các tứ giác nội tiếp.",
+    "output": [
+      {
+        "type": "TRIANGLE",
+        "points": [
+          "A",
+          "B",
+          "C"
+        ],
+        "properties": [
+          "ACUTE"
+        ],
+        "vertex": null
+      },
+      {
+        "type": "ALTITUDE",
+        "top": "B",
+        "foot": "D",
+        "base": [
+          "A",
+          "C"
+        ]
+      },
+      {
+        "type": "ALTITUDE",
+        "top": "C",
+        "foot": "E",
+        "base": [
+          "A",
+          "B"
+        ]
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "H",
+        "lines": [
+          [
+            "B",
+            "D"
+          ],
+          [
+            "C",
+            "E"
+          ]
+        ]
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "B",
+          "C",
+          "D",
+          "E"
+        ]
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "A",
+          "D",
+          "H",
+          "E"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho đường tròn (O) và điểm A nằm bên ngoài đường tròn. Kẻ hai tiếp tuyến AB, AC với đường tròn (B, C là các tiếp điểm). Chứng minh tứ giác ABOC nội tiếp đường tròn.",
+    "output": [
+      {
+        "type": "CIRCLE",
+        "center": "O"
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "A",
+        "circle": "O",
+        "location": "OUTSIDE"
+      },
+      {
+        "type": "TANGENT",
+        "line": [
+          "A",
+          "B"
+        ],
+        "contact": "B",
+        "circle": "O"
+      },
+      {
+        "type": "TANGENT",
+        "line": [
+          "A",
+          "C"
+        ],
+        "contact": "C",
+        "circle": "O"
+      },
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "A",
+          "B",
+          "O",
+          "C"
+        ]
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "A",
+          "B",
+          "O",
+          "C"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho tam giác ABC vuông tại A, đường cao AH. Kẻ HE vuông góc với AB tại E, HF vuông góc với AC tại F. Chứng minh tứ giác AEHF nội tiếp đường tròn.",
+    "output": [
+      {
+        "type": "TRIANGLE",
+        "points": [
+          "A",
+          "B",
+          "C"
+        ],
+        "properties": [
+          "RIGHT"
+        ],
+        "vertex": "A"
+      },
+      {
+        "type": "ALTITUDE",
+        "top": "A",
+        "foot": "H",
+        "base": [
+          "B",
+          "C"
+        ]
+      },
+      {
+        "type": "PERPENDICULAR",
+        "lines": [
+          [
+            "H",
+            "E"
+          ],
+          [
+            "A",
+            "B"
+          ]
+        ]
+      },
+      {
+        "type": "PERPENDICULAR",
+        "lines": [
+          [
+            "H",
+            "F"
+          ],
+          [
+            "A",
+            "C"
+          ]
+        ]
+      },
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "A",
+          "E",
+          "H",
+          "F"
+        ],
+        "subtype": null
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "A",
+          "E",
+          "H",
+          "F"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho nửa đường tròn (O) đường kính AB. Lấy điểm M trên nửa đường tròn. Kẻ tiếp tuyến Ax. Tia BM cắt Ax tại I. Tia phân giác của góc IAM cắt nửa đường tròn tại E, cắt tia BM tại F. Tia BE cắt Ax tại H, cắt AM tại K. Chứng minh tứ giác EFMK nội tiếp.",
+    "output": [
+      {
+        "type": "SEMICIRCLE",
+        "center": "O",
+        "diameter": [
+          "A",
+          "B"
+        ]
+      },
+      {
+        "type": "TANGENT",
+        "line": [
+          "A",
+          "x"
+        ],
+        "contact": "A",
+        "circle": "O"
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "M",
+        "circle": "O",
+        "location": "ON"
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "I",
+        "lines": [
+          [
+            "B",
+            "M"
+          ],
+          [
+            "A",
+            "x"
+          ]
+        ]
+      },
+      {
+        "type": "VALUE",
+        "subtype": "angle",
+        "points": [
+          "I",
+          "A",
+          "M"
+        ]
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "E",
+        "circle": "O",
+        "location": "ON"
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "F",
+        "lines": [
+          [
+            "A",
+            "E"
+          ],
+          [
+            "B",
+            "M"
+          ]
+        ]
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "H",
+        "lines": [
+          [
+            "B",
+            "E"
+          ],
+          [
+            "A",
+            "x"
+          ]
+        ]
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "K",
+        "lines": [
+          [
+            "B",
+            "E"
+          ],
+          [
+            "A",
+            "M"
+          ]
+        ]
+      },
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "E",
+          "F",
+          "M",
+          "K"
+        ]
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "E",
+          "F",
+          "M",
+          "K"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Từ điểm M nằm ngoài đường tròn (O) kẻ hai tiếp tuyến MA, MB (A, B là tiếp điểm) và cát tuyến MCD không đi qua tâm O (C nằm giữa M và D). Gọi I là trung điểm của dây CD. Chứng minh 5 điểm M, A, I, O, B cùng thuộc một đường tròn.",
+    "output": [
+      {
+        "type": "CIRCLE",
+        "center": "O"
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "M",
+        "circle": "O",
+        "location": "OUTSIDE"
+      },
+      {
+        "type": "TANGENT",
+        "line": [
+          "M",
+          "A"
+        ],
+        "contact": "A",
+        "circle": "O"
+      },
+      {
+        "type": "TANGENT",
+        "line": [
+          "M",
+          "B"
+        ],
+        "contact": "B",
+        "circle": "O"
+      },
+      {
+        "type": "COLLINEAR",
+        "points": [
+          "M",
+          "C",
+          "D"
+        ]
+      },
+      {
+        "type": "MIDPOINT",
+        "point": "I",
+        "segment": [
+          "C",
+          "D"
+        ]
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "M",
+          "A",
+          "I",
+          "O",
+          "B"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho tam giác ABC có ba góc nhọn nội tiếp đường tròn (O). Các đường cao AD, BE, CF cắt nhau tại H. Chứng minh tứ giác BFEC nội tiếp và H là tâm đường tròn nội tiếp tam giác DEF.",
+    "output": [
+      {
+        "type": "TRIANGLE",
+        "points": [
+          "A",
+          "B",
+          "C"
+        ],
+        "properties": [
+          "ACUTE"
+        ],
+        "vertex": null
+      },
+      {
+        "type": "CIRCLE",
+        "center": "O"
+      },
+      {
+        "type": "ALTITUDE",
+        "top": "A",
+        "foot": "D",
+        "base": [
+          "B",
+          "C"
+        ]
+      },
+      {
+        "type": "ALTITUDE",
+        "top": "B",
+        "foot": "E",
+        "base": [
+          "A",
+          "C"
+        ]
+      },
+      {
+        "type": "ALTITUDE",
+        "top": "C",
+        "foot": "F",
+        "base": [
+          "A",
+          "B"
+        ]
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "H",
+        "lines": [
+          [
+            "A",
+            "D"
+          ],
+          [
+            "B",
+            "E"
+          ],
+          [
+            "C",
+            "F"
+          ]
+        ]
+      },
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "B",
+          "F",
+          "E",
+          "C"
+        ],
+        "subtype": null
+      },
+      {
+        "type": "TRIANGLE",
+        "points": [
+          "D",
+          "E",
+          "F"
+        ],
+        "properties": [],
+        "vertex": null
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho hình vuông ABCD. Trên cạnh BC lấy điểm E, trên cạnh CD lấy điểm F sao cho góc EAF = 45 độ. Hạ AH vuông góc với EF tại H. Chứng minh tứ giác ABHE và ADHF là các tứ giác nội tiếp.",
+    "output": [
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "subtype": "SQUARE"
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "E",
+        "location": "ON",
+        "segment": [
+          "B",
+          "C"
+        ]
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "F",
+        "location": "ON",
+        "segment": [
+          "C",
+          "D"
+        ]
+      },
+      {
+        "type": "VALUE",
+        "subtype": "angle",
+        "points": [
+          "E",
+          "A",
+          "F"
+        ],
+        "value": 45
+      },
+      {
+        "type": "PERPENDICULAR",
+        "lines": [
+          [
+            "A",
+            "H"
+          ],
+          [
+            "E",
+            "F"
+          ]
+        ]
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "A",
+          "B",
+          "H",
+          "E"
+        ]
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "A",
+          "D",
+          "H",
+          "F"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho tứ giác ABCD nội tiếp đường tròn (O). Gọi M là điểm chính giữa của cung AB. Dây CM và DM cắt dây AB lần lượt tại P và Q. Chứng minh tứ giác CDQP nội tiếp.",
+    "output": [
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ]
+      },
+      {
+        "type": "CIRCLE",
+        "center": "O"
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "A",
+        "circle": "O",
+        "location": "ON"
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "B",
+        "circle": "O",
+        "location": "ON"
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "C",
+        "circle": "O",
+        "location": "ON"
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "D",
+        "circle": "O",
+        "location": "ON"
+      },
+      {
+        "type": "MIDPOINT",
+        "point": "M",
+        "segment": [
+          "A",
+          "B"
+        ]
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "P",
+        "lines": [
+          [
+            "C",
+            "M"
+          ],
+          [
+            "A",
+            "B"
+          ]
+        ]
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "Q",
+        "lines": [
+          [
+            "D",
+            "M"
+          ],
+          [
+            "A",
+            "B"
+          ]
+        ]
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "C",
+          "D",
+          "Q",
+          "P"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho tam giác ABC vuông tại A. Trên cạnh AC lấy điểm M, dựng đường tròn tâm I đường kính MC. Đường tròn này cắt BC tại E. Đường thẳng BM cắt đường tròn (I) tại D. Chứng minh tứ giác ABCD nội tiếp.",
+    "output": [
+      {
+        "type": "TRIANGLE",
+        "points": [
+          "A",
+          "B",
+          "C"
+        ],
+        "properties": [
+          "RIGHT"
+        ],
+        "vertex": "A"
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "M",
+        "segment": [
+          "A",
+          "C"
+        ],
+        "location": "ON"
+      },
+      {
+        "type": "CIRCLE",
+        "center": "I",
+        "diameter": [
+          "M",
+          "C"
+        ]
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "E",
+        "lines": [
+          [
+            "B",
+            "C"
+          ]
+        ]
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "E",
+        "lines": [
+          [
+            "B",
+            "C"
+          ]
+        ]
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "D",
+        "lines": [
+          [
+            "B",
+            "M"
+          ]
+        ]
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "D",
+        "lines": [
+          [
+            "B",
+            "M"
+          ]
+        ]
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ]
+      },
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "subtype": null
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho đường tròn tâm O. Từ điểm A ở bên ngoài đường tròn vẽ hai tiếp tuyến AB và AC. Trên BC lấy điểm M. Vẽ đường thẳng vuông góc với OM tại M cắt AB và AC lần lượt tại E và D. Chứng minh các tứ giác EBOM và DCMO nội tiếp.",
+    "output": [
+      {
+        "type": "CIRCLE",
+        "center": "O"
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "A",
+        "circle": "O",
+        "location": "OUTSIDE"
+      },
+      {
+        "type": "TANGENT",
+        "line": [
+          "A",
+          "B"
+        ],
+        "contact": "B",
+        "circle": "O"
+      },
+      {
+        "type": "TANGENT",
+        "line": [
+          "A",
+          "C"
+        ],
+        "contact": "C",
+        "circle": "O"
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "M",
+        "circle": "O",
+        "location": "ON"
+      },
+      {
+        "type": "COLLINEAR",
+        "points": [
+          "B",
+          "M",
+          "C"
+        ]
+      },
+      {
+        "type": "PERPENDICULAR",
+        "lines": [
+          [
+            "E",
+            "D"
+          ],
+          [
+            "O",
+            "M"
+          ]
+        ]
+      },
+      {
+        "type": "COLLINEAR",
+        "points": [
+          "A",
+          "E",
+          "B"
+        ]
+      },
+      {
+        "type": "COLLINEAR",
+        "points": [
+          "A",
+          "D",
+          "C"
+        ]
+      },
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "E",
+          "B",
+          "O",
+          "M"
+        ]
+      },
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "D",
+          "C",
+          "M",
+          "O"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho tam giác ABC cân tại A. Các trung tuyến AH, BE, CF cắt nhau tại G. Gọi M là trung điểm của BG, N là trung điểm của FG. Chứng minh rằng tứ giác CMNE nội tiếp.",
+    "output": [
+      {
+        "type": "TRIANGLE",
+        "points": [
+          "A",
+          "B",
+          "C"
+        ],
+        "properties": [
+          "ISOSCELES"
+        ],
+        "vertex": "A"
+      },
+      {
+        "type": "MIDPOINT",
+        "point": "H",
+        "segment": [
+          "B",
+          "C"
+        ]
+      },
+      {
+        "type": "MIDPOINT",
+        "point": "E",
+        "segment": [
+          "A",
+          "C"
+        ]
+      },
+      {
+        "type": "MIDPOINT",
+        "point": "F",
+        "segment": [
+          "A",
+          "B"
+        ]
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "G",
+        "lines": [
+          [
+            "A",
+            "H"
+          ],
+          [
+            "B",
+            "E"
+          ],
+          [
+            "C",
+            "F"
+          ]
+        ]
+      },
+      {
+        "type": "MIDPOINT",
+        "point": "M",
+        "segment": [
+          "B",
+          "G"
+        ]
+      },
+      {
+        "type": "MIDPOINT",
+        "point": "N",
+        "segment": [
+          "F",
+          "G"
+        ]
+      },
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "C",
+          "M",
+          "N",
+          "E"
+        ],
+        "subtype": null
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "C",
+          "M",
+          "N",
+          "E"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho hình bình hành ABCD (có góc A > 90 độ). Các đường cao kẻ từ A cắt BC tại K và cắt CD tại I. Chứng minh tứ giác AKCI nội tiếp đường tròn.",
+    "output": [
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "subtype": "PARALLELOGRAM"
+      },
+      {
+        "type": "VALUE",
+        "subtype": "angle",
+        "points": [
+          "B",
+          "A",
+          "D"
+        ],
+        "value": 90
+      },
+      {
+        "type": "ALTITUDE",
+        "top": "A",
+        "foot": "K",
+        "base": [
+          "B",
+          "C"
+        ]
+      },
+      {
+        "type": "ALTITUDE",
+        "top": "A",
+        "foot": "I",
+        "base": [
+          "C",
+          "D"
+        ]
+      },
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "A",
+          "K",
+          "C",
+          "I"
+        ]
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "A",
+          "K",
+          "C",
+          "I"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho tam giác ABC vuông tại A. Kẻ đường cao AH. Vẽ đường tròn đường kính AH cắt AB tại E, cắt AC tại F. Chứng minh tứ giác BCFE nội tiếp.",
+    "output": [
+      {
+        "type": "TRIANGLE",
+        "points": [
+          "A",
+          "B",
+          "C"
+        ],
+        "properties": [
+          "RIGHT"
+        ],
+        "vertex": "A"
+      },
+      {
+        "type": "ALTITUDE",
+        "top": "A",
+        "foot": "H",
+        "base": [
+          "B",
+          "C"
+        ]
+      },
+      {
+        "type": "CIRCLE",
+        "diameter": [
+          "A",
+          "H"
+        ],
+        "center": null
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "E",
+        "lines": [
+          [
+            "A",
+            "B"
+          ],
+          [
+            "A",
+            "H"
+          ]
+        ]
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "F",
+        "lines": [
+          [
+            "A",
+            "C"
+          ],
+          [
+            "A",
+            "H"
+          ]
+        ]
+      },
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "B",
+          "C",
+          "F",
+          "E"
+        ],
+        "subtype": null
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "B",
+          "C",
+          "F",
+          "E"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho đường tròn (O) đường kính AB. Lấy điểm C thuộc đường tròn. Tiếp tuyến tại A của (O) cắt đường thẳng BC tại D. Gọi H là trung điểm của AD. Chứng minh tứ giác AHCO nội tiếp.",
+    "output": [
+      {
+        "type": "CIRCLE",
+        "center": "O",
+        "diameter": [
+          "A",
+          "B"
+        ]
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "C",
+        "circle": "O",
+        "location": "ON"
+      },
+      {
+        "type": "TANGENT",
+        "line": [
+          "A",
+          "D"
+        ],
+        "contact": "A",
+        "circle": "O"
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "D",
+        "lines": [
+          [
+            "A",
+            "D"
+          ],
+          [
+            "B",
+            "C"
+          ]
+        ]
+      },
+      {
+        "type": "MIDPOINT",
+        "point": "H",
+        "segment": [
+          "A",
+          "D"
+        ]
+      },
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "A",
+          "H",
+          "C",
+          "O"
+        ]
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "A",
+          "H",
+          "C",
+          "O"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho hai đường tròn (O) và (O') cắt nhau tại A và B. Một cát tuyến qua A cắt (O) tại C và cắt (O') tại D. Tiếp tuyến tại C của (O) và tiếp tuyến tại D của (O') cắt nhau tại M. Chứng minh tứ giác MCBD nội tiếp.",
+    "output": [
+      {
+        "type": "CIRCLE",
+        "center": "O"
+      },
+      {
+        "type": "CIRCLE",
+        "center": "O'"
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "A",
+        "circles": [
+          "O",
+          "O'"
+        ]
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "B",
+        "circles": [
+          "O",
+          "O'"
+        ]
+      },
+      {
+        "type": "COLLINEAR",
+        "points": [
+          "C",
+          "A",
+          "D"
+        ]
+      },
+      {
+        "type": "TANGENT",
+        "line": [
+          "M",
+          "C"
+        ],
+        "contact": "C",
+        "circle": "O"
+      },
+      {
+        "type": "TANGENT",
+        "line": [
+          "M",
+          "D"
+        ],
+        "contact": "D",
+        "circle": "O'"
+      },
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "M",
+          "C",
+          "B",
+          "D"
+        ]
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "M",
+          "C",
+          "B",
+          "D"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho tam giác ABC nhọn (AB < AC) nội tiếp đường tròn (O). Các đường cao AD, BE, CF cắt nhau tại H. Gọi K là giao điểm của EF và BC. Chứng minh tứ giác KFDO nội tiếp.",
+    "output": [
+      {
+        "type": "TRIANGLE",
+        "points": [
+          "A",
+          "B",
+          "C"
+        ],
+        "properties": [
+          "ACUTE"
+        ]
+      },
+      {
+        "type": "CIRCLE",
+        "center": "O"
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "A",
+        "circle": "O",
+        "location": "ON"
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "B",
+        "circle": "O",
+        "location": "ON"
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "C",
+        "circle": "O",
+        "location": "ON"
+      },
+      {
+        "type": "ALTITUDE",
+        "top": "A",
+        "foot": "D",
+        "base": [
+          "B",
+          "C"
+        ]
+      },
+      {
+        "type": "ALTITUDE",
+        "top": "B",
+        "foot": "E",
+        "base": [
+          "A",
+          "C"
+        ]
+      },
+      {
+        "type": "ALTITUDE",
+        "top": "C",
+        "foot": "F",
+        "base": [
+          "A",
+          "B"
+        ]
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "H",
+        "lines": [
+          [
+            "A",
+            "D"
+          ],
+          [
+            "B",
+            "E"
+          ],
+          [
+            "C",
+            "F"
+          ]
+        ]
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "K",
+        "lines": [
+          [
+            "E",
+            "F"
+          ],
+          [
+            "B",
+            "C"
+          ]
+        ]
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "K",
+          "F",
+          "D",
+          "O"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho nửa đường tròn tâm O đường kính AB. C là một điểm nằm trên nửa đường tròn. H là hình chiếu của C trên AB. Qua trung điểm M của CH, kẻ đường thẳng vuông góc với OC, cắt nửa đường tròn tại D và E. Chứng minh tứ giác ABDE nội tiếp.",
+    "output": [
+      {
+        "type": "SEMICIRCLE",
+        "center": "O",
+        "diameter": [
+          "A",
+          "B"
+        ]
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "C",
+        "circle": "O",
+        "location": "ON"
+      },
+      {
+        "type": "ALTITUDE",
+        "top": "C",
+        "foot": "H",
+        "base": [
+          "A",
+          "B"
+        ]
+      },
+      {
+        "type": "MIDPOINT",
+        "point": "M",
+        "segment": [
+          "C",
+          "H"
+        ]
+      },
+      {
+        "type": "PERPENDICULAR",
+        "lines": [
+          [
+            "M",
+            "x"
+          ],
+          [
+            "O",
+            "C"
+          ]
+        ]
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "D",
+        "circle": "O",
+        "location": "ON"
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "E",
+        "circle": "O",
+        "location": "ON"
+      },
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "A",
+          "B",
+          "D",
+          "E"
+        ]
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "A",
+          "B",
+          "D",
+          "E"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho tam giác ABC nhọn nội tiếp đường tròn (O). Gọi H là trực tâm của tam giác. Kẻ đường kính AD của đường tròn. Gọi M là hình chiếu của B lên AD, N là hình chiếu của C lên AD. Chứng minh tứ giác BMNC nội tiếp.",
+    "output": [
+      {
+        "type": "TRIANGLE",
+        "points": [
+          "A",
+          "B",
+          "C"
+        ],
+        "properties": [
+          "ACUTE"
+        ],
+        "vertex": null
+      },
+      {
+        "type": "CIRCLE",
+        "center": "O"
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "A",
+        "circle": "O",
+        "location": "ON"
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "B",
+        "circle": "O",
+        "location": "ON"
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "C",
+        "circle": "O",
+        "location": "ON"
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "H",
+        "lines": []
+      },
+      {
+        "type": "CIRCLE",
+        "center": "O",
+        "diameter": [
+          "A",
+          "D"
+        ]
+      },
+      {
+        "type": "PERPENDICULAR",
+        "lines": [
+          [
+            "B",
+            "M"
+          ],
+          [
+            "A",
+            "D"
+          ]
+        ]
+      },
+      {
+        "type": "PERPENDICULAR",
+        "lines": [
+          [
+            "C",
+            "N"
+          ],
+          [
+            "A",
+            "D"
+          ]
+        ]
+      },
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "B",
+          "M",
+          "N",
+          "C"
+        ],
+        "subtype": null
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "B",
+          "M",
+          "N",
+          "C"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho hình chữ nhật ABCD. Gọi M, N, P lần lượt là hình chiếu vuông góc của C lên các đường thẳng BD, AD và AB. Chứng minh 4 điểm M, N, P và tâm O của hình chữ nhật cùng thuộc một đường tròn.",
+    "output": [
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "subtype": "RECTANGLE"
+      },
+      {
+        "type": "ALTITUDE",
+        "top": "C",
+        "foot": "M",
+        "base": [
+          "B",
+          "D"
+        ]
+      },
+      {
+        "type": "ALTITUDE",
+        "top": "C",
+        "foot": "N",
+        "base": [
+          "A",
+          "D"
+        ]
+      },
+      {
+        "type": "ALTITUDE",
+        "top": "C",
+        "foot": "P",
+        "base": [
+          "A",
+          "B"
+        ]
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "M",
+          "N",
+          "P",
+          "O"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho đường tròn (O) và dây cung BC cố định. Điểm A di động trên cung lớn BC. Các đường cao AD, BE, CF của tam giác ABC cắt nhau tại H. Chứng minh đường tròn ngoại tiếp tứ giác BFEC luôn đi qua hai điểm cố định.",
+    "output": [
+      {
+        "type": "CIRCLE",
+        "center": "O"
+      },
+      {
+        "type": "VALUE",
+        "subtype": "length",
+        "points": [
+          "B",
+          "C"
+        ],
+        "value": "fixed"
+      },
+      {
+        "type": "TRIANGLE",
+        "points": [
+          "A",
+          "B",
+          "C"
+        ],
+        "properties": []
+      },
+      {
+        "type": "ALTITUDE",
+        "top": "A",
+        "foot": "D",
+        "base": [
+          "B",
+          "C"
+        ]
+      },
+      {
+        "type": "ALTITUDE",
+        "top": "B",
+        "foot": "E",
+        "base": [
+          "A",
+          "C"
+        ]
+      },
+      {
+        "type": "ALTITUDE",
+        "top": "C",
+        "foot": "F",
+        "base": [
+          "A",
+          "B"
+        ]
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "H",
+        "lines": [
+          [
+            "A",
+            "D"
+          ],
+          [
+            "B",
+            "E"
+          ],
+          [
+            "C",
+            "F"
+          ]
+        ]
+      },
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "B",
+          "F",
+          "E",
+          "C"
+        ]
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "B",
+          "F",
+          "E",
+          "C"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho đường tròn (O; R) có đường kính AB. Bán kính CO vuông góc với AB, M là một điểm bất kỳ trên cung nhỏ AC; BM cắt AC tại H. Gọi K là hình chiếu của H trên AB. Chứng minh tứ giác CBKH nội tiếp.",
+    "output": [
+      {
+        "type": "CIRCLE",
+        "center": "O",
+        "diameter": [
+          "A",
+          "B"
+        ]
+      },
+      {
+        "type": "VALUE",
+        "subtype": "length",
+        "points": [
+          "O",
+          "A"
+        ],
+        "value": "R"
+      },
+      {
+        "type": "PERPENDICULAR",
+        "lines": [
+          [
+            "C",
+            "O"
+          ],
+          [
+            "A",
+            "B"
+          ]
+        ]
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "M",
+        "circle": "O",
+        "location": "ON"
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "H",
+        "lines": [
+          [
+            "B",
+            "M"
+          ],
+          [
+            "A",
+            "C"
+          ]
+        ]
+      },
+      {
+        "type": "PERPENDICULAR",
+        "lines": [
+          [
+            "H",
+            "K"
+          ],
+          [
+            "A",
+            "B"
+          ]
+        ]
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "C",
+          "B",
+          "K",
+          "H"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho tam giác ABC nhọn nội tiếp đường tròn (O). Vẽ đường kính AD. Đường thẳng qua B vuông góc với AD tại E cắt AC tại F. Gọi H là hình chiếu vuông góc của B trên AC. Chứng minh tứ giác EFHC nội tiếp.",
+    "output": [
+      {
+        "type": "TRIANGLE",
+        "points": [
+          "A",
+          "B",
+          "C"
+        ],
+        "properties": [
+          "ACUTE"
+        ],
+        "vertex": null
+      },
+      {
+        "type": "CIRCLE",
+        "center": "O"
+      },
+      {
+        "type": "CIRCLE",
+        "center": "O",
+        "diameter": [
+          "A",
+          "D"
+        ]
+      },
+      {
+        "type": "PERPENDICULAR",
+        "lines": [
+          [
+            "B",
+            "E"
+          ],
+          [
+            "A",
+            "D"
+          ]
+        ]
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "E",
+        "lines": [
+          [
+            "B",
+            "E"
+          ],
+          [
+            "A",
+            "D"
+          ]
+        ]
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "F",
+        "lines": [
+          [
+            "B",
+            "E"
+          ],
+          [
+            "A",
+            "C"
+          ]
+        ]
+      },
+      {
+        "type": "ALTITUDE",
+        "top": "B",
+        "foot": "H",
+        "base": [
+          "A",
+          "C"
+        ]
+      },
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "E",
+          "F",
+          "H",
+          "C"
+        ],
+        "subtype": null
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "E",
+          "F",
+          "H",
+          "C"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho đường tròn (O) đường kính AB = 2R. Gọi d1 và d2 lần lượt là các tiếp tuyến tại A và B. Gọi I là trung điểm của OA, E là điểm thuộc đường tròn. Đường thẳng d đi qua E vuông góc với EI cắt d1, d2 lần lượt tại M, N. Chứng minh tứ giác AMEI nội tiếp.",
+    "output": [
+      {
+        "type": "CIRCLE",
+        "center": "O",
+        "diameter": [
+          "A",
+          "B"
+        ]
+      },
+      {
+        "type": "VALUE",
+        "subtype": "length",
+        "points": [
+          "A",
+          "B"
+        ],
+        "value": 2
+      },
+      {
+        "type": "VALUE",
+        "subtype": "length",
+        "points": [
+          "A",
+          "B"
+        ],
+        "value": "2R"
+      },
+      {
+        "type": "TANGENT",
+        "line": [
+          "A",
+          "d1"
+        ],
+        "contact": "A",
+        "circle": "O"
+      },
+      {
+        "type": "TANGENT",
+        "line": [
+          "B",
+          "d2"
+        ],
+        "contact": "B",
+        "circle": "O"
+      },
+      {
+        "type": "MIDPOINT",
+        "point": "I",
+        "segment": [
+          "O",
+          "A"
+        ]
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "E",
+        "circle": "O",
+        "location": "ON"
+      },
+      {
+        "type": "PERPENDICULAR",
+        "lines": [
+          [
+            "E",
+            "d"
+          ],
+          [
+            "E",
+            "I"
+          ]
+        ]
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "M",
+        "lines": [
+          [
+            "E",
+            "d"
+          ],
+          [
+            "A",
+            "d1"
+          ]
+        ]
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "N",
+        "lines": [
+          [
+            "E",
+            "d"
+          ],
+          [
+            "B",
+            "d2"
+          ]
+        ]
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "A",
+          "M",
+          "E",
+          "I"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho tam giác ABC vuông tại A. Trên nửa mặt phẳng bờ BC chứa điểm A, vẽ nửa đường tròn đường kính BH cắt AB tại E, nửa đường tròn đường kính HC cắt AC tại F. Chứng minh tứ giác BEFC nội tiếp.",
+    "output": [
+      {
+        "type": "TRIANGLE",
+        "points": [
+          "A",
+          "B",
+          "C"
+        ],
+        "properties": [
+          "RIGHT"
+        ],
+        "vertex": "A"
+      },
+      {
+        "type": "SEMICIRCLE",
+        "center": null,
+        "diameter": [
+          "B",
+          "H"
+        ]
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "E",
+        "lines": [
+          [
+            "A",
+            "B"
+          ],
+          [
+            "B",
+            "H"
+          ]
+        ]
+      },
+      {
+        "type": "SEMICIRCLE",
+        "center": null,
+        "diameter": [
+          "H",
+          "C"
+        ]
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "F",
+        "lines": [
+          [
+            "A",
+            "C"
+          ],
+          [
+            "H",
+            "C"
+          ]
+        ]
+      },
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "B",
+          "E",
+          "F",
+          "C"
+        ],
+        "subtype": null
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "B",
+          "E",
+          "F",
+          "C"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho đường tròn (O) và dây BC cố định. Điểm A di chuyển trên cung lớn BC. Các đường cao BD và CE cắt nhau tại H. Gọi K là giao điểm của DE và BC. Chứng minh tứ giác ADHE nội tiếp.",
+    "output": [
+      {
+        "type": "CIRCLE",
+        "center": "O"
+      },
+      {
+        "type": "COLLINEAR",
+        "points": [
+          "B",
+          "C"
+        ]
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "A",
+        "circle": "O",
+        "location": "ON"
+      },
+      {
+        "type": "ALTITUDE",
+        "top": "B",
+        "foot": "D",
+        "base": [
+          "A",
+          "C"
+        ]
+      },
+      {
+        "type": "ALTITUDE",
+        "top": "C",
+        "foot": "E",
+        "base": [
+          "A",
+          "B"
+        ]
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "H",
+        "lines": [
+          [
+            "B",
+            "D"
+          ],
+          [
+            "C",
+            "E"
+          ]
+        ]
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "K",
+        "lines": [
+          [
+            "D",
+            "E"
+          ],
+          [
+            "B",
+            "C"
+          ]
+        ]
+      },
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "A",
+          "D",
+          "H",
+          "E"
+        ]
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "A",
+          "D",
+          "H",
+          "E"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho đường tròn (O) và điểm M nằm ngoài đường tròn. Qua M kẻ các tiếp tuyến MA, MB. Gọi C là điểm bất kỳ trên cung nhỏ AB. Gọi D, E, F lần lượt là hình chiếu vuông góc của C trên AB, AM, BM. Chứng minh tứ giác AECD nội tiếp.",
+    "output": [
+      {
+        "type": "CIRCLE",
+        "center": "O"
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "M",
+        "circle": "O",
+        "location": "OUTSIDE"
+      },
+      {
+        "type": "TANGENT",
+        "line": [
+          "M",
+          "A"
+        ],
+        "contact": "A",
+        "circle": "O"
+      },
+      {
+        "type": "TANGENT",
+        "line": [
+          "M",
+          "B"
+        ],
+        "contact": "B",
+        "circle": "O"
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "C",
+        "circle": "O",
+        "location": "ON"
+      },
+      {
+        "type": "ALTITUDE",
+        "top": "C",
+        "foot": "D",
+        "base": [
+          "A",
+          "B"
+        ]
+      },
+      {
+        "type": "ALTITUDE",
+        "top": "C",
+        "foot": "E",
+        "base": [
+          "A",
+          "M"
+        ]
+      },
+      {
+        "type": "ALTITUDE",
+        "top": "C",
+        "foot": "F",
+        "base": [
+          "B",
+          "M"
+        ]
+      },
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "A",
+          "E",
+          "C",
+          "D"
+        ]
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "A",
+          "E",
+          "C",
+          "D"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho tam giác ABC nhọn. Các đường cao BD và CE cắt nhau tại H. Qua D kẻ đường thẳng song song với AC cắt AB tại I và cắt EB tại F. Chứng minh tứ giác BCDE nội tiếp.",
+    "output": [
+      {
+        "type": "TRIANGLE",
+        "points": [
+          "A",
+          "B",
+          "C"
+        ],
+        "properties": [
+          "ACUTE"
+        ],
+        "vertex": null
+      },
+      {
+        "type": "ALTITUDE",
+        "top": "B",
+        "foot": "D",
+        "base": [
+          "A",
+          "C"
+        ]
+      },
+      {
+        "type": "ALTITUDE",
+        "top": "C",
+        "foot": "E",
+        "base": [
+          "A",
+          "B"
+        ]
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "H",
+        "lines": [
+          [
+            "B",
+            "D"
+          ],
+          [
+            "C",
+            "E"
+          ]
+        ]
+      },
+      {
+        "type": "PARALLEL",
+        "lines": [
+          [
+            "D",
+            "I"
+          ],
+          [
+            "A",
+            "C"
+          ]
+        ]
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "I",
+        "lines": [
+          [
+            "D",
+            "F"
+          ],
+          [
+            "A",
+            "B"
+          ]
+        ]
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "F",
+        "lines": [
+          [
+            "D",
+            "I"
+          ],
+          [
+            "E",
+            "B"
+          ]
+        ]
+      },
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "B",
+          "C",
+          "D",
+          "E"
+        ],
+        "subtype": null
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "B",
+          "C",
+          "D",
+          "E"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho nửa đường tròn (O) đường kính AB. Gọi C là điểm chính giữa của cung AB. M là điểm bất kỳ trên cung AC. Tiếp tuyến tại M cắt các tiếp tuyến tại A và B lần lượt ở D và E. Chứng minh tứ giác ADMO nội tiếp.",
+    "output": [
+      {
+        "type": "SEMICIRCLE",
+        "center": "O",
+        "diameter": [
+          "A",
+          "B"
+        ]
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "C",
+        "circle": "O",
+        "location": "ON"
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "M",
+        "circle": "O",
+        "location": "ON"
+      },
+      {
+        "type": "TANGENT",
+        "line": [
+          "D",
+          "M"
+        ],
+        "contact": "M",
+        "circle": "O"
+      },
+      {
+        "type": "TANGENT",
+        "line": [
+          "A",
+          "D"
+        ],
+        "contact": "A",
+        "circle": "O"
+      },
+      {
+        "type": "TANGENT",
+        "line": [
+          "B",
+          "E"
+        ],
+        "contact": "B",
+        "circle": "O"
+      },
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "A",
+          "D",
+          "M",
+          "O"
+        ]
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "A",
+          "D",
+          "M",
+          "O"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho tam giác ABC cân tại A nội tiếp đường tròn (O). Điểm M thuộc cung nhỏ AC. Kẻ Mx vuông góc với AM cắt tia BC tại N. Chứng minh tứ giác AMNC nội tiếp.",
+    "output": [
+      {
+        "type": "TRIANGLE",
+        "points": [
+          "A",
+          "B",
+          "C"
+        ],
+        "properties": [
+          "ISOSCELES"
+        ],
+        "vertex": "A"
+      },
+      {
+        "type": "CIRCLE",
+        "center": "O"
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "M",
+        "circle": "O",
+        "location": "ON"
+      },
+      {
+        "type": "PERPENDICULAR",
+        "lines": [
+          [
+            "M",
+            "x"
+          ],
+          [
+            "A",
+            "M"
+          ]
+        ]
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "N",
+        "lines": [
+          [
+            "M",
+            "x"
+          ],
+          [
+            "B",
+            "C"
+          ]
+        ]
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "A",
+          "M",
+          "N",
+          "C"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho tam giác ABC vuông ở A. Trên AC lấy điểm M và vẽ đường tròn đường kính MC. Kẻ BM cắt đường tròn tại D. Chứng minh tứ giác ABCD nội tiếp.",
+    "output": [
+      {
+        "type": "TRIANGLE",
+        "points": [
+          "A",
+          "B",
+          "C"
+        ],
+        "properties": [
+          "RIGHT"
+        ],
+        "vertex": "A"
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "M",
+        "circle": null,
+        "location": "ON"
+      },
+      {
+        "type": "CIRCLE",
+        "center": null,
+        "diameter": [
+          "M",
+          "C"
+        ]
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "D",
+        "lines": [
+          [
+            "B",
+            "M"
+          ]
+        ]
+      },
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "subtype": null
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho tứ giác ABCD nội tiếp đường tròn (O) đường kính AD. Kẻ EF vuông góc với AD tại F (E là giao điểm hai đường chéo). Chứng minh tứ giác ABEF nội tiếp.",
+    "output": [
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ]
+      },
+      {
+        "type": "CIRCLE",
+        "center": "O",
+        "diameter": [
+          "A",
+          "D"
+        ]
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "E",
+        "lines": [
+          [
+            "A",
+            "C"
+          ],
+          [
+            "B",
+            "D"
+          ]
+        ]
+      },
+      {
+        "type": "PERPENDICULAR",
+        "lines": [
+          [
+            "E",
+            "F"
+          ],
+          [
+            "A",
+            "D"
+          ]
+        ]
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "A",
+          "B",
+          "E",
+          "F"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho hình vuông ABCD. Lấy điểm M trên cạnh BC. Đường thẳng qua A vuông góc với AM cắt đường thẳng CD tại N. Gọi I là trung điểm của MN. Kẻ đường cao AH của tam giác AMN. Chứng minh tứ giác AHCD nội tiếp.",
+    "output": [
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "subtype": "SQUARE"
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "M",
+        "segment": [
+          "B",
+          "C"
+        ],
+        "location": "ON"
+      },
+      {
+        "type": "PERPENDICULAR",
+        "lines": [
+          [
+            "A",
+            "N"
+          ],
+          [
+            "A",
+            "M"
+          ]
+        ]
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "N",
+        "lines": [
+          [
+            "A",
+            "N"
+          ],
+          [
+            "C",
+            "D"
+          ]
+        ]
+      },
+      {
+        "type": "MIDPOINT",
+        "point": "I",
+        "segment": [
+          "M",
+          "N"
+        ]
+      },
+      {
+        "type": "TRIANGLE",
+        "points": [
+          "A",
+          "M",
+          "N"
+        ],
+        "properties": [],
+        "vertex": null
+      },
+      {
+        "type": "ALTITUDE",
+        "top": "A",
+        "foot": "H",
+        "base": [
+          "M",
+          "N"
+        ]
+      },
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "A",
+          "H",
+          "C",
+          "D"
+        ],
+        "subtype": null
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "A",
+          "H",
+          "C",
+          "D"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho đường tròn (O; R). Cát tuyến d cắt đường tròn tại A và B. Từ M trên d kẻ hai tiếp tuyến MC và MD. Gọi I là trung điểm của AB. Chứng minh tứ giác MCID nội tiếp.",
+    "output": [
+      {
+        "type": "CIRCLE",
+        "center": "O",
+        "diameter": null
+      },
+      {
+        "type": "VALUE",
+        "subtype": "length",
+        "points": [
+          "O"
+        ],
+        "value": "R"
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "A",
+        "lines": [
+          [
+            "d"
+          ],
+          [
+            "CIRCLE",
+            "O"
+          ]
+        ]
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "B",
+        "lines": [
+          [
+            "d"
+          ],
+          [
+            "CIRCLE",
+            "O"
+          ]
+        ]
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "M",
+        "circle": null,
+        "location": "ON"
+      },
+      {
+        "type": "TANGENT",
+        "line": [
+          "M",
+          "C"
+        ],
+        "contact": "C",
+        "circle": "O"
+      },
+      {
+        "type": "TANGENT",
+        "line": [
+          "M",
+          "D"
+        ],
+        "contact": "D",
+        "circle": "O"
+      },
+      {
+        "type": "MIDPOINT",
+        "point": "I",
+        "segment": [
+          "A",
+          "B"
+        ]
+      },
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "M",
+          "C",
+          "I",
+          "D"
+        ]
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "M",
+          "C",
+          "I",
+          "D"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho tam giác ABC đều nội tiếp đường tròn (O). M là điểm di động trên cung nhỏ BC. Trên đoạn MA lấy điểm D sao cho MD = MB. Chứng minh tứ giác ADOC nội tiếp.",
+    "output": [
+      {
+        "type": "TRIANGLE",
+        "points": [
+          "A",
+          "B",
+          "C"
+        ],
+        "properties": [
+          "EQUILATERAL"
+        ],
+        "vertex": null
+      },
+      {
+        "type": "CIRCLE",
+        "center": "O"
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "M",
+        "circle": "O",
+        "location": "ON"
+      },
+      {
+        "type": "COLLINEAR",
+        "points": [
+          "M",
+          "A",
+          "D"
+        ]
+      },
+      {
+        "type": "VALUE",
+        "subtype": "length",
+        "points": [
+          "M",
+          "D"
+        ],
+        "value": null
+      },
+      {
+        "type": "VALUE",
+        "subtype": "length",
+        "points": [
+          "M",
+          "B"
+        ],
+        "value": null
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "A",
+          "D",
+          "O",
+          "C"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho nửa đường tròn tâm O đường kính AB. Từ A và B vẽ các tiếp tuyến Ax và By. Đường thẳng qua N thuộc nửa đường tròn vuông góc với NM cắt Ax, By tại C và D. Chứng minh tứ giác ACMN nội tiếp.",
+    "output": [
+      {
+        "type": "SEMICIRCLE",
+        "center": "O",
+        "diameter": [
+          "A",
+          "B"
+        ]
+      },
+      {
+        "type": "TANGENT",
+        "line": [
+          "A",
+          "x"
+        ],
+        "contact": "A",
+        "circle": "O"
+      },
+      {
+        "type": "TANGENT",
+        "line": [
+          "B",
+          "y"
+        ],
+        "contact": "B",
+        "circle": "O"
+      },
+      {
+        "type": "PERPENDICULAR",
+        "lines": [
+          [
+            "N",
+            "M"
+          ],
+          [
+            "N",
+            "M"
+          ]
+        ]
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "C",
+        "lines": [
+          [
+            "A",
+            "x"
+          ],
+          [
+            "N",
+            "D"
+          ]
+        ]
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "D",
+        "lines": [
+          [
+            "B",
+            "y"
+          ],
+          [
+            "N",
+            "C"
+          ]
+        ]
+      },
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "A",
+          "C",
+          "M",
+          "N"
+        ]
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "A",
+          "C",
+          "M",
+          "N"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho tam giác ABC vuông tại A. Từ một điểm E trên cạnh AC kẻ đường thẳng vuông góc xuống BC tại M. Chứng minh tứ giác ABME nội tiếp.",
+    "output": [
+      {
+        "type": "TRIANGLE",
+        "points": [
+          "A",
+          "B",
+          "C"
+        ],
+        "properties": [
+          "RIGHT"
+        ],
+        "vertex": "A"
+      },
+      {
+        "type": "PERPENDICULAR",
+        "lines": [
+          [
+            "E",
+            "M"
+          ],
+          [
+            "B",
+            "C"
+          ]
+        ]
+      },
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "A",
+          "B",
+          "M",
+          "E"
+        ]
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "A",
+          "B",
+          "M",
+          "E"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho đường tròn tâm O, đường kính AB. Kẻ tiếp tuyến d tại B. Gọi M là điểm chạy trên d. AM cắt (O) tại C. Gọi H là trung điểm của AC. Chứng minh tứ giác OBHM nội tiếp.",
+    "output": [
+      {
+        "type": "CIRCLE",
+        "center": "O",
+        "diameter": [
+          "A",
+          "B"
+        ]
+      },
+      {
+        "type": "TANGENT",
+        "line": [
+          "d"
+        ],
+        "contact": "B",
+        "circle": "O"
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "M",
+        "line": [
+          "d"
+        ],
+        "location": "ON"
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "C",
+        "lines": [
+          [
+            "A",
+            "M"
+          ],
+          [
+            "A",
+            "B"
+          ]
+        ]
+      },
+      {
+        "type": "MIDPOINT",
+        "point": "H",
+        "segment": [
+          "A",
+          "C"
+        ]
+      },
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "O",
+          "B",
+          "H",
+          "M"
+        ]
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "O",
+          "B",
+          "H",
+          "M"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho hình thang cân ABCD nội tiếp đường tròn (O). Kẻ các đường cao AH, BK. Chứng minh tứ giác ABKH nội tiếp.",
+    "output": [
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "subtype": "TRAPEZOID"
+      },
+      {
+        "type": "CIRCLE",
+        "center": "O"
+      },
+      {
+        "type": "ALTITUDE",
+        "top": "A",
+        "foot": "H",
+        "base": [
+          "C",
+          "D"
+        ]
+      },
+      {
+        "type": "ALTITUDE",
+        "top": "B",
+        "foot": "K",
+        "base": [
+          "C",
+          "D"
+        ]
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "A",
+          "B",
+          "K",
+          "H"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho tam giác ABC có 3 góc nhọn. Đường tròn tâm O đường kính BC cắt AB, AC tại F, E. BE cắt CF tại H. Gọi K là điểm đối xứng của H qua BC. Chứng minh tứ giác ACKB nội tiếp.",
+    "output": [
+      {
+        "type": "TRIANGLE",
+        "points": [
+          "A",
+          "B",
+          "C"
+        ],
+        "properties": [
+          "ACUTE"
+        ],
+        "vertex": null
+      },
+      {
+        "type": "CIRCLE",
+        "center": "O",
+        "diameter": [
+          "B",
+          "C"
+        ]
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "F",
+        "lines": [
+          [
+            "A",
+            "B"
+          ]
+        ]
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "E",
+        "lines": [
+          [
+            "A",
+            "C"
+          ]
+        ]
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "H",
+        "lines": [
+          [
+            "B",
+            "E"
+          ],
+          [
+            "C",
+            "F"
+          ]
+        ]
+      },
+      {
+        "type": "POINT",
+        "point": "K",
+        "relation": "K là điểm đối xứng của H qua BC"
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "A",
+          "C",
+          "K",
+          "B"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho tam giác ABC vuông tại A. Kẻ đường cao AH. Gọi I, K lần lượt là tâm đường tròn nội tiếp các tam giác ABH và ACH. Đường thẳng IK cắt AB, AC tại M và N. Chứng minh tứ giác AMHN nội tiếp.",
+    "output": [
+      {
+        "type": "TRIANGLE",
+        "points": [
+          "A",
+          "B",
+          "C"
+        ],
+        "properties": [
+          "RIGHT"
+        ],
+        "vertex": "A"
+      },
+      {
+        "type": "ALTITUDE",
+        "top": "A",
+        "foot": "H",
+        "base": [
+          "B",
+          "C"
+        ]
+      },
+      {
+        "type": "CIRCLE",
+        "center": "I"
+      },
+      {
+        "type": "CIRCLE",
+        "center": "K"
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "A",
+          "M",
+          "H",
+          "N"
+        ]
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "M",
+        "lines": [
+          [
+            "I",
+            "K"
+          ],
+          [
+            "A",
+            "B"
+          ]
+        ]
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "N",
+        "lines": [
+          [
+            "I",
+            "K"
+          ],
+          [
+            "A",
+            "C"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho nửa đường tròn tâm O đường kính AB. Điểm C nằm trên nửa đường tròn. Gọi D là điểm chính giữa cung AC. Dây AC cắt BD tại H. Dây AD cắt BC tại K. Chứng minh tứ giác CDKH nội tiếp.",
+    "output": [
+      {
+        "type": "SEMICIRCLE",
+        "center": "O",
+        "diameter": [
+          "A",
+          "B"
+        ]
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "C",
+        "circle": "O",
+        "location": "ON"
+      },
+      {
+        "type": "MIDPOINT",
+        "point": "D",
+        "segment": [
+          "A",
+          "C"
+        ]
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "H",
+        "lines": [
+          [
+            "A",
+            "C"
+          ],
+          [
+            "B",
+            "D"
+          ]
+        ]
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "K",
+        "lines": [
+          [
+            "A",
+            "D"
+          ],
+          [
+            "B",
+            "C"
+          ]
+        ]
+      },
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "C",
+          "D",
+          "K",
+          "H"
+        ]
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "C",
+          "D",
+          "K",
+          "H"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho tam giác ABC nhọn nội tiếp đường tròn (O). Kẻ MH vuông góc với AB, MK vuông góc với AC (M thuộc cung nhỏ BC). Chứng minh tứ giác AHMK nội tiếp.",
+    "output": [
+      {
+        "type": "TRIANGLE",
+        "points": [
+          "A",
+          "B",
+          "C"
+        ],
+        "properties": [
+          "ACUTE"
+        ],
+        "vertex": null
+      },
+      {
+        "type": "CIRCLE",
+        "center": "O"
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "M",
+        "circle": "O",
+        "location": "ON"
+      },
+      {
+        "type": "PERPENDICULAR",
+        "lines": [
+          [
+            "M",
+            "H"
+          ],
+          [
+            "A",
+            "B"
+          ]
+        ]
+      },
+      {
+        "type": "PERPENDICULAR",
+        "lines": [
+          [
+            "M",
+            "K"
+          ],
+          [
+            "A",
+            "C"
+          ]
+        ]
+      },
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "A",
+          "H",
+          "M",
+          "K"
+        ],
+        "subtype": null
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "A",
+          "H",
+          "M",
+          "K"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho điểm M thuộc đường tròn (O), tiếp tuyến tại M cắt tiếp tuyến tại A và B của đường tròn lần lượt ở C và D (AB là đường kính). Chứng minh tứ giác CDMO nội tiếp.",
+    "output": [
+      {
+        "type": "CIRCLE",
+        "center": "O"
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "M",
+        "circle": "O",
+        "location": "ON"
+      },
+      {
+        "type": "TANGENT",
+        "line": [
+          "C",
+          "M"
+        ],
+        "contact": "M",
+        "circle": "O"
+      },
+      {
+        "type": "TANGENT",
+        "line": [
+          "A",
+          "C"
+        ],
+        "contact": "A",
+        "circle": "O"
+      },
+      {
+        "type": "TANGENT",
+        "line": [
+          "B",
+          "D"
+        ],
+        "contact": "B",
+        "circle": "O"
+      },
+      {
+        "type": "COLLINEAR",
+        "points": [
+          "A",
+          "O",
+          "B"
+        ]
+      },
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "C",
+          "D",
+          "M",
+          "O"
+        ]
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "C",
+          "D",
+          "M",
+          "O"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho tam giác ABC vuông cân tại A. M là trung điểm BC. Điểm E thuộc đoạn MC. Kẻ BH, CK vuông góc với AE. Chứng minh tứ giác ABHK nội tiếp.",
+    "output": [
+      {
+        "type": "TRIANGLE",
+        "points": [
+          "A",
+          "B",
+          "C"
+        ],
+        "properties": [
+          "RIGHT",
+          "ISOSCELES"
+        ],
+        "vertex": "A"
+      },
+      {
+        "type": "MIDPOINT",
+        "point": "M",
+        "segment": [
+          "B",
+          "C"
+        ]
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "E",
+        "segment": [
+          "M",
+          "C"
+        ],
+        "location": "ON"
+      },
+      {
+        "type": "PERPENDICULAR",
+        "lines": [
+          [
+            "B",
+            "H"
+          ],
+          [
+            "A",
+            "E"
+          ]
+        ]
+      },
+      {
+        "type": "PERPENDICULAR",
+        "lines": [
+          [
+            "C",
+            "K"
+          ],
+          [
+            "A",
+            "E"
+          ]
+        ]
+      },
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "A",
+          "B",
+          "H",
+          "K"
+        ],
+        "subtype": null
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "A",
+          "B",
+          "H",
+          "K"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho tam giác ABC nhọn. Vẽ đường tròn tâm O đường kính BC cắt AB tại D và AC tại E. BE và CD cắt nhau tại H. Chứng minh tứ giác ADHE nội tiếp.",
+    "output": [
+      {
+        "type": "TRIANGLE",
+        "points": [
+          "A",
+          "B",
+          "C"
+        ],
+        "properties": [
+          "ACUTE"
+        ],
+        "vertex": null
+      },
+      {
+        "type": "CIRCLE",
+        "center": "O",
+        "diameter": [
+          "B",
+          "C"
+        ]
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "D",
+        "lines": [
+          [
+            "A",
+            "B"
+          ],
+          [
+            "O",
+            "D"
+          ]
+        ]
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "E",
+        "lines": [
+          [
+            "A",
+            "C"
+          ],
+          [
+            "O",
+            "E"
+          ]
+        ]
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "H",
+        "lines": [
+          [
+            "B",
+            "E"
+          ],
+          [
+            "C",
+            "D"
+          ]
+        ]
+      },
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "A",
+          "D",
+          "H",
+          "E"
+        ],
+        "subtype": null
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "A",
+          "D",
+          "H",
+          "E"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho hình vuông ABCD. Gọi E là một điểm trên cạnh BC. Qua A kẻ đường thẳng vuông góc với AE cắt đường thẳng CD tại F. Chứng minh tứ giác AEFD có các điểm cùng thuộc một đường tròn (biến thể nội tiếp).",
+    "output": [
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "subtype": "SQUARE"
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "E",
+        "segment": [
+          "B",
+          "C"
+        ],
+        "location": "ON"
+      },
+      {
+        "type": "PERPENDICULAR",
+        "lines": [
+          [
+            "A",
+            "F"
+          ],
+          [
+            "A",
+            "E"
+          ]
+        ]
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "F",
+        "lines": [
+          [
+            "A",
+            "F"
+          ],
+          [
+            "C",
+            "D"
+          ]
+        ]
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "A",
+          "E",
+          "F",
+          "D"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho tam giác ABC vuông tại A. Kẻ đường cao AH. Gọi D và E lần lượt là hình chiếu của H trên AB và AC. Chứng minh tứ giác BDEC nội tiếp.",
+    "output": [
+      {
+        "type": "TRIANGLE",
+        "points": [
+          "A",
+          "B",
+          "C"
+        ],
+        "properties": [
+          "RIGHT"
+        ],
+        "vertex": "A"
+      },
+      {
+        "type": "ALTITUDE",
+        "top": "A",
+        "foot": "H",
+        "base": [
+          "B",
+          "C"
+        ]
+      },
+      {
+        "type": "PERPENDICULAR",
+        "lines": [
+          [
+            "H",
+            "D"
+          ],
+          [
+            "A",
+            "B"
+          ]
+        ]
+      },
+      {
+        "type": "PERPENDICULAR",
+        "lines": [
+          [
+            "H",
+            "E"
+          ],
+          [
+            "A",
+            "C"
+          ]
+        ]
+      },
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "B",
+          "D",
+          "E",
+          "C"
+        ],
+        "subtype": null
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "B",
+          "D",
+          "E",
+          "C"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho đường tròn (O) đường kính AB. M là một điểm trên đường tròn. Tiếp tuyến tại M cắt tiếp tuyến tại A ở C. Chứng minh tứ giác ACMO nội tiếp.",
+    "output": [
+      {
+        "type": "CIRCLE",
+        "center": "O",
+        "diameter": [
+          "A",
+          "B"
+        ]
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "M",
+        "circle": "O",
+        "location": "ON"
+      },
+      {
+        "type": "TANGENT",
+        "line": [
+          "C",
+          "M"
+        ],
+        "contact": "M",
+        "circle": "O"
+      },
+      {
+        "type": "TANGENT",
+        "line": [
+          "A",
+          "C"
+        ],
+        "contact": "A",
+        "circle": "O"
+      },
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "A",
+          "C",
+          "M",
+          "O"
+        ]
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "A",
+          "C",
+          "M",
+          "O"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho tam giác nhọn ABC. Gọi M là trung điểm của BC. Các đường trung trực của AB và AC cắt nhau tại O. Gọi H là trực tâm của tam giác ABC. Chứng minh tứ giác OBHC nội tiếp (trường hợp đặc biệt).",
+    "output": [
+      {
+        "type": "TRIANGLE",
+        "points": [
+          "A",
+          "B",
+          "C"
+        ],
+        "properties": [
+          "ACUTE"
+        ],
+        "vertex": null
+      },
+      {
+        "type": "MIDPOINT",
+        "point": "M",
+        "segment": [
+          "B",
+          "C"
+        ]
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "O",
+        "lines": []
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "H",
+        "lines": []
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "O",
+          "B",
+          "H",
+          "C"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho hai đường tròn (O) và (O') cắt nhau tại A và B. Gọi I là trung điểm của OO'. Đường thẳng qua A cắt các đường tròn tại C và D. Chứng minh tứ giác OO'DC có tính chất liên quan nội tiếp khi biến đổi.",
+    "output": [
+      {
+        "type": "CIRCLE",
+        "center": "O"
+      },
+      {
+        "type": "CIRCLE",
+        "center": "O'"
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "A",
+        "lines": [
+          [
+            "CIRCLE",
+            "O"
+          ],
+          [
+            "CIRCLE",
+            "O'"
+          ]
+        ]
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "B",
+        "lines": [
+          [
+            "CIRCLE",
+            "O"
+          ],
+          [
+            "CIRCLE",
+            "O'"
+          ]
+        ]
+      },
+      {
+        "type": "MIDPOINT",
+        "point": "I",
+        "segment": [
+          "O",
+          "O'"
+        ]
+      },
+      {
+        "type": "COLLINEAR",
+        "points": [
+          "A",
+          "C",
+          "D"
+        ]
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "C",
+        "circle": "O",
+        "location": "ON"
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "D",
+        "circle": "O'",
+        "location": "ON"
+      },
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "O",
+          "O'",
+          "D",
+          "C"
+        ]
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "O",
+          "O'",
+          "D",
+          "C"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho tam giác ABC cân tại A. Đường cao AD, BE cắt nhau tại H. Gọi O là tâm đường tròn ngoại tiếp tam giác AHE. Chứng minh tứ giác ABDE nội tiếp.",
+    "output": [
+      {
+        "type": "TRIANGLE",
+        "points": [
+          "A",
+          "B",
+          "C"
+        ],
+        "properties": [
+          "ISOSCELES"
+        ],
+        "vertex": "A"
+      },
+      {
+        "type": "ALTITUDE",
+        "top": "A",
+        "foot": "D",
+        "base": [
+          "B",
+          "C"
+        ]
+      },
+      {
+        "type": "ALTITUDE",
+        "top": "B",
+        "foot": "E",
+        "base": [
+          "A",
+          "C"
+        ]
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "H",
+        "lines": [
+          [
+            "A",
+            "D"
+          ],
+          [
+            "B",
+            "E"
+          ]
+        ]
+      },
+      {
+        "type": "CIRCLE",
+        "center": "O",
+        "points": [
+          "A",
+          "H",
+          "E"
+        ]
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "A",
+          "B",
+          "D",
+          "E"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho nửa đường tròn (O) đường kính AB. Gọi C là một điểm trên nửa đường tròn. Kẻ CH vuông góc với AB. Gọi M và N lần lượt là hình chiếu của H trên AC và BC. Chứng minh tứ giác CMHN nội tiếp.",
+    "output": [
+      {
+        "type": "SEMICIRCLE",
+        "center": "O",
+        "diameter": [
+          "A",
+          "B"
+        ]
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "C",
+        "circle": "O",
+        "location": "ON"
+      },
+      {
+        "type": "PERPENDICULAR",
+        "lines": [
+          [
+            "C",
+            "H"
+          ],
+          [
+            "A",
+            "B"
+          ]
+        ]
+      },
+      {
+        "type": "PERPENDICULAR",
+        "lines": [
+          [
+            "H",
+            "M"
+          ],
+          [
+            "A",
+            "C"
+          ]
+        ]
+      },
+      {
+        "type": "PERPENDICULAR",
+        "lines": [
+          [
+            "H",
+            "N"
+          ],
+          [
+            "B",
+            "C"
+          ]
+        ]
+      },
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "C",
+          "M",
+          "H",
+          "N"
+        ],
+        "subtype": null
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "C",
+          "M",
+          "H",
+          "N"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho hình thoi ABCD có góc A = 60 độ. Gọi E, F lần lượt là trung điểm của AB và BC. Chứng minh tứ giác DEBF nội tiếp (hoặc các điểm liên quan).",
+    "output": [
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "subtype": "RHOMBUS"
+      },
+      {
+        "type": "VALUE",
+        "subtype": "angle",
+        "points": [
+          "B",
+          "A",
+          "D"
+        ],
+        "value": 60
+      },
+      {
+        "type": "MIDPOINT",
+        "point": "E",
+        "segment": [
+          "A",
+          "B"
+        ]
+      },
+      {
+        "type": "MIDPOINT",
+        "point": "F",
+        "segment": [
+          "B",
+          "C"
+        ]
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "D",
+          "E",
+          "B",
+          "F"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho tam giác ABC nội tiếp đường tròn (O). Phân giác trong của góc A cắt đường tròn tại D. Chứng minh tứ giác ABDC nội tiếp (hiển nhiên) và gọi I là tâm đường tròn nội tiếp, chứng minh tứ giác AIO... (bài toán mở rộng).",
+    "output": [
+      {
+        "type": "TRIANGLE",
+        "points": [
+          "A",
+          "B",
+          "C"
+        ],
+        "properties": [],
+        "vertex": null
+      },
+      {
+        "type": "CIRCLE",
+        "center": "O"
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "A",
+        "circle": "O",
+        "location": "ON"
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "B",
+        "circle": "O",
+        "location": "ON"
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "C",
+        "circle": "O",
+        "location": "ON"
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "A",
+          "B",
+          "D",
+          "C"
+        ]
+      },
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "A",
+          "B",
+          "D",
+          "C"
+        ],
+        "subtype": null
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho đường tròn (O) và điểm M ngoài đường tròn. Vẽ hai cát tuyến MAB và MCD. Chứng minh tứ giác ACDB nội tiếp.",
+    "output": [
+      {
+        "type": "CIRCLE",
+        "center": "O"
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "M",
+        "circle": "O",
+        "location": "OUTSIDE"
+      },
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "A",
+          "C",
+          "D",
+          "B"
+        ]
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "A",
+          "C",
+          "D",
+          "B"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho tam giác ABC vuông tại A. Gọi M là trung điểm của AC. Đường tròn đường kính MC cắt BC tại N. BM cắt đường tròn tại I. Chứng minh tứ giác ABIN nội tiếp.",
+    "output": [
+      {
+        "type": "TRIANGLE",
+        "points": [
+          "A",
+          "B",
+          "C"
+        ],
+        "properties": [
+          "RIGHT"
+        ],
+        "vertex": "A"
+      },
+      {
+        "type": "MIDPOINT",
+        "point": "M",
+        "segment": [
+          "A",
+          "C"
+        ]
+      },
+      {
+        "type": "CIRCLE",
+        "center": "O",
+        "diameter": [
+          "M",
+          "C"
+        ]
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "N",
+        "lines": [
+          [
+            "B",
+            "C"
+          ],
+          [
+            "M",
+            "C"
+          ]
+        ]
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "I",
+        "lines": [
+          [
+            "B",
+            "M"
+          ],
+          [
+            "M",
+            "C"
+          ]
+        ]
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "A",
+          "B",
+          "I",
+          "N"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho tứ giác ABCD nội tiếp đường tròn (O). Gọi E là giao điểm của AB và CD, F là giao điểm của AD và BC. Chứng minh các đường phân giác của góc E và góc F vuông góc với nhau tạo thành tứ giác nội tiếp nhỏ bên trong.",
+    "output": [
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ]
+      },
+      {
+        "type": "CIRCLE",
+        "center": "O"
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "A",
+        "circle": "O",
+        "location": "ON"
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "B",
+        "circle": "O",
+        "location": "ON"
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "C",
+        "circle": "O",
+        "location": "ON"
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "D",
+        "circle": "O",
+        "location": "ON"
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "E",
+        "lines": [
+          [
+            "A",
+            "B"
+          ],
+          [
+            "C",
+            "D"
+          ]
+        ]
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "F",
+        "lines": [
+          [
+            "A",
+            "D"
+          ],
+          [
+            "B",
+            "C"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho tam giác ABC. Đường tròn tâm I nội tiếp tam giác tiếp xúc với các cạnh BC, CA, AB lần lượt tại D, E, F. Chứng minh các tứ giác AEIF, BFID, CDIE nội tiếp.",
+    "output": [
+      {
+        "type": "TRIANGLE",
+        "points": [
+          "A",
+          "B",
+          "C"
+        ],
+        "properties": [],
+        "vertex": null
+      },
+      {
+        "type": "CIRCLE",
+        "center": "I"
+      },
+      {
+        "type": "TANGENT",
+        "line": [
+          "I",
+          "D"
+        ],
+        "contact": "D",
+        "circle": "I"
+      },
+      {
+        "type": "TANGENT",
+        "line": [
+          "I",
+          "E"
+        ],
+        "contact": "E",
+        "circle": "I"
+      },
+      {
+        "type": "TANGENT",
+        "line": [
+          "I",
+          "F"
+        ],
+        "contact": "F",
+        "circle": "I"
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "A",
+          "E",
+          "I",
+          "F"
+        ]
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "B",
+          "F",
+          "I",
+          "D"
+        ]
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "C",
+          "D",
+          "I",
+          "E"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho tam giác ABC nhọn. Các đường cao AD, BE, CF. Gọi M, N, P, Q lần lượt là hình chiếu của D trên AB, AC, BE, CF. Chứng minh M, N, P, Q cùng thuộc một đường tròn.",
+    "output": [
+      {
+        "type": "TRIANGLE",
+        "points": [
+          "A",
+          "B",
+          "C"
+        ],
+        "properties": [
+          "ACUTE"
+        ],
+        "vertex": null
+      },
+      {
+        "type": "ALTITUDE",
+        "top": "A",
+        "foot": "D",
+        "base": [
+          "B",
+          "C"
+        ]
+      },
+      {
+        "type": "ALTITUDE",
+        "top": "B",
+        "foot": "E",
+        "base": [
+          "A",
+          "C"
+        ]
+      },
+      {
+        "type": "ALTITUDE",
+        "top": "C",
+        "foot": "F",
+        "base": [
+          "A",
+          "B"
+        ]
+      },
+      {
+        "type": "PERPENDICULAR",
+        "lines": [
+          [
+            "D",
+            "M"
+          ],
+          [
+            "A",
+            "B"
+          ]
+        ]
+      },
+      {
+        "type": "PERPENDICULAR",
+        "lines": [
+          [
+            "D",
+            "N"
+          ],
+          [
+            "A",
+            "C"
+          ]
+        ]
+      },
+      {
+        "type": "PERPENDICULAR",
+        "lines": [
+          [
+            "D",
+            "P"
+          ],
+          [
+            "B",
+            "E"
+          ]
+        ]
+      },
+      {
+        "type": "PERPENDICULAR",
+        "lines": [
+          [
+            "D",
+            "Q"
+          ],
+          [
+            "C",
+            "F"
+          ]
+        ]
+      },
+      {
+        "type": "COLLINEAR",
+        "points": [
+          "A",
+          "M",
+          "B"
+        ]
+      },
+      {
+        "type": "COLLINEAR",
+        "points": [
+          "A",
+          "N",
+          "C"
+        ]
+      },
+      {
+        "type": "COLLINEAR",
+        "points": [
+          "B",
+          "P",
+          "E"
+        ]
+      },
+      {
+        "type": "COLLINEAR",
+        "points": [
+          "C",
+          "Q",
+          "F"
+        ]
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "M",
+          "N",
+          "P",
+          "Q"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho đường tròn (O) đường kính AB. Dây cung CD vuông góc với AB tại H. Gọi M là một điểm trên cung nhỏ CB. AM cắt CD tại N. Chứng minh tứ giác HMNB nội tiếp.",
+    "output": [
+      {
+        "type": "CIRCLE",
+        "center": "O",
+        "diameter": [
+          "A",
+          "B"
+        ]
+      },
+      {
+        "type": "PERPENDICULAR",
+        "lines": [
+          [
+            "C",
+            "D"
+          ],
+          [
+            "A",
+            "B"
+          ]
+        ]
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "H",
+        "lines": [
+          [
+            "C",
+            "D"
+          ],
+          [
+            "A",
+            "B"
+          ]
+        ]
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "M",
+        "circle": "O",
+        "location": "ON"
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "N",
+        "lines": [
+          [
+            "A",
+            "M"
+          ],
+          [
+            "C",
+            "D"
+          ]
+        ]
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "H",
+          "M",
+          "N",
+          "B"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho hình chữ nhật ABCD. Kẻ BH vuông góc với AC. Gọi M, K lần lượt là trung điểm của AH và CD. Chứng minh tứ giác BMKC nội tiếp.",
+    "output": [
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "subtype": "RECTANGLE"
+      },
+      {
+        "type": "PERPENDICULAR",
+        "lines": [
+          [
+            "B",
+            "H"
+          ],
+          [
+            "A",
+            "C"
+          ]
+        ]
+      },
+      {
+        "type": "MIDPOINT",
+        "point": "M",
+        "segment": [
+          "A",
+          "H"
+        ]
+      },
+      {
+        "type": "MIDPOINT",
+        "point": "K",
+        "segment": [
+          "C",
+          "D"
+        ]
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "B",
+          "M",
+          "K",
+          "C"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho tam giác ABC vuông tại A. Đường cao AH. Gọi D, E là hình chiếu của H lên AB, AC. Chứng minh tứ giác ADHE nội tiếp và tứ giác BDEC nội tiếp.",
+    "output": [
+      {
+        "type": "TRIANGLE",
+        "points": [
+          "A",
+          "B",
+          "C"
+        ],
+        "properties": [
+          "RIGHT"
+        ],
+        "vertex": "A"
+      },
+      {
+        "type": "ALTITUDE",
+        "top": "A",
+        "foot": "H",
+        "base": [
+          "B",
+          "C"
+        ]
+      },
+      {
+        "type": "PERPENDICULAR",
+        "lines": [
+          [
+            "H",
+            "D"
+          ],
+          [
+            "A",
+            "B"
+          ]
+        ]
+      },
+      {
+        "type": "PERPENDICULAR",
+        "lines": [
+          [
+            "H",
+            "E"
+          ],
+          [
+            "A",
+            "C"
+          ]
+        ]
+      },
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "A",
+          "D",
+          "H",
+          "E"
+        ]
+      },
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "B",
+          "D",
+          "E",
+          "C"
+        ]
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "A",
+          "D",
+          "H",
+          "E"
+        ]
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "B",
+          "D",
+          "E",
+          "C"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho đường tròn (O) và điểm A nằm ngoài. Kẻ tiếp tuyến AB và cát tuyến ACD. Tia phân giác góc BAC cắt BC, BD lần lượt tại M, N. Chứng minh tứ giác ABMN có tính chất nội tiếp đặc biệt.",
+    "output": [
+      {
+        "type": "CIRCLE",
+        "center": "O"
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "A",
+        "circle": "O",
+        "location": "OUTSIDE"
+      },
+      {
+        "type": "TANGENT",
+        "line": [
+          "A",
+          "B"
+        ],
+        "contact": "B",
+        "circle": "O"
+      },
+      {
+        "type": "COLLINEAR",
+        "points": [
+          "A",
+          "C",
+          "D"
+        ]
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "A",
+          "B",
+          "M",
+          "N"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho tam giác ABC có ba góc nhọn. Các đường cao AD, BE, CF cắt nhau tại H. Gọi M là trung điểm của BC. Đường thẳng qua H vuông góc với HM cắt AB, AC tại P, Q. Chứng minh tứ giác APHQ nội tiếp.",
+    "output": [
+      {
+        "type": "TRIANGLE",
+        "points": [
+          "A",
+          "B",
+          "C"
+        ],
+        "properties": [
+          "ACUTE"
+        ],
+        "vertex": null
+      },
+      {
+        "type": "ALTITUDE",
+        "top": "A",
+        "foot": "D",
+        "base": [
+          "B",
+          "C"
+        ]
+      },
+      {
+        "type": "ALTITUDE",
+        "top": "B",
+        "foot": "E",
+        "base": [
+          "A",
+          "C"
+        ]
+      },
+      {
+        "type": "ALTITUDE",
+        "top": "C",
+        "foot": "F",
+        "base": [
+          "A",
+          "B"
+        ]
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "H",
+        "lines": [
+          [
+            "A",
+            "D"
+          ],
+          [
+            "B",
+            "E"
+          ],
+          [
+            "C",
+            "F"
+          ]
+        ]
+      },
+      {
+        "type": "MIDPOINT",
+        "point": "M",
+        "segment": [
+          "B",
+          "C"
+        ]
+      },
+      {
+        "type": "PERPENDICULAR",
+        "lines": [
+          [
+            "H",
+            "Q"
+          ],
+          [
+            "H",
+            "M"
+          ]
+        ]
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "P",
+        "lines": [
+          [
+            "H",
+            "Q"
+          ],
+          [
+            "A",
+            "B"
+          ]
+        ]
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "Q",
+        "lines": [
+          [
+            "H",
+            "Q"
+          ],
+          [
+            "A",
+            "C"
+          ]
+        ]
+      },
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "A",
+          "P",
+          "H",
+          "Q"
+        ],
+        "subtype": null
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "A",
+          "P",
+          "H",
+          "Q"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho tam giác ABC nhọn. Đường tròn đường kính AB cắt AC tại D. Đường tròn đường kính AC cắt AB tại E. Gọi H là giao điểm của BD và CE. Chứng minh tứ giác ADHE nội tiếp.",
+    "output": [
+      {
+        "type": "TRIANGLE",
+        "points": [
+          "A",
+          "B",
+          "C"
+        ],
+        "properties": [
+          "ACUTE"
+        ],
+        "vertex": null
+      },
+      {
+        "type": "CIRCLE",
+        "center": "O1",
+        "diameter": [
+          "A",
+          "B"
+        ]
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "D",
+        "lines": [
+          [
+            "A",
+            "C"
+          ],
+          [
+            "O1",
+            "D"
+          ]
+        ]
+      },
+      {
+        "type": "CIRCLE",
+        "center": "O2",
+        "diameter": [
+          "A",
+          "C"
+        ]
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "E",
+        "lines": [
+          [
+            "A",
+            "B"
+          ],
+          [
+            "O2",
+            "E"
+          ]
+        ]
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "H",
+        "lines": [
+          [
+            "B",
+            "D"
+          ],
+          [
+            "C",
+            "E"
+          ]
+        ]
+      },
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "A",
+          "D",
+          "H",
+          "E"
+        ],
+        "subtype": null
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "A",
+          "D",
+          "H",
+          "E"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho tam giác ABC cân tại A. Gọi M là trung điểm của BC. Kẻ MH vuông góc với AC. Gọi I là trung điểm của MH. Chứng minh tứ giác AIM... (bài toán hình học phẳng nâng cao về tứ giác nội tiếp).",
+    "output": [
+      {
+        "type": "TRIANGLE",
+        "points": [
+          "A",
+          "B",
+          "C"
+        ],
+        "properties": [
+          "ISOSCELES"
+        ],
+        "vertex": "A"
+      },
+      {
+        "type": "MIDPOINT",
+        "point": "M",
+        "segment": [
+          "B",
+          "C"
+        ]
+      },
+      {
+        "type": "PERPENDICULAR",
+        "lines": [
+          [
+            "M",
+            "H"
+          ],
+          [
+            "A",
+            "C"
+          ]
+        ]
+      },
+      {
+        "type": "MIDPOINT",
+        "point": "I",
+        "segment": [
+          "M",
+          "H"
+        ]
+      },
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "A",
+          "I",
+          "M"
+        ],
+        "subtype": null
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "A",
+          "I",
+          "M"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho hai đường tròn (O) và (O') tiếp xúc ngoài tại A. Kẻ tiếp tuyến chung ngoài BC (B thuộc O, C thuộc O'). Tiếp tuyến chung trong tại A cắt BC tại M. Chứng minh tứ giác OBCO' nội tiếp đường tròn đường kính OO'.",
+    "output": [
+      {
+        "type": "CIRCLE",
+        "center": "O"
+      },
+      {
+        "type": "CIRCLE",
+        "center": "O'"
+      },
+      {
+        "type": "TANGENT",
+        "line": [
+          "B",
+          "C"
+        ],
+        "contact": "B",
+        "circle": "O"
+      },
+      {
+        "type": "TANGENT",
+        "line": [
+          "B",
+          "C"
+        ],
+        "contact": "C",
+        "circle": "O'"
+      },
+      {
+        "type": "TANGENT",
+        "line": [
+          "A",
+          "M"
+        ],
+        "contact": "A",
+        "circle": "O"
+      },
+      {
+        "type": "TANGENT",
+        "line": [
+          "A",
+          "M"
+        ],
+        "contact": "A",
+        "circle": "O'"
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "M",
+        "lines": [
+          [
+            "B",
+            "C"
+          ],
+          [
+            "A",
+            "M"
+          ]
+        ]
+      },
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "O",
+          "B",
+          "C",
+          "O'"
+        ]
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "O",
+          "B",
+          "C",
+          "O'"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho hình vuông ABCD. Gọi M, N lần lượt là trung điểm của BC và CD. AM và BN cắt nhau tại I. Chứng minh tứ giác ABID nội tiếp.",
+    "output": [
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "subtype": "SQUARE"
+      },
+      {
+        "type": "MIDPOINT",
+        "point": "M",
+        "segment": [
+          "B",
+          "C"
+        ]
+      },
+      {
+        "type": "MIDPOINT",
+        "point": "N",
+        "segment": [
+          "C",
+          "D"
+        ]
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "I",
+        "lines": [
+          [
+            "A",
+            "M"
+          ],
+          [
+            "B",
+            "N"
+          ]
+        ]
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "A",
+          "B",
+          "I",
+          "D"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho tam giác ABC. Gọi D, E, F lần lượt là chân các đường cao hạ từ A, B, C. Gọi M là trung điểm của BC. Chứng minh tứ giác MEFD nội tiếp.",
+    "output": [
+      {
+        "type": "TRIANGLE",
+        "points": [
+          "A",
+          "B",
+          "C"
+        ],
+        "properties": [],
+        "vertex": null
+      },
+      {
+        "type": "ALTITUDE",
+        "top": "A",
+        "foot": "D",
+        "base": [
+          "B",
+          "C"
+        ]
+      },
+      {
+        "type": "ALTITUDE",
+        "top": "B",
+        "foot": "E",
+        "base": [
+          "A",
+          "C"
+        ]
+      },
+      {
+        "type": "ALTITUDE",
+        "top": "C",
+        "foot": "F",
+        "base": [
+          "A",
+          "B"
+        ]
+      },
+      {
+        "type": "MIDPOINT",
+        "point": "M",
+        "segment": [
+          "B",
+          "C"
+        ]
+      },
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "M",
+          "E",
+          "F",
+          "D"
+        ],
+        "subtype": null
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "M",
+          "E",
+          "F",
+          "D"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho đường tròn (O) đường kính AB. Điểm C thuộc (O). Gọi H là hình chiếu của C trên AB. Đường tròn đường kính CH cắt AC, BC tại D, E. Chứng minh tứ giác CDEH là hình chữ nhật và tứ giác ABED nội tiếp.",
+    "output": [
+      {
+        "type": "CIRCLE",
+        "center": "O",
+        "diameter": [
+          "A",
+          "B"
+        ]
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "C",
+        "circle": "O",
+        "location": "ON"
+      },
+      {
+        "type": "ALTITUDE",
+        "top": "C",
+        "foot": "H",
+        "base": [
+          "A",
+          "B"
+        ]
+      },
+      {
+        "type": "CIRCLE",
+        "center": "I",
+        "diameter": [
+          "C",
+          "H"
+        ]
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "D",
+        "lines": [
+          [
+            "C",
+            "H"
+          ],
+          [
+            "A",
+            "C"
+          ]
+        ]
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "E",
+        "lines": [
+          [
+            "C",
+            "H"
+          ],
+          [
+            "B",
+            "C"
+          ]
+        ]
+      },
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "C",
+          "D",
+          "E",
+          "H"
+        ]
+      },
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "A",
+          "B",
+          "E",
+          "D"
+        ]
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "C",
+          "D",
+          "E",
+          "H"
+        ]
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "A",
+          "B",
+          "E",
+          "D"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho tam giác ABC vuông tại A. M là điểm bất kỳ trên cạnh AC. Đường tròn đường kính MC cắt BC tại D. BM cắt đường tròn tại I. Chứng minh tứ giác ABCI nội tiếp.",
+    "output": [
+      {
+        "type": "TRIANGLE",
+        "points": [
+          "A",
+          "B",
+          "C"
+        ],
+        "properties": [
+          "RIGHT"
+        ],
+        "vertex": "A"
+      },
+      {
+        "type": "MIDPOINT",
+        "point": "M",
+        "segment": [
+          "A",
+          "C"
+        ]
+      },
+      {
+        "type": "CIRCLE",
+        "center": "M",
+        "diameter": [
+          "M",
+          "C"
+        ]
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "D",
+        "lines": [
+          [
+            "B",
+            "C"
+          ],
+          [
+            "M",
+            "C"
+          ]
+        ]
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "I",
+        "lines": [
+          [
+            "B",
+            "M"
+          ],
+          [
+            "M",
+            "C"
+          ]
+        ]
+      },
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "A",
+          "B",
+          "C",
+          "I"
+        ]
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "A",
+          "B",
+          "C",
+          "I"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho tam giác ABC nhọn. H là trực tâm. M là trung điểm BC. Đường thẳng qua H vuông góc với HM cắt AB, AC tại E, F. Chứng minh tứ giác EBCF nội tiếp.",
+    "output": [
+      {
+        "type": "TRIANGLE",
+        "points": [
+          "A",
+          "B",
+          "C"
+        ],
+        "properties": [
+          "ACUTE"
+        ],
+        "vertex": null
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "H",
+        "lines": [
+          [
+            "A",
+            "B"
+          ],
+          [
+            "A",
+            "C"
+          ]
+        ]
+      },
+      {
+        "type": "MIDPOINT",
+        "point": "M",
+        "segment": [
+          "B",
+          "C"
+        ]
+      },
+      {
+        "type": "PERPENDICULAR",
+        "lines": [
+          [
+            "H",
+            "F"
+          ],
+          [
+            "H",
+            "M"
+          ]
+        ]
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "E",
+        "lines": [
+          [
+            "H",
+            "F"
+          ],
+          [
+            "A",
+            "B"
+          ]
+        ]
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "F",
+        "lines": [
+          [
+            "H",
+            "F"
+          ],
+          [
+            "A",
+            "C"
+          ]
+        ]
+      },
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "E",
+          "B",
+          "C",
+          "F"
+        ],
+        "subtype": null
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "E",
+          "B",
+          "C",
+          "F"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho đường tròn (O) và dây cung AB. Gọi M là điểm chính giữa cung nhỏ AB. C là điểm bất kỳ trên cung lớn AB. Dây MC cắt AB tại D. Chứng minh tứ giác MDO... (bài toán liên quan tứ giác nội tiếp).",
+    "output": [
+      {
+        "type": "CIRCLE",
+        "center": "O"
+      },
+      {
+        "type": "SEGMENT",
+        "points": [
+          "A",
+          "B"
+        ]
+      },
+      {
+        "type": "MIDPOINT",
+        "point": "M",
+        "segment": [
+          "A",
+          "B"
+        ]
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "C",
+        "circle": "O",
+        "location": "ON"
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "D",
+        "lines": [
+          [
+            "M",
+            "C"
+          ],
+          [
+            "A",
+            "B"
+          ]
+        ]
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "M",
+          "D",
+          "O"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho tam giác ABC vuông tại A. Đường phân giác AD. Gọi E, F lần lượt là hình chiếu của D trên AB, AC. Chứng minh tứ giác AEDF nội tiếp và là hình vuông.",
+    "output": [
+      {
+        "type": "TRIANGLE",
+        "points": [
+          "A",
+          "B",
+          "C"
+        ],
+        "properties": [
+          "RIGHT"
+        ],
+        "vertex": "A"
+      },
+      {
+        "type": "VALUE",
+        "subtype": "angle",
+        "points": [
+          "B",
+          "A",
+          "C"
+        ],
+        "value": 90
+      },
+      {
+        "type": "BISECTOR",
+        "line": [
+          "A",
+          "D"
+        ],
+        "angle": [
+          "B",
+          "A",
+          "C"
+        ]
+      },
+      {
+        "type": "PERPENDICULAR",
+        "lines": [
+          [
+            "D",
+            "E"
+          ],
+          [
+            "A",
+            "B"
+          ]
+        ]
+      },
+      {
+        "type": "PERPENDICULAR",
+        "lines": [
+          [
+            "D",
+            "F"
+          ],
+          [
+            "A",
+            "C"
+          ]
+        ]
+      },
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "A",
+          "E",
+          "D",
+          "F"
+        ],
+        "subtype": null
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "A",
+          "E",
+          "D",
+          "F"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho tam giác ABC nhọn. Các đường cao AD, BE, CF cắt nhau tại H. Gọi I là trung điểm của AH. Chứng minh tứ giác BFIE (hoặc tương tự) nội tiếp.",
+    "output": [
+      {
+        "type": "TRIANGLE",
+        "points": [
+          "A",
+          "B",
+          "C"
+        ],
+        "properties": [
+          "ACUTE"
+        ],
+        "vertex": null
+      },
+      {
+        "type": "ALTITUDE",
+        "top": "A",
+        "foot": "D",
+        "base": [
+          "B",
+          "C"
+        ]
+      },
+      {
+        "type": "ALTITUDE",
+        "top": "B",
+        "foot": "E",
+        "base": [
+          "A",
+          "C"
+        ]
+      },
+      {
+        "type": "ALTITUDE",
+        "top": "C",
+        "foot": "F",
+        "base": [
+          "A",
+          "B"
+        ]
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "H",
+        "lines": [
+          [
+            "A",
+            "D"
+          ],
+          [
+            "B",
+            "E"
+          ],
+          [
+            "C",
+            "F"
+          ]
+        ]
+      },
+      {
+        "type": "MIDPOINT",
+        "point": "I",
+        "segment": [
+          "A",
+          "H"
+        ]
+      },
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "B",
+          "F",
+          "I",
+          "E"
+        ],
+        "subtype": null
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "B",
+          "F",
+          "I",
+          "E"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho đường tròn (O) đường kính AB. C là điểm trên đường tròn. Tiếp tuyến tại C cắt AB tại D. Chứng minh tứ giác... (bài toán tiếp tuyến cơ bản).",
+    "output": [
+      {
+        "type": "CIRCLE",
+        "center": "O",
+        "diameter": [
+          "A",
+          "B"
+        ]
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "C",
+        "circle": "O",
+        "location": "ON"
+      },
+      {
+        "type": "TANGENT",
+        "line": [
+          "C",
+          "D"
+        ],
+        "contact": "C",
+        "circle": "O"
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "D",
+        "lines": [
+          [
+            "C",
+            "D"
+          ],
+          [
+            "A",
+            "B"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho hình bình hành ABCD. Đường tròn ngoại tiếp tam giác ABC cắt CD tại E. Chứng minh tứ giác ABED nội tiếp (hình thang cân).",
+    "output": [
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "subtype": "PARALLELOGRAM"
+      },
+      {
+        "type": "CIRCLE",
+        "points": [
+          "A",
+          "B",
+          "C"
+        ]
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "E",
+        "lines": [
+          [
+            "C",
+            "D"
+          ]
+        ]
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "A",
+          "B",
+          "E",
+          "D"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho tam giác ABC. Gọi I là tâm đường tròn nội tiếp. Đường thẳng vuông góc với CI tại I cắt AC, BC tại M, N. Chứng minh tứ giác... nội tiếp.",
+    "output": [
+      {
+        "type": "TRIANGLE",
+        "points": [
+          "A",
+          "B",
+          "C"
+        ],
+        "properties": [],
+        "vertex": null
+      },
+      {
+        "type": "CIRCLE",
+        "center": "I"
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "I",
+        "circle": "I",
+        "location": "INSIDE"
+      },
+      {
+        "type": "PERPENDICULAR",
+        "lines": [
+          [
+            "C",
+            "I"
+          ],
+          [
+            "M",
+            "N"
+          ]
+        ]
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "M",
+        "lines": [
+          [
+            "M",
+            "N"
+          ],
+          [
+            "A",
+            "C"
+          ]
+        ]
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "N",
+        "lines": [
+          [
+            "M",
+            "N"
+          ],
+          [
+            "B",
+            "C"
+          ]
+        ]
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "M",
+          "C",
+          "N",
+          "I"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho tam giác ABC vuông tại A. Gọi H là hình chiếu của A trên BC. Trên tia đối của tia HA lấy điểm D sao cho HD = HA. Chứng minh tứ giác ABDC nội tiếp.",
+    "output": [
+      {
+        "type": "TRIANGLE",
+        "points": [
+          "A",
+          "B",
+          "C"
+        ],
+        "properties": [
+          "RIGHT"
+        ],
+        "vertex": "A"
+      },
+      {
+        "type": "ALTITUDE",
+        "top": "A",
+        "foot": "H",
+        "base": [
+          "B",
+          "C"
+        ]
+      },
+      {
+        "type": "COLLINEAR",
+        "points": [
+          "H",
+          "A",
+          "D"
+        ]
+      },
+      {
+        "type": "VALUE",
+        "subtype": "length",
+        "points": [
+          "H",
+          "D"
+        ],
+        "value": null
+      },
+      {
+        "type": "VALUE",
+        "subtype": "length",
+        "points": [
+          "H",
+          "A"
+        ],
+        "value": null
+      },
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "A",
+          "B",
+          "D",
+          "C"
+        ],
+        "subtype": null
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "A",
+          "B",
+          "D",
+          "C"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho đường tròn (O) và điểm M nằm ngoài. Kẻ hai tiếp tuyến MA, MB. Gọi H là giao điểm của MO và AB. Kẻ cát tuyến MCD. Chứng minh tứ giác OHCD nội tiếp.",
+    "output": [
+      {
+        "type": "CIRCLE",
+        "center": "O"
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "M",
+        "circle": "O",
+        "location": "OUTSIDE"
+      },
+      {
+        "type": "TANGENT",
+        "line": [
+          "M",
+          "A"
+        ],
+        "contact": "A",
+        "circle": "O"
+      },
+      {
+        "type": "TANGENT",
+        "line": [
+          "M",
+          "B"
+        ],
+        "contact": "B",
+        "circle": "O"
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "H",
+        "lines": [
+          [
+            "M",
+            "O"
+          ],
+          [
+            "A",
+            "B"
+          ]
+        ]
+      },
+      {
+        "type": "COLLINEAR",
+        "points": [
+          "M",
+          "C",
+          "D"
+        ]
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "O",
+          "H",
+          "C",
+          "D"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho tam giác ABC có góc A = 45 độ. Các đường cao BD, CE cắt nhau tại H. Chứng minh tứ giác ADHE nội tiếp và tứ giác BCDE nội tiếp.",
+    "output": [
+      {
+        "type": "TRIANGLE",
+        "points": [
+          "A",
+          "B",
+          "C"
+        ],
+        "properties": []
+      },
+      {
+        "type": "VALUE",
+        "subtype": "angle",
+        "points": [
+          "B",
+          "A",
+          "C"
+        ],
+        "value": 45
+      },
+      {
+        "type": "ALTITUDE",
+        "top": "B",
+        "foot": "D",
+        "base": [
+          "A",
+          "C"
+        ]
+      },
+      {
+        "type": "ALTITUDE",
+        "top": "C",
+        "foot": "E",
+        "base": [
+          "A",
+          "B"
+        ]
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "H",
+        "lines": [
+          [
+            "B",
+            "D"
+          ],
+          [
+            "C",
+            "E"
+          ]
+        ]
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "A",
+          "D",
+          "H",
+          "E"
+        ]
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "B",
+          "C",
+          "D",
+          "E"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho đường tròn tâm O. Đường kính AB. Dây cung CD vuông góc với AB tại I (I nằm giữa A và O). Lấy điểm E trên cung nhỏ BC. AE cắt CD tại F. Chứng minh tứ giác BEFI nội tiếp.",
+    "output": [
+      {
+        "type": "CIRCLE",
+        "center": "O"
+      },
+      {
+        "type": "CIRCLE",
+        "diameter": [
+          "A",
+          "B"
+        ]
+      },
+      {
+        "type": "PERPENDICULAR",
+        "lines": [
+          [
+            "C",
+            "D"
+          ],
+          [
+            "A",
+            "B"
+          ]
+        ]
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "I",
+        "lines": [
+          [
+            "C",
+            "D"
+          ],
+          [
+            "A",
+            "B"
+          ]
+        ]
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "I",
+        "circle": "O",
+        "location": "INSIDE"
+      },
+      {
+        "type": "COLLINEAR",
+        "points": [
+          "A",
+          "I",
+          "O"
+        ]
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "E",
+        "circle": "O",
+        "location": "ON"
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "F",
+        "lines": [
+          [
+            "A",
+            "E"
+          ],
+          [
+            "C",
+            "D"
+          ]
+        ]
+      },
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "B",
+          "E",
+          "F",
+          "I"
+        ]
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "B",
+          "E",
+          "F",
+          "I"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho tam giác ABC vuông tại A. M là trung điểm của AC. Đường tròn đường kính MC cắt BC tại N. Chứng minh tứ giác AMNB nội tiếp.",
+    "output": [
+      {
+        "type": "TRIANGLE",
+        "points": [
+          "A",
+          "B",
+          "C"
+        ],
+        "properties": [
+          "RIGHT"
+        ],
+        "vertex": "A"
+      },
+      {
+        "type": "MIDPOINT",
+        "point": "M",
+        "segment": [
+          "A",
+          "C"
+        ]
+      },
+      {
+        "type": "CIRCLE",
+        "center": null,
+        "diameter": [
+          "M",
+          "C"
+        ]
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "N",
+        "lines": [
+          [
+            "B",
+            "C"
+          ]
+        ]
+      },
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "A",
+          "M",
+          "N",
+          "B"
+        ],
+        "subtype": null
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "A",
+          "M",
+          "N",
+          "B"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho tam giác ABC đều. Lấy điểm M trên cạnh BC. Gọi D, E lần lượt là hình chiếu của M trên AB, AC. Chứng minh tứ giác ADME nội tiếp.",
+    "output": [
+      {
+        "type": "TRIANGLE",
+        "points": [
+          "A",
+          "B",
+          "C"
+        ],
+        "properties": [
+          "EQUILATERAL"
+        ],
+        "vertex": null
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "M",
+        "segment": [
+          "B",
+          "C"
+        ],
+        "location": "ON"
+      },
+      {
+        "type": "PERPENDICULAR",
+        "lines": [
+          [
+            "M",
+            "D"
+          ],
+          [
+            "A",
+            "B"
+          ]
+        ]
+      },
+      {
+        "type": "PERPENDICULAR",
+        "lines": [
+          [
+            "M",
+            "E"
+          ],
+          [
+            "A",
+            "C"
+          ]
+        ]
+      },
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "A",
+          "D",
+          "M",
+          "E"
+        ],
+        "subtype": null
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "A",
+          "D",
+          "M",
+          "E"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho nửa đường tròn (O) đường kính AB. Lấy M thuộc OA. Qua M kẻ đường thẳng vuông góc với AB cắt nửa đường tròn tại C. Trên cung AC lấy điểm D. Tiếp tuyến tại D cắt đường thẳng CM tại E. Chứng minh tứ giác... nội tiếp.",
+    "output": [
+      {
+        "type": "SEMICIRCLE",
+        "center": "O",
+        "diameter": [
+          "A",
+          "B"
+        ]
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "M",
+        "circle": "O",
+        "location": "INSIDE"
+      },
+      {
+        "type": "COLLINEAR",
+        "points": [
+          "A",
+          "M",
+          "O"
+        ]
+      },
+      {
+        "type": "PERPENDICULAR",
+        "lines": [
+          [
+            "C",
+            "M"
+          ],
+          [
+            "A",
+            "B"
+          ]
+        ]
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "C",
+        "circle": "O",
+        "location": "ON"
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "D",
+        "circle": "O",
+        "location": "ON"
+      },
+      {
+        "type": "TANGENT",
+        "line": [
+          "D",
+          "E"
+        ],
+        "contact": "D",
+        "circle": "O"
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "E",
+        "lines": [
+          [
+            "D",
+            "E"
+          ],
+          [
+            "C",
+            "M"
+          ]
+        ]
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": []
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho tam giác ABC nội tiếp đường tròn (O). Tia phân giác góc A cắt BC tại D và cắt đường tròn tại E. Chứng minh... liên quan đến tứ giác nội tiếp.",
+    "output": [
+      {
+        "type": "TRIANGLE",
+        "points": [
+          "A",
+          "B",
+          "C"
+        ],
+        "properties": [],
+        "vertex": null
+      },
+      {
+        "type": "CIRCLE",
+        "center": "O"
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "D",
+        "lines": [
+          [
+            "A",
+            "D"
+          ],
+          [
+            "B",
+            "C"
+          ]
+        ]
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "E",
+        "lines": [
+          [
+            "A",
+            "D"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho hình thang vuông ABCD (vuông tại A và D). Gọi E là trung điểm của AD. Kẻ EC vuông góc với EB. Chứng minh tứ giác ABCD nội tiếp (hoặc các điểm liên quan).",
+    "output": [
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "subtype": "TRAPEZOID"
+      },
+      {
+        "type": "PERPENDICULAR",
+        "lines": [
+          [
+            "A",
+            "B"
+          ],
+          [
+            "A",
+            "D"
+          ]
+        ]
+      },
+      {
+        "type": "PERPENDICULAR",
+        "lines": [
+          [
+            "C",
+            "D"
+          ],
+          [
+            "A",
+            "D"
+          ]
+        ]
+      },
+      {
+        "type": "MIDPOINT",
+        "point": "E",
+        "segment": [
+          "A",
+          "D"
+        ]
+      },
+      {
+        "type": "PERPENDICULAR",
+        "lines": [
+          [
+            "E",
+            "C"
+          ],
+          [
+            "E",
+            "B"
+          ]
+        ]
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho tam giác ABC nhọn. Gọi O là tâm đường tròn ngoại tiếp. Gọi H là trực tâm. Chứng minh tứ giác... liên quan đến đường thẳng Euler nội tiếp.",
+    "output": [
+      {
+        "type": "TRIANGLE",
+        "points": [
+          "A",
+          "B",
+          "C"
+        ],
+        "properties": [
+          "ACUTE"
+        ],
+        "vertex": null
+      },
+      {
+        "type": "CIRCLE",
+        "center": "O"
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "O",
+        "circle": "O",
+        "location": "ON"
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "A",
+        "circle": "O",
+        "location": "ON"
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "B",
+        "circle": "O",
+        "location": "ON"
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "C",
+        "circle": "O",
+        "location": "ON"
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "H",
+        "lines": []
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho đường tròn (O) đường kính AB. Gọi H là trung điểm của OA. Kẻ dây cung CD vuông góc với AB tại H. Lấy điểm E trên cung nhỏ AC. Chứng minh tứ giác... nội tiếp.",
+    "output": [
+      {
+        "type": "CIRCLE",
+        "center": "O",
+        "diameter": [
+          "A",
+          "B"
+        ]
+      },
+      {
+        "type": "MIDPOINT",
+        "point": "H",
+        "segment": [
+          "O",
+          "A"
+        ]
+      },
+      {
+        "type": "PERPENDICULAR",
+        "lines": [
+          [
+            "C",
+            "D"
+          ],
+          [
+            "A",
+            "B"
+          ]
+        ],
+        "point": "H"
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "E",
+        "circle": "O",
+        "location": "ON"
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho tam giác ABC vuông tại A. Đường cao AH. Gọi D là điểm đối xứng của A qua H. Chứng minh tứ giác ABDC nội tiếp.",
+    "output": [
+      {
+        "type": "TRIANGLE",
+        "points": [
+          "A",
+          "B",
+          "C"
+        ],
+        "properties": [
+          "RIGHT"
+        ],
+        "vertex": "A"
+      },
+      {
+        "type": "ALTITUDE",
+        "top": "A",
+        "foot": "H",
+        "base": [
+          "B",
+          "C"
+        ]
+      },
+      {
+        "type": "MIDPOINT",
+        "point": "H",
+        "segment": [
+          "A",
+          "D"
+        ]
+      },
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "A",
+          "B",
+          "D",
+          "C"
+        ],
+        "subtype": null
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "A",
+          "B",
+          "D",
+          "C"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho hình vuông ABCD. E là điểm trên cạnh CD. Tia phân giác của góc DAE cắt CD tại F. Chứng minh... liên quan tứ giác nội tiếp.",
+    "output": [
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "subtype": "SQUARE"
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "E",
+        "segment": [
+          "C",
+          "D"
+        ],
+        "location": "ON"
+      },
+      {
+        "type": "VALUE",
+        "subtype": "angle",
+        "points": [
+          "D",
+          "A",
+          "E"
+        ]
+      },
+      {
+        "type": "COLLINEAR",
+        "points": [
+          "D",
+          "F",
+          "C"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho tam giác ABC. Gọi M, N là trung điểm của AB, AC. Kẻ đường cao AH. Chứng minh tứ giác MNH... nội tiếp.",
+    "output": [
+      {
+        "type": "TRIANGLE",
+        "points": [
+          "A",
+          "B",
+          "C"
+        ],
+        "properties": [],
+        "vertex": null
+      },
+      {
+        "type": "MIDPOINT",
+        "point": "M",
+        "segment": [
+          "A",
+          "B"
+        ]
+      },
+      {
+        "type": "MIDPOINT",
+        "point": "N",
+        "segment": [
+          "A",
+          "C"
+        ]
+      },
+      {
+        "type": "ALTITUDE",
+        "top": "A",
+        "foot": "H",
+        "base": [
+          "B",
+          "C"
+        ]
+      },
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "M",
+          "N",
+          "H"
+        ],
+        "subtype": null
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "M",
+          "N",
+          "H"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho đường tròn (O). Từ điểm A ngoài đường tròn kẻ tiếp tuyến AB, AC. Gọi M là trung điểm của AC. BM cắt (O) tại N. Chứng minh tứ giác... nội tiếp.",
+    "output": [
+      {
+        "type": "CIRCLE",
+        "center": "O"
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "A",
+        "circle": "O",
+        "location": "OUTSIDE"
+      },
+      {
+        "type": "TANGENT",
+        "line": [
+          "A",
+          "B"
+        ],
+        "contact": "B",
+        "circle": "O"
+      },
+      {
+        "type": "TANGENT",
+        "line": [
+          "A",
+          "C"
+        ],
+        "contact": "C",
+        "circle": "O"
+      },
+      {
+        "type": "MIDPOINT",
+        "point": "M",
+        "segment": [
+          "A",
+          "C"
+        ]
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "N",
+        "lines": [
+          [
+            "B",
+            "M"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho đường tròn (O) đường kính AB. Dây cung CD vuông góc với AB tại H. Kẻ CK vuông góc với AD tại K. Chứng minh tứ giác AHKC nội tiếp.",
+    "output": [
+      {
+        "type": "CIRCLE",
+        "center": "O",
+        "diameter": [
+          "A",
+          "B"
+        ]
+      },
+      {
+        "type": "PERPENDICULAR",
+        "lines": [
+          [
+            "C",
+            "D"
+          ],
+          [
+            "A",
+            "B"
+          ]
+        ]
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "H",
+        "lines": [
+          [
+            "C",
+            "D"
+          ],
+          [
+            "A",
+            "B"
+          ]
+        ]
+      },
+      {
+        "type": "PERPENDICULAR",
+        "lines": [
+          [
+            "C",
+            "K"
+          ],
+          [
+            "A",
+            "D"
+          ]
+        ]
+      },
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "A",
+          "H",
+          "K",
+          "C"
+        ]
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "A",
+          "H",
+          "K",
+          "C"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho tam giác MNP nhọn. Các đường cao MH, NK cắt nhau tại I. Chứng minh tứ giác NHIK nội tiếp.",
+    "output": [
+      {
+        "type": "TRIANGLE",
+        "points": [
+          "M",
+          "N",
+          "P"
+        ],
+        "properties": [
+          "ACUTE"
+        ],
+        "vertex": null
+      },
+      {
+        "type": "ALTITUDE",
+        "top": "M",
+        "foot": "H",
+        "base": [
+          "N",
+          "P"
+        ]
+      },
+      {
+        "type": "ALTITUDE",
+        "top": "N",
+        "foot": "K",
+        "base": [
+          "M",
+          "P"
+        ]
+      },
+      {
+        "type": "INTERSECTION",
+        "point": "I",
+        "lines": [
+          [
+            "M",
+            "H"
+          ],
+          [
+            "N",
+            "K"
+          ]
+        ]
+      },
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "N",
+          "H",
+          "I",
+          "K"
+        ],
+        "subtype": null
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "N",
+          "H",
+          "I",
+          "K"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho hình vuông ABCD. Lấy điểm E trên cạnh AB, điểm F trên cạnh AD. Kẻ AH vuông góc với EF tại H. Chứng minh tứ giác AHFD nội tiếp.",
+    "output": [
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "subtype": "SQUARE"
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "E",
+        "segment": [
+          "A",
+          "B"
+        ],
+        "location": "ON"
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "F",
+        "segment": [
+          "A",
+          "D"
+        ],
+        "location": "ON"
+      },
+      {
+        "type": "PERPENDICULAR",
+        "lines": [
+          [
+            "A",
+            "H"
+          ],
+          [
+            "E",
+            "F"
+          ]
+        ]
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "A",
+          "H",
+          "F",
+          "D"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho đường tròn (O). Điểm S nằm ngoài đường tròn. Kẻ tiếp tuyến SA (A là tiếp điểm) và cát tuyến SBC (B nằm giữa S và C). Gọi I là trung điểm của dây BC. Chứng minh tứ giác SAOI nội tiếp.",
+    "output": [
+      {
+        "type": "CIRCLE",
+        "center": "O"
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "S",
+        "circle": "O",
+        "location": "OUTSIDE"
+      },
+      {
+        "type": "TANGENT",
+        "line": [
+          "S",
+          "A"
+        ],
+        "contact": "A",
+        "circle": "O"
+      },
+      {
+        "type": "COLLINEAR",
+        "points": [
+          "S",
+          "B",
+          "C"
+        ]
+      },
+      {
+        "type": "MIDPOINT",
+        "point": "I",
+        "segment": [
+          "B",
+          "C"
+        ]
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "S",
+          "A",
+          "O",
+          "I"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho tam giác ABC cân tại A. Đường cao AH. Kẻ HE vuông góc với AB tại E, HF vuông góc với AC tại F. Chứng minh tứ giác AEHF nội tiếp.",
+    "output": [
+      {
+        "type": "TRIANGLE",
+        "points": [
+          "A",
+          "B",
+          "C"
+        ],
+        "properties": [
+          "ISOSCELES"
+        ],
+        "vertex": "A"
+      },
+      {
+        "type": "ALTITUDE",
+        "top": "A",
+        "foot": "H",
+        "base": [
+          "B",
+          "C"
+        ]
+      },
+      {
+        "type": "PERPENDICULAR",
+        "lines": [
+          [
+            "H",
+            "E"
+          ],
+          [
+            "A",
+            "B"
+          ]
+        ]
+      },
+      {
+        "type": "PERPENDICULAR",
+        "lines": [
+          [
+            "H",
+            "F"
+          ],
+          [
+            "A",
+            "C"
+          ]
+        ]
+      },
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "A",
+          "E",
+          "H",
+          "F"
+        ],
+        "subtype": null
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "A",
+          "E",
+          "H",
+          "F"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho nửa đường tròn tâm O đường kính AB. Kẻ dây AC bất kỳ. Kẻ dây CD song song với AB (D thuộc nửa đường tròn). Chứng minh tứ giác ACDB nội tiếp.",
+    "output": [
+      {
+        "type": "SEMICIRCLE",
+        "center": "O",
+        "diameter": [
+          "A",
+          "B"
+        ]
+      },
+      {
+        "type": "COLLINEAR",
+        "points": [
+          "A",
+          "O",
+          "B"
+        ]
+      },
+      {
+        "type": "COLLINEAR",
+        "points": [
+          "O",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "type": "COLLINEAR",
+        "points": [
+          "A",
+          "C"
+        ]
+      },
+      {
+        "type": "PARALLEL",
+        "lines": [
+          [
+            "C",
+            "D"
+          ],
+          [
+            "A",
+            "B"
+          ]
+        ]
+      },
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "A",
+          "C",
+          "D",
+          "B"
+        ]
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "A",
+          "C",
+          "D",
+          "B"
+        ]
+      }
+    ]
+  },
+  {
+    "instruction": "Trích xuất các thực thể và quan hệ hình học từ đề bài sau thành JSON.",
+    "input": "Cho tam giác ABC vuông tại A. Tia phân giác của góc B cắt cạnh AC tại D. Kẻ DE vuông góc với BC tại E. Chứng minh tứ giác ABED nội tiếp.",
+    "output": [
+      {
+        "type": "TRIANGLE",
+        "points": [
+          "A",
+          "B",
+          "C"
+        ],
+        "properties": [
+          "RIGHT"
+        ],
+        "vertex": "A"
+      },
+      {
+        "type": "VALUE",
+        "subtype": "angle",
+        "points": [
+          "A",
+          "B",
+          "D"
+        ],
+        "value": null
+      },
+      {
+        "type": "VALUE",
+        "subtype": "angle",
+        "points": [
+          "D",
+          "B",
+          "C"
+        ],
+        "value": null
+      },
+      {
+        "type": "POINT_LOCATION",
+        "point": "D",
+        "segment": [
+          "A",
+          "C"
+        ],
+        "location": "ON"
+      },
+      {
+        "type": "PERPENDICULAR",
+        "lines": [
+          [
+            "D",
+            "E"
+          ],
+          [
+            "B",
+            "C"
+          ]
+        ]
+      },
+      {
+        "type": "QUADRILATERAL",
+        "points": [
+          "A",
+          "B",
+          "E",
+          "D"
+        ],
+        "subtype": null
+      },
+      {
+        "type": "RENDER_ORDER",
+        "points": [
+          "A",
+          "B",
+          "E",
+          "D"
+        ]
+      }
+    ]
+  }
+]
