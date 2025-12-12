@@ -14,4 +14,13 @@ Cho ΔABC nhọn, các đường cao AD, BE, CF cắt nhau tại H. Chứng minh
 Cho tam giác ABC cân tại A. Đường cao AH. Kẻ HE vuông góc với AB tại E, HF vuông góc với AC tại F. Chứng minh tứ giác AEHF nội tiếp.
 
 - Bài 6:
+Cho tam giác ABC nhọn. Vẽ đường cao BD vuông góc với AC tại D. Vẽ đường cao CE vuông góc với AB tại E. Gọi H là giao điểm của BD và CE. Chứng minh tứ giác ADHE nội tiếp.
+
+- Bài 7:
 Cho tam giác ABC nhọn nội tiếp đường tròn (O). Các đường cao BD, CE cắt nhau tại H. Kẻ tiếp tuyến Ax với (O). Chứng minh tứ giác ADHE nội tiếp.
+
+- Bài 8:
+Cho tứ giác ABCD, biết OA=OB=OC=OD và DAC = 90 độ, DBC = 90 độ. Chứng minh tứ giác ABCD nội tiếp đường tròn tâm O.
+
+- Bài 9:
+Cho các điểm A, B, C, D và O. Biết OA=OB=OC=OD. Chứng minh tứ giác ABCD nội tiếp đường tròn tâm O.

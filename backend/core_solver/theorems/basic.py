@@ -88,44 +88,70 @@ class RulePerpendicularToValue(GeometricRule):
 
         for fact in kb.properties["PERPENDICULAR"]:
             p_names = fact.entities
-            entities = [kb.id_map[n] for n in p_names]
+            try: entities = [kb.id_map[n] for n in p_names]
+            except KeyError: continue
             
-            # --- TRƯỜNG HỢP 1: CÓ ĐIỂM GIAO CỤ THỂ (MỚI) ---
-            # Cấu trúc: [At_Point, L1_a, L1_b, L2_a, L2_b] (Length = 5)
+            # Case 5 điểm (có điểm giao cụ thể)
             if len(entities) == 5:
-                p_at = entities[0]
-                l1a, l1b = entities[1], entities[2]
-                l2a, l2b = entities[3], entities[4]
-                
-                # Tìm các điểm lân cận trên 2 đường thẳng để tạo góc
-                # (Loại bỏ chính điểm giao p_at ra khỏi danh sách)
+                p_at, l1a, l1b, l2a, l2b = entities
                 neighbors_1 = [p for p in [l1a, l1b] if p != p_at]
                 neighbors_2 = [p for p in [l2a, l2b] if p != p_at]
                 
-                # Tạo các góc 90 độ có thể có
                 for n1 in neighbors_1:
                     for n2 in neighbors_2:
-                        # Góc(n1, p_at, n2)
                         ang = Angle(n1, p_at, n2)
                         reason = f"{l1a.name}{l1b.name} ⊥ {l2a.name}{l2b.name} tại {p_at.name}"
-                        
-                        if kb.add_property("VALUE", [ang], reason, value=90, parents=[fact]):
+                        # [FIX] Thêm subtype="angle"
+                        if kb.add_property("VALUE", [ang], reason, value=90, parents=[fact], subtype="angle"):
                             changed = True
 
-            # --- TRƯỜNG HỢP 2: KHÔNG RÕ GIAO ĐIỂM (CŨ) ---
-            # Cấu trúc: [L1_a, L1_b, L2_a, L2_b] (Length = 4)
-            # (Logic heuristic cũ: Giả định L1_b là chân vuông góc nếu nó nằm trên L2)
+            # Case 4 điểm (mặc định)
             elif len(entities) == 4:
                 p1, p2, b1, b2 = entities
-                # Heuristic: Thường điểm thứ 2 của đường thứ nhất (p2) là giao điểm
-                # VD: HE vuông AB -> p1=H, p2=E. E thuộc AB.
-                # Tạo góc (P1, P2, B1) và (P1, P2, B2)
                 ang1 = Angle(p1, p2, b1)
                 ang2 = Angle(p1, p2, b2)
-                
                 reason = f"{p1.name}{p2.name} ⊥ {b1.name}{b2.name}"
+                # [FIX] Thêm subtype="angle"
+                if kb.add_property("VALUE", [ang1], reason, value=90, parents=[fact], subtype="angle"): changed = True
+                if kb.add_property("VALUE", [ang2], reason, value=90, parents=[fact], subtype="angle"): changed = True
                 
-                if kb.add_property("VALUE", [ang1], reason, value=90, parents=[fact]): changed = True
-                if kb.add_property("VALUE", [ang2], reason, value=90, parents=[fact]): changed = True
-                
+        return changed
+
+
+class RuleEqualityByValue(GeometricRule):
+    @property
+    def name(self): return "Bằng nhau qua giá trị"
+    @property
+    def description(self): return "Hai đối tượng có cùng giá trị số thì bằng nhau."
+
+    def apply(self, kb) -> bool:
+        changed = False
+        
+        value_facts = kb.properties.get("VALUE", [])
+        values_map = {}
+        for f in value_facts:
+            if f.value is not None:
+                values_map.setdefault(f.value, []).append(f)
+
+        for value, facts in values_map.items():
+            if len(facts) < 2: continue
+            
+            for i in range(len(facts)):
+                for j in range(i + 1, len(facts)):
+                    f1 = facts[i]
+                    f2 = facts[j]
+                    
+                    if f1.entities[0] == f2.entities[0]: continue
+                    
+                    obj1 = kb.id_map.get(f1.entities[0])
+                    obj2 = kb.id_map.get(f2.entities[0])
+                    
+                    if obj1 and obj2 and isinstance(obj1, Angle) and isinstance(obj2, Angle):
+                        reason = f"Cả hai góc đều bằng {int(value)}°"
+                        parents = [f1, f2] # Tiền đề là 2 Fact VALUE
+                        
+                        # [QUAN TRỌNG] Phải gọi add_equality nhận parents
+                        if kb.add_equality(obj1, obj2, reason, parents=parents):
+                            changed = True
+                            
         return changed

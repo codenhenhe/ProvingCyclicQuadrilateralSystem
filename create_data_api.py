@@ -6,15 +6,14 @@ import google.generativeai as genai
 from dotenv import load_dotenv
 
 # --- CẤU HÌNH ---
-# Thay bằng API Key của bạn
-# 1. CẤU HÌNH CLIENT (SDK MỚI)
 load_dotenv()
 key = os.getenv("GOOGLE_API_KEY")
+modelName = os.getenv("GEMINI_MODEL")
 genai.configure(api_key=key)
 
 # Dùng model Pro để có tư duy tốt nhất
 model = genai.GenerativeModel(
-    model_name="gemini-2.0-flash",
+    model_name=modelName,
     generation_config={
         "temperature": 0.0,
         "response_mime_type": "application/json"

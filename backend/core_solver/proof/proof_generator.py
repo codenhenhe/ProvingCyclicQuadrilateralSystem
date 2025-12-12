@@ -3,139 +3,208 @@ import re
 class ProofGenerator:
     def __init__(self, kb):
         self.kb = kb
-        self.steps = []
+        self.steps = [] 
         self.visited_facts = set()
 
     def generate_proof(self, target_fact):
-        """
-        Sinh lời giải tự nhiên từ Fact kết luận.
-        """
-        self.steps = []
-        self.visited_facts = set()
+        if target_fact is None: return ["Không tìm thấy lời giải."]
         
-        # 1. Thu thập chuỗi suy diễn (Traceback)
-        self._collect_steps(target_fact)
-        
-        # 2. Biên tập văn bản
-        lines = []
-        
-        # Tiêu đề
-        lines.append(f"Cần chứng minh: {self._format_statement(target_fact)}")
-        lines.append("---") # Dòng kẻ phân cách
-        
-        # Nội dung từng bước
-        step_counter = 1
-        for fact in self.steps:
-            # Bỏ qua các fact "nguyên thủy" từ đề bài (Giả thiết) để lời giải đỡ rác
-            # Nhưng giữ lại các fact quan trọng nếu nó là khởi đầu của suy luận
-            if not fact.parents: 
-                continue 
+        if not hasattr(target_fact, 'sources') or not target_fact.sources:
+            return ["Không tìm thấy dữ liệu suy diễn."]
 
-            text = self._verbalize_fact(fact, step_counter)
-            if text:
-                lines.append(text)
-                # Chỉ tăng số bước cho những lập luận quan trọng (như xét tứ giác, xét tam giác)
-                if "Xét" in text or "Ta có" in text:
-                    step_counter += 1
+        all_proofs_list = []
         
-        # Kết luận cuối
-        lines.append("---")
-        lines.append(f"➨ ĐIỀU PHẢI CHỨNG MINH.")
-        
-        return "\n".join(lines)
+        # --- [FIX MỚI] LỌC TRÙNG PHƯƠNG PHÁP (DEDUPLICATION) ---
+        # Chỉ giữ lại 1 đại diện cho mỗi loại phương pháp
+        unique_method_sources = []
+        seen_methods = set()
 
-    def _collect_steps(self, fact):
-        """Duyệt DFS để sắp xếp thứ tự logic (Cái gì có trước nói trước)."""
+        for source in target_fact.sources:
+            reason = source['reason']
+            method_type = "unknown"
+
+            # Phân loại dựa trên chuỗi reason
+            if "Tổng hai góc đối" in reason:
+                method_type = "METHOD_SUM_180"
+            elif "cùng nhìn cạnh" in reason:
+                method_type = "METHOD_SAME_ARC"
+            elif "Góc ngoài" in reason:
+                method_type = "METHOD_EXTERIOR"
+            elif "cách đều" in reason:
+                method_type = "METHOD_EQUIDISTANT"
+            elif "góc đối vuông" in reason:
+                method_type = "METHOD_TWO_RIGHT_ANGLES"
+            else:
+                method_type = reason # Fallback cho các lý do khác
+
+            if method_type not in seen_methods:
+                seen_methods.add(method_type)
+                unique_method_sources.append(source)
+
+        # --- DUYỆT QUA CÁC CÁCH GIẢI ĐÃ LỌC ---
+        # Dùng unique_method_sources thay vì target_fact.sources
+        for i, source in enumerate(unique_method_sources):
+            self.visited_facts = set()
+            self.steps = [] 
+            
+            # 1. Thu thập dữ liệu
+            self._collect_steps_from_source(source, target_fact)
+            
+            # 2. Biên tập văn bản
+            lines = []
+            
+            # Header
+            if len(unique_method_sources) > 1:
+                header = f"🔷 CÁCH {i+1}: {source['reason']}"
+            else:
+                header = f"Cần chứng minh: {self._format_statement(target_fact)}"
+            
+            lines.append(header)
+            lines.append("-" * 30) 
+            
+            # Phần chuẩn bị (Ta có...)
+            prep_steps = []
+            other_steps = []
+            
+            for fact, src in self.steps:
+                if fact == target_fact: continue 
+                if not src['parents']: continue 
+
+                text = self._verbalize_fact(fact, src, raw=True)
+                if text:
+                    if fact.type == "VALUE":
+                        prep_steps.append(text)
+                    else:
+                        other_steps.append(f"• {text}")
+            
+            if prep_steps:
+                lines.append("• Ta có:")
+                for p in prep_steps:
+                    lines.append(f"    + {p}")
+                lines.append("")
+
+            if other_steps:
+                lines.extend(other_steps)
+                lines.append("")
+
+            # 3. KẾT LUẬN
+            conclusion = self._verbalize_fact(target_fact, source)
+            if conclusion:
+                lines.append(conclusion)
+            else:
+                stmt = self._format_statement(target_fact)
+                lines.append(f"➨ {stmt} ({source['reason']})")
+            
+            all_proofs_list.append("\n".join(lines))
+
+        return all_proofs_list
+
+    def _verbalize_fact(self, fact, source, raw=False):
+        """
+        raw=True: Trả về nội dung trần (không có dấu • ở đầu) để dễ gom nhóm.
+        """
+        stmt = self._format_statement(fact)
+        parents = source['parents']
+        reason = source['reason']
+
+        # --- XỬ LÝ CÁC BƯỚC PHỤ (VALUE) ---
+        if fact.type == "VALUE":
+            # Nếu là góc 90 độ
+            if fact.value == 90:
+                return f"{reason} ➜ {stmt}"
+            # Các giá trị khác
+            return f"{stmt} ({reason})"
+
+        # --- FORMAT ĐẸP CHO TỨ GIÁC NỘI TIẾP ---
+        if fact.type == "IS_CYCLIC":
+            quad_name = "".join([self._clean_name(e) for e in fact.entities])
+            proofs = []
+            
+            for p in parents:
+                if p.type == "QUADRILATERAL" or p.type == "TRIANGLE": continue
+                
+                p_stmt = self._format_statement(p)
+                
+                # Logic xác định note
+                is_given = True
+                if hasattr(p, 'sources') and p.sources:
+                     if p.sources[0]['parents']: is_given = False
+                
+                note = "(giả thiết)" if is_given else "(chứng minh trên)"
+                
+                # Format dòng chứng minh con
+                if p.type == "EQUALITY":
+                    proofs.append(f"    + {p_stmt} {note}")
+                elif p.type == "VALUE": # Nếu proof trực tiếp từ giá trị (Cách 1)
+                    proofs.append(f"    + {p_stmt} {note}")
+                else:
+                    proofs.append(f"    + {p_stmt} {note}")
+
+            unique_proofs = sorted(list(set(proofs)))
+
+            return (
+                f"• Xét tứ giác {quad_name} có:\n"
+                f"{chr(10).join(unique_proofs)}\n"
+                f"➨ {quad_name} nội tiếp ({reason})"
+            )
+
+        # Các trường hợp khác
+        if parents:
+             return f"Suy ra: {stmt} ({reason})" if raw else f"• Suy ra: {stmt} ({reason})"
+        
+        return None
+    
+    def _collect_steps_from_source(self, source, fact):
+        """Truy vết đệ quy từ một source cụ thể."""
         if fact.id in self.visited_facts: return
         self.visited_facts.add(fact.id)
         
-        for p in fact.parents:
-            self._collect_steps(p)
+        # Đệ quy vào parents
+        for p in source['parents']:
+            # Với các bước trung gian, chọn source đầu tiên để tránh bùng nổ tổ hợp
+            if hasattr(p, 'sources') and p.sources:
+                self._collect_steps_from_source(p.sources[0], p)
         
-        self.steps.append(fact)
+        # Lưu cả Fact và Source tương ứng vào steps
+        self.steps.append((fact, source))
 
     def _clean_name(self, text):
-        """Làm đẹp tên điểm/góc (Xóa Quad_, Angle_, Tri_...)."""
         if not text: return ""
-        # Xóa prefix kỹ thuật
         text = re.sub(r'^(Quad_|Tri_|Angle_|Seg_)', '', str(text))
-        # Xóa các ký tự thừa nếu có
-        text = text.replace("Quadrilateral", "").replace("Triangle", "")
-        return text
+        return text.replace("Quadrilateral", "").replace("Triangle", "")
+
+    def _translate_subtype(self, subtype):
+        mapping = {
+            "ISOSCELES_TRAPEZOID": "hình thang cân", "RIGHT_TRAPEZOID": "hình thang vuông",
+            "TRAPEZOID": "hình thang", "PARALLELOGRAM": "hình bình hành",
+            "RECTANGLE": "hình chữ nhật", "RHOMBUS": "hình thoi", "SQUARE": "hình vuông"
+        }
+        return mapping.get(subtype, subtype)
 
     def _format_statement(self, fact):
-        """Chuyển Fact thành câu toán học ngắn gọn."""
         entities = [self._clean_name(e) for e in fact.entities]
         
+        if fact.type == "QUADRILATERAL":
+            name = "".join(entities); subtype = getattr(fact, 'subtype', None)
+            if subtype: return f"{name} là {self._translate_subtype(subtype)}"
+            return f"Tứ giác {name}"
+
         if fact.type == "IS_CYCLIC":
-            return f"Tứ giác {entities[0]} nội tiếp"
+            return f"Tứ giác {''.join(entities)} nội tiếp"
         
         if fact.type == "VALUE":
-            # Kiểm tra xem là Góc hay Cạnh dựa vào ID gốc
             raw_id = fact.entities[0]
-            if "Angle" in raw_id:
-                return f"∠{entities[0]} = {fact.value}°"
+            if "Angle" in str(raw_id) or len(entities) == 3:
+                v_name = entities[1] if len(entities)>1 else entities[0]
+                return f"∠{v_name} = {str(fact.value).replace('.0', '')}°"
             return f"{entities[0]} = {fact.value}"
             
-        if fact.type == "PERPENDICULAR":
-            return f"{entities[0]} ⊥ {entities[1]}"
-        
-        if fact.type == "PARALLEL":
-            return f"{entities[0]} // {entities[1]}"
-        
-        if fact.type == "EQUALITY":
-            return f"{entities[0]} = {entities[1]}"
+        if fact.type == "PERPENDICULAR": return f"{entities[-2]} ⊥ {entities[-1]}"
+        if fact.type == "PARALLEL": return f"{entities[0]}{entities[1]} // {entities[2]}{entities[3]}"
+        if fact.type == "EQUALITY": return f"{entities[0]} = {entities[1]}"
+        if fact.type == "SIMILAR" and len(entities)==6:
+             return f"∆{''.join(entities[:3])} ∽ ∆{''.join(entities[3:])}"
 
-        return fact.reason # Fallback
+        return "..."
 
-    def _verbalize_fact(self, fact, idx):
-        """Diễn giải một Fact thành câu văn tự nhiên."""
-        
-        stmt = self._format_statement(fact)
-        
-        # --- TRƯỜNG HỢP 1: TỨ GIÁC NỘI TIẾP ---
-        if fact.type == "IS_CYCLIC":
-            quad_name = self._clean_name(fact.entities[0])
-            
-            # Lọc ra các dẫn chứng (Bỏ qua dẫn chứng là chính cái Tứ giác đó)
-            proofs = []
-            for p in fact.parents:
-                if p.type == "QUADRILATERAL": continue # Bỏ qua câu "Xét tứ giác..."
-                
-                p_stmt = self._format_statement(p)
-                p_reason = p.reason
-                
-                # Làm đẹp lý do con
-                if "Giả thiết" in p_reason or not p.parents:
-                    proofs.append(f"+ {p_stmt} (giả thiết)")
-                else:
-                    proofs.append(f"+ {p_stmt} (chứng minh trên)")
-
-            return (
-                f"Bước {idx}: Xét tứ giác {quad_name}:\n"
-                f"{chr(10).join(proofs)}\n"
-                f"➨ {quad_name} nội tiếp ({fact.reason})"
-            )
-
-        # --- TRƯỜNG HỢP 2: GIÁ TRỊ (GÓC/CẠNH) ---
-        if fact.type == "VALUE":
-            # Nếu cha là đường cao -> Viết kiểu "Vì... nên..."
-            parent = fact.parents[0] if fact.parents else None
-            if parent and parent.type == "ALTITUDE":
-                # parent.entities: [Top, Foot, Base1, Base2]
-                top, foot = self._clean_name(parent.entities[0]), self._clean_name(parent.entities[1])
-                base = self._clean_name(parent.entities[2]) + self._clean_name(parent.entities[3])
-                return f"• Vì {top}{foot} là đường cao (⊥ {base}) ⇒ {stmt}"
-            
-            if parent and parent.type == "IS_EQUILATERAL":
-                tri_name = self._clean_name(parent.entities[0]) # Entity 0,1,2 là điểm
-                return f"• Vì ∆{tri_name} đều ⇒ {stmt}"
-
-            # Mặc định
-            if parent:
-                return f"• Ta có: {stmt} (do {self._format_statement(parent)})"
-        
-        # --- TRƯỜNG HỢP 3: SONG SONG / VUÔNG GÓC ---
-        # (Thường là giả thiết hoặc suy ra từ góc)
-        
-        return None # Những cái lặt vặt không in ra để đỡ rối
+    
