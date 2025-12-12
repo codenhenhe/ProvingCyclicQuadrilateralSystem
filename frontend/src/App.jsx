@@ -137,37 +137,57 @@ const EmptyStateIcon = () => (
   </svg>
 );
 
-// --- MODAL COMPONENT (Thêm mới) ---
-const InfoModal = ({ isOpen, onClose, title, children }) => {
+const InfoModal = ({ isOpen, onClose, title, children, className = "" }) => {
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [isOpen]);
+
   if (!isOpen) return null;
+
   return (
-    <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 transition-all">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+      
+      {/* Overlay: Giữ nguyên */}
+      <div className="absolute inset-0" onClick={onClose} />
+
+      {/* Modal Container */}
       <div
-        className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl max-w-5xl w-full max-h-[85vh] overflow-y-auto border border-slate-200 dark:border-slate-700 animate-in fade-in zoom-in duration-200"
+        className={`relative z-10 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-h-[90vh] flex flex-col border border-slate-200 dark:border-slate-700 ${
+          className || "max-w-5xl"
+        }`}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header Modal */}
-        <div className="flex justify-between items-center p-5 border-b border-slate-100 dark:border-slate-800 sticky top-0 bg-white dark:bg-slate-900 z-10">
-          <h3 className="text-lg font-bold bg-linear-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+        {/* Header cố định */}
+        <div className="flex justify-between items-center px-6 py-4 border-b border-slate-100 dark:border-slate-800 shrink-0">
+          <h3 className="text-xl font-bold bg-linear-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
             {title}
           </h3>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors text-slate-400 hover:text-red-500"
+            className="p-2 bg-slate-100 cursor-pointer dark:bg-slate-800 hover:bg-red-100 dark:hover:bg-red-900/30 text-slate-500 hover:text-red-500 rounded-full transition-all"
           >
-            ✕
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+            </svg>
           </button>
         </div>
-        {/* Content Modal */}
-        <div className="p-6 text-slate-600 dark:text-slate-300 leading-relaxed text-sm">
+
+        {/* Phần cuộn nội dung */}
+        <div className="flex-1 min-h-0 overflow-y-auto px-6 py-4">
           {children}
         </div>
       </div>
-      {/* Click outside to close */}
-      <div className="absolute inset-0 -z-10" onClick={onClose}></div>
     </div>
   );
 };
+
 
 // --- MAIN COMPONENT ---
 function App() {
@@ -178,27 +198,9 @@ function App() {
   const [activeTab, setActiveTab] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [darkMode, setDarkMode] = useState(false);
   const [showGuide, setShowGuide] = useState(false);
   const [showTheory, setShowTheory] = useState(false);
   const [guideStep, setGuideStep] = useState(0);
-
-  useEffect(() => {
-    if (
-      window.matchMedia &&
-      window.matchMedia("(prefers-color-scheme: dark)").matches
-    ) {
-      setDarkMode(true);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  }, [darkMode]);
 
   const handleSolve = async () => {
     if (!inputText.trim()) return;
@@ -220,17 +222,11 @@ function App() {
 
   return (
     <div
-      className={`min-h-screen transition-colors duration-300 font-sans flex flex-col ${
-        darkMode ? "bg-slate-950 text-slate-100" : "bg-slate-50 text-slate-800"
-      }`}
+      className={`min-h-screen transition-colors duration-300 font-sans flex flex-col bg-slate-950 text-slate-100`}
     >
       {/* NAVBAR: Compact */}
       <nav
-        className={`border-b h-14 flex items-center px-6 sticky top-0 z-50 backdrop-blur-md ${
-          darkMode
-            ? "bg-slate-900/80 border-slate-800"
-            : "bg-white/80 border-slate-200"
-        }`}
+        className={`border-b h-14 flex items-center px-6 sticky top-0 z-50 backdrop-blur-md bg-slate-900/80 border-slate-800`}
       >
         <div className="flex items-center gap-2 mr-auto">
           <div className="bg-blue-600 p-1.5 rounded-lg shadow-sm">
@@ -243,27 +239,18 @@ function App() {
         <div className="hidden md:flex items-center gap-1 mx-4">
           <button
             onClick={() => setShowGuide(true)}
-            className="px-3 py-1.5 text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+            className="px-3 py-1.5 cursor-pointer text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
           >
-            📖 Hướng dẫn
+            Hướng dẫn
           </button>
           <button
             onClick={() => setShowTheory(true)}
-            className="px-3 py-1.5 text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+            className="px-3 py-1.5 cursor-pointer text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
           >
-            🧠 Lý thuyết
+            Lý thuyết
           </button>
         </div>
-        <button
-          onClick={() => setDarkMode(!darkMode)}
-          className={`p-1.5 rounded-md border ${
-            darkMode
-              ? "bg-slate-800 border-slate-700 hover:bg-slate-700"
-              : "bg-white border-slate-200 hover:bg-slate-100"
-          }`}
-        >
-          {darkMode ? <SunIcon /> : <MoonIcon />}
-        </button>
+
       </nav>
 
       {/* MAIN CONTENT: Full Height Dashboard */}
@@ -271,11 +258,7 @@ function App() {
         {/* === LEFT COLUMN: INPUT === */}
         <div className="w-full md:w-1/3 lg:w-1/4 flex flex-col gap-4">
           <div
-            className={`flex-1 rounded-2xl shadow-sm border flex flex-col p-4 ${
-              darkMode
-                ? "bg-slate-900 border-slate-800"
-                : "bg-white border-slate-200"
-            }`}
+            className={`flex-1 rounded-2xl shadow-sm border flex flex-col p-4 bg-slate-900 border-slate-800`}
           >
             <div className="flex justify-between items-center mb-3">
               <label className="text-xs font-bold uppercase tracking-wider text-slate-500">
@@ -301,11 +284,7 @@ function App() {
             <textarea
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
-              className={`flex-1 w-full p-3 text-sm rounded-xl border resize-none focus:ring-2 focus:border-transparent outline-none leading-relaxed custom-scrollbar ${
-                darkMode
-                  ? "bg-slate-950 border-slate-800 text-slate-200 focus:ring-blue-500"
-                  : "bg-slate-50 border-slate-200 text-slate-700 focus:bg-white focus:ring-blue-500"
-              }`}
+              className={`flex-1 w-full p-3 text-sm rounded-xl border resize-none focus:ring-2 focus:border-transparent outline-none leading-relaxed bg-slate-950 border-slate-800 text-slate-200 focus:ring-blue-500`}
               placeholder="Nhập đề bài tại đây..."
               spellCheck={false}
               autoComplete="off"
@@ -334,11 +313,7 @@ function App() {
           </div>
 
           <div
-            className={`rounded-xl border p-4 text-xs ${
-              darkMode
-                ? "bg-indigo-900/10 border-indigo-900/30 text-indigo-300"
-                : "bg-indigo-50 border-indigo-100 text-indigo-800"
-            }`}
+            className={`rounded-xl border p-4 text-xs bg-indigo-900/10 border-indigo-900/30 text-indigo-300`}
           >
             <p className="font-bold mb-1">💡 Gợi ý nhập liệu:</p>
             <ul className="list-disc list-inside opacity-80 space-y-1">
@@ -351,19 +326,11 @@ function App() {
 
         {/* === RIGHT COLUMN: OUTPUT (Split View) === */}
         <div
-          className={`flex-1 rounded-2xl shadow-sm border overflow-hidden flex flex-col ${
-            darkMode
-              ? "bg-slate-900 border-slate-800"
-              : "bg-white border-slate-200"
-          }`}
+          className={`flex-1 rounded-2xl shadow-sm border overflow-hidden flex flex-col bg-slate-900 border-slate-800`}
         >
           {/* Header Kết quả */}
           <div
-            className={`h-12 px-5 border-b flex items-center justify-between ${
-              darkMode
-                ? "border-slate-800 bg-slate-900"
-                : "border-slate-100 bg-white"
-            }`}
+            className={`h-12 px-5 border-b flex items-center justify-between border-slate-800 bg-slate-900`}
           >
             <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
               Kết quả phân tích
@@ -391,11 +358,7 @@ function App() {
             <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
               {/* --- PHẦN 1: HÌNH ẢNH (Bên trái hoặc Trên) --- */}
               <div
-                className={`lg:w-5/12 flex flex-col border-b lg:border-b-0 lg:border-r ${
-                  darkMode
-                    ? "border-slate-800 bg-slate-950/50"
-                    : "border-slate-100 bg-slate-50"
-                }`}
+                className={`lg:w-5/12 flex flex-col border-b lg:border-b-0 lg:border-r border-slate-800 bg-slate-950/50`}
               >
                 <div className="flex-1 flex items-center justify-center px-6 pb-3 relative group">
                   {result.image ? (
@@ -431,11 +394,10 @@ function App() {
 
               {/* --- PHẦN 2: LỜI GIẢI (Bên phải hoặc Dưới) --- */}
               <div className="lg:w-7/12 flex flex-col bg-transparent h-full overflow-hidden">
-                <div className="flex-1 overflow-y-auto p-5 custom-scrollbar">
+                <div className="flex-1 overflow-y-auto p-5">
                   <h4
-                    className={`font-bold text-lg mb-4 flex items-center gap-2 ${
-                      darkMode ? "text-slate-100" : "text-slate-800"
-                    }`}
+                    className={`font-bold text-lg mb-4 flex items-center gap-2 text-slate-100
+                    `}
                   >
                     <SolutionIcon />
                     {result.status === "contradiction"
@@ -448,11 +410,7 @@ function App() {
                     {/* CASE 1: MÂU THUẪN (Contradiction) */}
                     {result.status === "contradiction" && (
                       <div
-                        className={`p-4 rounded-lg border-l-4 text-sm ${
-                          darkMode
-                            ? "bg-red-900/20 border-red-500 text-red-200"
-                            : "bg-red-50 border-red-500 text-slate-800"
-                        }`}
+                        className={`p-4 rounded-lg border-l-4 text-sm bg-red-900/20 border-red-500 text-red-200`}
                       >
                         <div className="font-bold mb-2 flex items-center gap-2 text-red-600 dark:text-red-400">
                           <ErrorIcon /> Phát hiện mâu thuẫn:
@@ -468,11 +426,7 @@ function App() {
                     {/* CASE 2: CẢNH BÁO (Warning) - Có Text trả về */}
                     {result.status === "warning" && (
                       <div
-                        className={`p-4 rounded-lg border-l-4 text-sm leading-relaxed whitespace-pre-line shadow-sm ${
-                          darkMode
-                            ? "bg-yellow-900/10 border-yellow-500 text-yellow-100"
-                            : "bg-yellow-50 border-yellow-500 text-slate-800"
-                        }`}
+                        className={`p-4 rounded-lg border-l-4 text-sm leading-relaxed whitespace-pre-line shadow-sm bg-yellow-900/10 border-yellow-500 text-yellow-100}`}
                       >
                         <div className="font-bold mb-2 flex items-center gap-2 text-yellow-600 dark:text-yellow-500">
                           <svg
@@ -522,11 +476,7 @@ function App() {
 
                         {/* CONTENT: Hiển thị lời giải đang chọn */}
                         <div
-                          className={`p-4 rounded-lg border-l-4 text-sm leading-relaxed whitespace-pre-line shadow-sm transition-all duration-300 ${
-                            darkMode
-                              ? "bg-emerald-900/10 border-emerald-500 text-emerald-100"
-                              : "bg-emerald-50 border-emerald-500 text-slate-800"
-                          }`}
+                          className={`p-4 rounded-lg border-l-4 text-sm leading-relaxed whitespace-pre-line shadow-sm transition-all duration-300 bg-emerald-900/10 border-emerald-500 text-emerald-100`}
                         >
                           {formatText(result.solutions[activeTab])}
                         </div>
@@ -572,316 +522,237 @@ function App() {
           )}
         </div>
       </main>
-      {/* <InfoModal
-        isOpen={showGuide}
-        onClose={() => setShowGuide(false)}
-        title="📖 Hướng dẫn sử dụng GeoSolver AI"
-      >
-        <div className="space-y-4">
-          <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-100 dark:border-blue-800">
-            <p className="font-bold text-blue-700 dark:text-blue-300 mb-1">
-              Bước 1: Nhập đề bài
-            </p>
-            <p>
-              Nhập đề toán hình học phẳng vào khung bên trái. Hãy viết rõ ràng
-              bằng tiếng Việt, tách câu bằng dấu chấm để hệ thống dễ hiểu. Tránh
-              dùng từ viết tắt hoặc ngôn ngữ mơ hồ.
-            </p>
-            <p className="text-xs mt-2 opacity-80">
-              Ví dụ đầy đủ: "Cho tam giác ABC cân tại A với đường cao AH. Kẻ HE
-              vuông góc với AB tại E, HF vuông góc với AC tại F. Chứng minh rằng
-              tứ giác AEHF là tứ giác nội tiếp."
-            </p>
-          </div>
-          <div className="bg-indigo-50 dark:bg-indigo-900/20 p-4 rounded-lg border border-indigo-100 dark:border-indigo-800">
-            <p className="font-bold text-indigo-700 dark:text-indigo-300 mb-1">
-              Bước 2: Phân tích đề bài
-            </p>
-            <p>
-              Nhấn nút <strong>"Giải ngay"</strong>. Hệ thống sẽ sử dụng AI để:
-            </p>
-            <ul className="list-disc list-inside mt-1 ml-2 space-y-1 opacity-90">
-              <li>Đọc hiểu và trích xuất các yếu tố hình học từ đề bài.</li>
-              <li>Sử dụng engine suy luận logic để tìm lời giải.</li>
-              <li>Tạo hình minh họa dựa trên tọa độ chính xác.</li>
-              <li>
-                Xử lý các trường hợp đặc biệt như mâu thuẫn hoặc cảnh báo.
-              </li>
-            </ul>
-          </div>
-          <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg border border-green-100 dark:border-green-800">
-            <p className="font-bold text-green-700 dark:text-green-300 mb-1">
-              Bước 3: Xem và tương tác với kết quả
-            </p>
-            <p>
-              Kết quả sẽ hiển thị bên phải, bao gồm hình vẽ (có thể tải về) và
-              lời giải chi tiết. Nếu có nhiều cách giải, sử dụng tab để chuyển
-              đổi. Nếu phát hiện mâu thuẫn, hệ thống sẽ chỉ ra lý do.
-            </p>
-            <p className="text-xs mt-2 opacity-80">
-              Lưu ý: Nếu kết quả không như mong đợi, thử chỉnh sửa đề bài cho rõ
-              ràng hơn hoặc kiểm tra kết nối server.
-            </p>
-          </div>
-          <p className="italic text-xs text-center pt-2">
-            Lưu ý: Hệ thống hiện tại tối ưu cho bài toán liên quan đến tứ giác
-            nội tiếp, nhưng có thể mở rộng trong tương lai.
-          </p>
-        </div>
-      </InfoModal> */}
-
+      {/* --- MODAL HƯỚNG DẪN --- */}
       <InfoModal
         isOpen={showGuide}
         onClose={() => setShowGuide(false)}
         title="Hướng dẫn sử dụng GeoSolver AI"
-        className="max-w-5xl"
+        className="max-w-4xl" 
       >
-        <div className="relative">
-          {/* Tabs chọn bước */}
-          <div className="flex flex-wrap justify-center gap-3 mb-8">
-            {[1, 2, 3].map((step) => (
-              <button
-                key={step}
-                onClick={() => setGuideStep(step - 1)}
-                className={`px-6 py-3 rounded-xl font-bold text-sm transition-all ${
-                  guideStep === step - 1
-                    ? "bg-linear-to-r from-blue-600 to-indigo-600 text-white shadow-lg scale-105"
-                    : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
-                }`}
-              >
-                Bước {step}
-              </button>
-            ))}
+        <div className="flex flex-col">
+          <div className="flex justify-center mb-6">
+            <div className="flex gap-4 md:gap-16">
+              {["Bước 1", "Bước 2", "Bước 3"].map((label, index) => (
+                <button
+                  key={index}
+                  onClick={() => setGuideStep(index)}
+                  className={`flex flex-col items-center gap-2 group transition-all cursor-pointer duration-300 ${
+                    guideStep === index ? "opacity-100" : "opacity-50 hover:opacity-100"
+                  }`}
+                >
+                  <div
+                    className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm shadow-sm transition-all border-2 ${
+                      guideStep === index
+                        ? "bg-blue-600 border-blue-600 text-white scale-110"
+                        : "bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-500"
+                    }`}
+                  >
+                    {index + 1}
+                  </div>
+                  <span className={`text-[10px] font-bold uppercase tracking-wider ${
+                    guideStep === index ? "text-blue-600 dark:text-blue-400" : "text-slate-500"
+                  }`}>
+                    {label}
+                  </span>
+                </button>
+              ))}
+            </div>
           </div>
 
-          {/* Carousel chính */}
-          <div className="grid md:grid-cols-2 gap-8 items-center">
-            {/* Ảnh minh họa */}
-            <div className="relative order-2 md:order-1">
-              <div className="bg-linear-to-br from-blue-50 to-indigo-100 dark:from-slate-800 dark:to-slate-900 rounded-3xl p-5 shadow-2xl">
+          {/* Main Content Area - ĐÃ THU NHỎ KÍCH THƯỚC */}
+          <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-1 border border-slate-100 dark:border-slate-700 shadow-inner">
+            <div className="grid md:grid-cols-2 gap-6 items-center min-h-80 p-4">
+              
+              {/* Cột 1: Hình ảnh minh họa (Giảm chiều cao xuống còn 240px) */}
+              <div className="relative h-[200px] md:h-60 bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-center overflow-hidden group">
                 <img
-                  src={`/step${guideStep + 1}.png`}
-                  alt={`Bước ${guideStep + 1}`}
-                  className="w-full rounded-2xl shadow-xl border-4 border-white dark:border-slate-700"
+                  src={`/step${guideStep + 1}.png`} 
+                  alt={`Minh họa bước ${guideStep + 1}`}
+                  className="max-w-full max-h-full object-contain p-2 transition-transform duration-500 group-hover:scale-105"
+                  onError={(e) => {
+                    e.target.style.display = 'none'; 
+                    e.target.nextSibling.style.display = 'flex'; 
+                  }}
                 />
+                {/* Fallback khi chưa có ảnh */}
+                <div className="hidden absolute inset-0 flex-col items-center justify-center text-slate-300 dark:text-slate-600 bg-slate-50 dark:bg-slate-900">
+                  <span className="text-3xl">🖼️</span>
+                  <span className="text-xs mt-2 font-medium">Ảnh bước {guideStep + 1}</span>
+                </div>
               </div>
 
-              {/* Nút chuyển thủ công */}
-              <button
-                onClick={() =>
-                  setGuideStep((prev) => (prev === 0 ? 2 : prev - 1))
-                }
-                className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/90 dark:bg-slate-900/90 backdrop-blur p-3 rounded-full shadow-lg hover:scale-110 transition"
-              >
-                Previous
-              </button>
-              <button
-                onClick={() =>
-                  setGuideStep((prev) => (prev === 2 ? 0 : prev + 1))
-                }
-                className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/90 dark:bg-slate-900/90 backdrop-blur p-3 rounded-full shadow-lg hover:scale-110 transition"
-              >
-                Next
-              </button>
-            </div>
-
-            {/* Nội dung mô tả */}
-            <div className="order-1 md:order-2 space-y-5">
-              {guideStep === 0 && (
-                <>
-                  <h3 className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                    Bước 1: Nhập đề bài
-                  </h3>
-                  <p className="text-lg leading-relaxed">
-                    Viết đề toán bằng <strong>tiếng Việt tự nhiên</strong>, tách
-                    câu bằng dấu chấm.
-                    <br />
-                    Hệ thống sẽ tự động hiểu: tam giác, đường cao, vuông góc,
-                    nội tiếp,...
-                  </p>
-                  <div className="bg-blue-50 dark:bg-blue-900/30 p-4 rounded-xl text-sm">
-                    <span className="font-semibold">Ví dụ:</span>
-                    <br />
-                    Cho tam giác ABC cân tại A. Đường cao AH. Kẻ HE ⊥ AB, HF ⊥
-                    AC. Chứng minh AEHF nội tiếp.
+              {/* Cột 2: Nội dung chữ (Giảm spacing và font size) */}
+              <div className="flex flex-col justify-center space-y-4 h-full">
+                
+                {guideStep === 0 && (
+                  <div className="animate-in slide-in-from-right-4 fade-in duration-300">
+                    <h3 className="text-xl font-bold text-blue-600 dark:text-blue-400 mb-2">
+                      Bước 1: Nhập đề toán
+                    </h3>
+                    <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed mb-3">
+                      Nhập đề bài hình học phẳng vào ô văn bản. Hãy sử dụng <strong>tiếng Việt có dấu</strong>.
+                    </p>
+                    <div className="bg-white dark:bg-slate-900 p-3 rounded-lg border border-blue-100 dark:border-blue-900/50 shadow-sm">
+                      <div className="text-[10px] font-bold text-slate-400 uppercase mb-1">Ví dụ:</div>
+                      <p className="font-mono text-xs text-slate-700 dark:text-slate-300">
+                        "Cho tam giác ABC đều. Đường cao AH. Chứng minh..."
+                      </p>
+                    </div>
                   </div>
-                </>
-              )}
+                )}
 
-              {guideStep === 1 && (
-                <>
-                  <h3 className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">
-                    Bước 2: Nhấn "Giải ngay"
-                  </h3>
-                  <p className="text-lg leading-relaxed">AI sẽ:</p>
-                  <ul className="space-y-2 text-lg">
-                    <li className="flex items-center gap-3">Đọc hiểu đề bài</li>
-                    <li className="flex items-center gap-3">
-                      Tìm lời giải logic
-                    </li>
-                    <li className="flex items-center gap-3">
-                      Vẽ hình chính xác theo tọa độ
-                    </li>
-                    <li className="flex items-center gap-3">
-                      Phát hiện mâu thuẫn (nếu có)
-                    </li>
-                  </ul>
-                </>
-              )}
+                {guideStep === 1 && (
+                  <div className="animate-in slide-in-from-right-4 fade-in duration-300">
+                    <h3 className="text-xl font-bold text-indigo-600 dark:text-indigo-400 mb-2">
+                      Bước 2: Phân tích & Giải
+                    </h3>
+                    <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed mb-3">
+                      Bấm nút <strong>"Giải ngay"</strong>. AI sẽ thực hiện:
+                    </p>
+                    <ul className="space-y-2">
+                      {[
+                        "Trích xuất dữ kiện",
+                        "Suy luận logic",
+                        "Tính toán tọa độ",
+                        "Kiểm tra đề bài"
+                      ].map((item, i) => (
+                        <li key={i} className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-200">
+                          <span className="bg-indigo-100 dark:bg-indigo-900 text-indigo-600 dark:text-indigo-300 p-0.5 rounded-full">
+                            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" /></svg>
+                          </span>
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
 
-              {guideStep === 2 && (
-                <>
-                  <h3 className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
-                    Bước 3: Xem kết quả
-                  </h3>
-                  <p className="text-lg leading-relaxed">Bên phải sẽ hiện:</p>
-                  <ul className="space-y-2 text-lg">
-                    <li className="flex items-center gap-3">
-                      Hình vẽ có thể tải về
-                    </li>
-                    <li className="flex items-center gap-3">
-                      Lời giải chi tiết (có thể có nhiều cách)
-                    </li>
-                    <li className="flex items-center gap-3">
-                      Cảnh báo nếu đề sai hoặc thiếu điều kiện
-                    </li>
-                  </ul>
-                </>
-              )}
+                {guideStep === 2 && (
+                  <div className="animate-in slide-in-from-right-4 fade-in duration-300">
+                    <h3 className="text-xl font-bold text-emerald-600 dark:text-emerald-400 mb-2">
+                      Bước 3: Nhận kết quả
+                    </h3>
+                    <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                      Kết quả bao gồm hai phần trực quan:
+                    </p>
+                    <div className="grid grid-cols-2 gap-3 mt-3">
+                      <div className="bg-white dark:bg-slate-900 p-3 rounded-lg border border-slate-200 dark:border-slate-700 text-center">
+                        <div className="text-xl mb-1">📐</div>
+                        <div className="font-bold text-sm text-slate-700 dark:text-slate-200">Hình vẽ</div>
+                      </div>
+                      <div className="bg-white dark:bg-slate-900 p-3 rounded-lg border border-slate-200 dark:border-slate-700 text-center">
+                        <div className="text-xl mb-1">📝</div>
+                        <div className="font-bold text-sm text-slate-700 dark:text-slate-200">Lời giải</div>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
-              {/* Dots chỉ thị */}
-              <div className="flex justify-center gap-2 pt-6">
-                {[0, 1, 2].map((i) => (
-                  <div
-                    key={i}
-                    onClick={() => setGuideStep(i)}
-                    className={`w-3 h-3 rounded-full cursor-pointer transition-all ${
-                      guideStep === i
-                        ? "bg-blue-600 w-10"
-                        : "bg-slate-300 dark:bg-slate-600"
+                {/* Navigation Buttons (Bottom) */}
+                <div className="flex gap-3 pt-2 mt-auto">
+                  <button
+                    onClick={() => setGuideStep((prev) => Math.max(0, prev - 1))}
+                    disabled={guideStep === 0}
+                    className={`px-4 py-2 cursor-pointer text-sm rounded-lg font-medium transition-all ${
+                      guideStep === 0
+                        ? "bg-slate-100 text-slate-400 cursor-not-allowed dark:bg-slate-800 dark:text-slate-600"
+                        : "bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 shadow-sm dark:bg-slate-700 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-600"
                     }`}
-                  />
-                ))}
+                  >
+                    Quay lại
+                  </button>
+                  <button
+                    onClick={() => {
+                        if (guideStep === 2) setShowGuide(false);
+                        else setGuideStep((prev) => Math.min(2, prev + 1));
+                    }}
+                    className="flex-1 cursor-pointer bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 text-sm rounded-lg font-medium shadow-md shadow-blue-500/20 transition-all active:scale-95"
+                  >
+                    {guideStep === 2 ? "Bắt đầu sử dụng" : "Tiếp theo"}
+                  </button>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </InfoModal>
+      </InfoModal>   
 
       {/* --- MODAL LÝ THUYẾT --- */}
       <InfoModal
         isOpen={showTheory}
         onClose={() => setShowTheory(false)}
         title="Các phương pháp chứng minh tứ giác nội tiếp"
-        className="max-w-6xl" // Đảm bảo bạn đã update InfoModal nhận prop className như hướng dẫn trước
+        className="max-w-6xl"
       >
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-2">
-          {/* ==================== CÁCH 1 ==================== */}
-          <div className="group flex flex-col h-full border rounded-2xl p-5 hover:shadow-xl transition-shadow dark:border-slate-700 bg-white dark:bg-slate-800">
-            {/* Phần nội dung chữ (Dùng flex-1 để chiếm chỗ trống, đẩy ảnh xuống) */}
-            <div className="flex-1">
-              <div className="flex items-center gap-3 mb-3">
-                <span className="bg-linear-to-r from-blue-500 to-cyan-500 text-white font-bold px-3 py-1 rounded-lg text-xs shadow-sm">
-                  CÁCH 1
-                </span>
-                <h3 className="text-base font-bold text-slate-800 dark:text-slate-100">
-                  Tổng hai góc đối bằng 180°
+        <div className="grid gap-6 md:grid-cols-2">
+          {[
+            {
+              id: 1,
+              color: "from-blue-500 to-cyan-500",
+              title: "Tổng hai góc đối bằng 180°",
+              desc: "Tứ giác có tổng hai góc đối diện bằng 180° là tứ giác nội tiếp. Đây là dấu hiệu nhận biết phổ biến nhất.",
+              img: "/cyclic-sum-180.jpg",
+              icon: "🔵"
+            },
+            {
+              id: 2,
+              color: "from-emerald-500 to-teal-500",
+              title: "Hai đỉnh kề cùng nhìn một cạnh",
+              desc: "Nếu hai đỉnh kề nhau cùng nhìn cạnh chứa hai đỉnh còn lại dưới một góc alpha bằng nhau thì tứ giác đó nội tiếp.",
+              img: "/cyclic-same-arc.png",
+              icon: "🟢"
+            },
+            {
+              id: 3,
+              color: "from-orange-500 to-amber-500",
+              title: "Góc ngoài tại một đỉnh",
+              desc: "Góc ngoài tại một đỉnh bằng góc trong tại đỉnh đối diện. Đây là hệ quả trực tiếp của tính chất tổng hai góc đối.",
+              img: "/cyclic-exterior.png",
+              icon: "🟠"
+            },
+            {
+              id: 4,
+              color: "from-purple-500 to-pink-500",
+              title: "Bốn đỉnh cách đều một điểm",
+              desc: "Nếu tồn tại một điểm O sao cho OA = OB = OC = OD thì bốn điểm A, B, C, D nằm trên đường tròn tâm O.",
+              img: "/cyclic-center.jpg",
+              icon: "🟣"
+            }
+          ].map((item) => (
+            <div 
+              key={item.id} 
+              className="group flex flex-col h-full bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 hover:shadow-xl hover:border-blue-300 dark:hover:border-blue-700 transition-all duration-300 overflow-hidden"
+            >
+              {/* Header Card */}
+              <div className="p-6 pb-2 flex-1">
+                <div className="flex items-center justify-between mb-4">
+                  <span className={`bg-linear-to-r ${item.color} text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm`}>
+                    PHƯƠNG PHÁP {item.id}
+                  </span>
+                  <span className="text-2xl opacity-80 group-hover:scale-110 transition-transform">{item.icon}</span>
+                </div>
+                <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                  {item.title}
                 </h3>
+                <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                  {item.desc}
+                </p>
               </div>
-              <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-300 mb-4">
-                Đây là định lý cơ bản nhất: Một tứ giác nội tiếp khi và chỉ khi
-                tổng hai góc đối diện bằng 180°. Đây cũng là cách được dùng
-                nhiều nhất trong các bài thi.
-              </p>
-            </div>
 
-            {/* Phần ảnh (Sẽ luôn nằm ở đáy và cố định chiều cao) */}
-            <div className="w-full h-48 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-700 overflow-hidden flex items-center justify-center">
-              <img
-                src="/cyclic-sum-180.jpg" // Đảm bảo đường dẫn đúng
-                alt="Tổng hai góc đối = 180°"
-                className="max-w-full max-h-full p-2 object-contain transition-transform duration-500 group-hover:scale-105"
-              />
-            </div>
-          </div>
-
-          {/* ==================== CÁCH 2 ==================== */}
-          <div className="group flex flex-col h-full border rounded-2xl p-5 hover:shadow-xl transition-shadow dark:border-slate-700 bg-white dark:bg-slate-800">
-            <div className="flex-1">
-              <div className="flex items-center gap-3 mb-3">
-                <span className="bg-linear-to-r from-emerald-500 to-teal-500 text-white font-bold px-3 py-1 rounded-lg text-xs shadow-sm">
-                  CÁCH 2
-                </span>
-                <h3 className="text-base font-bold text-slate-800 dark:text-slate-100">
-                  Hai góc kề nhìn cùng một cạnh
-                </h3>
+              {/* Image Container */}
+              <div className="mt-auto p-6 pt-2">
+                <div className="w-full h-48 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-700 overflow-hidden flex items-center justify-center relative">
+                  <img
+                    src={item.img}
+                    alt={item.title}
+                    className="max-w-full max-h-full p-2 object-contain transition-transform duration-500 group-hover:scale-105 z-10"
+                    onError={(e) => e.target.style.opacity = 0}
+                  />
+                  <div className="absolute inset-0 opacity-5 bg-[radial-linear(#444cf7_1px,transparent_1px)] bg-size:[16px_16px]"></div>
+                </div>
               </div>
-              <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-300 mb-4">
-                Nếu hai góc kề nhau cùng nhìn một cạnh dưới góc bằng nhau (bài
-                toán quỹ tích cung chứa góc) thì bốn đỉnh cùng nằm trên một
-                đường tròn.
-              </p>
             </div>
-            <div className="w-full h-48 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-700 overflow-hidden flex items-center justify-center">
-              <img
-                src="/cyclic-same-arc.png"
-                alt="Góc nội tiếp cùng cung"
-                className="max-w-full max-h-full p-2 object-contain transition-transform duration-500 group-hover:scale-105"
-              />
-            </div>
-          </div>
-
-          {/* ==================== CÁCH 3 ==================== */}
-          <div className="group flex flex-col h-full border rounded-2xl p-5 hover:shadow-xl transition-shadow dark:border-slate-700 bg-white dark:bg-slate-800">
-            <div className="flex-1">
-              <div className="flex items-center gap-3 mb-3">
-                <span className="bg-linear-to-r from-orange-500 to-amber-500 text-white font-bold px-3 py-1 rounded-lg text-xs shadow-sm">
-                  CÁCH 3
-                </span>
-                <h3 className="text-base font-bold text-slate-800 dark:text-slate-100">
-                  Góc ngoài bằng góc trong đối diện
-                </h3>
-              </div>
-              <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-300 mb-4">
-                Góc ngoài tại một đỉnh bằng góc trong tại đỉnh đối diện. Thực
-                chất đây là hệ quả trực tiếp của cách 1 (Tổng hai góc đối =
-                180°).
-              </p>
-            </div>
-            <div className="w-full h-48 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-700 overflow-hidden flex items-center justify-center">
-              <img
-                src="/cyclic-exterior.png"
-                alt="Góc ngoài = góc trong đối diện"
-                className="max-w-full max-h-full p-2 object-contain transition-transform duration-500 group-hover:scale-105"
-              />
-            </div>
-          </div>
-
-          {/* ==================== CÁCH 4 ==================== */}
-          <div className="group flex flex-col h-full border rounded-2xl p-5 hover:shadow-xl transition-shadow dark:border-slate-700 bg-white dark:bg-slate-800">
-            <div className="flex-1">
-              <div className="flex items-center gap-3 mb-3">
-                <span className="bg-linear-to-r from-purple-500 to-pink-500 text-white font-bold px-3 py-1 rounded-lg text-xs shadow-sm">
-                  CÁCH 4
-                </span>
-                <h3 className="text-base font-bold text-slate-800 dark:text-slate-100">
-                  Bốn đỉnh cách đều một điểm
-                </h3>
-              </div>
-              <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-300 mb-4">
-                Định nghĩa gốc: Bốn điểm A, B, C, D cùng nằm trên một đường tròn
-                khi và chỉ khi tồn tại điểm O (tâm) sao cho OA = OB = OC = OD =
-                R.
-              </p>
-            </div>
-            <div className="w-full h-48 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-700 overflow-hidden flex items-center justify-center">
-              <img
-                src="/cyclic-center.jpg"
-                alt="Tâm đường tròn ngoại tiếp"
-                className="max-w-full max-h-full p-2 object-contain transition-transform duration-500 group-hover:scale-105"
-              />
-            </div>
-          </div>
+          ))}
         </div>
       </InfoModal>
     </div>
