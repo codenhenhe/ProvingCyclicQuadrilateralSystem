@@ -24,3 +24,9 @@ Cho tứ giác ABCD, biết OA=OB=OC=OD và DAC = 90 độ, DBC = 90 độ. Ch�
 
 - Bài 9:
 Cho các điểm A, B, C, D và O. Biết OA=OB=OC=OD. Chứng minh tứ giác ABCD nội tiếp đường tròn tâm O.
+
+- Bài 10:
+Cho hình chữ nhật ABCD. Chứng minh ABCD nội tiếp.
+
+- Bài 11:
+Cho tứ giác ABCD. Góc BCD = 60 độ và góc ngoài tại đỉnh A bằng 60 độ. Chứng minh tứ giác ABCD nội tiếp.

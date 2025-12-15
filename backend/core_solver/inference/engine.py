@@ -21,7 +21,6 @@ class InferenceEngine:
             new_info_found = False
             
             for rule in self.rules:
-                # Rule.apply trả về True nếu nó thêm được Fact mới vào KB
                 try:
                     if rule.apply(self.kb):
                         new_info_found = True

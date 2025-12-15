@@ -69,23 +69,39 @@ class Triangle(Entity):
     def __repr__(self):
         return f"Tam giác {self.p1.name}{self.p2.name}{self.p3.name}"
 
-
 class Quadrilateral(Entity):
     def __init__(self, p1, p2, p3, p4):
+        # Lưu nguyên xi thứ tự người dùng nhập vào
+        # Ví dụ: nhập A, D, H, E -> lưu [A, D, H, E]
         self.points = [p1, p2, p3, p4]
 
     @property
     def canonical_id(self):
-        # Tứ giác thì thứ tự quan trọng, nhưng điểm bắt đầu không quan trọng
-        # ABCD == BCDA == CDAB. Nhưng khác ACBD.
-        # Để đơn giản cho bài toán nội tiếp, ta có thể sort, 
-        # NHƯNG đúng chuẩn là phải giữ thứ tự vòng.
-        # Tuy nhiên, để Logic Engine dễ tìm kiếm (như RuleCyclicMethod2), 
-        # ta tạm thời định danh bằng tập hợp điểm đã sort (vì bài toán thường cho tên cố định).
+        """
+        Tìm ra cái tên 'nhỏ nhất' để làm ID duy nhất trong Database.
+        Máy cần biết ADHE và HEDA là một hình duy nhất.
+        """
+        names = [p.name for p in self.points]
+        n = len(names)
+        candidates = []
         
-        names = sorted([p.name for p in self.points])
-        return f"Quad_{''.join(names)}"
+        # 1. Xoay vòng (Rotation)
+        for i in range(n):
+            rotated = names[i:] + names[:i]
+            candidates.append("".join(rotated))
+            
+        # 2. Đảo chiều (Reflection)
+        reversed_names = names[::-1]
+        for i in range(n):
+            rotated_rev = reversed_names[i:] + reversed_names[:i]
+            candidates.append("".join(rotated_rev))
+            
+        # Trả về ID chuẩn nhất (theo alphabet)
+        return f"Quad_{min(candidates)}"
     
     def __repr__(self):
+        """
+        Hiển thị đúng thứ tự gốc mà người dùng (hoặc LLM) đã nhập.
+        """
         names = "".join([p.name for p in self.points])
         return f"Tứ giác {names}"

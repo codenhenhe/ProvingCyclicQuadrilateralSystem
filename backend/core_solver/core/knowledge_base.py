@@ -3,20 +3,19 @@ import networkx as nx
 class Fact:
     """
     Đại diện cho một đơn vị tri thức.
-    Hỗ trợ Multi-source (nhiều cách giải) và Tương thích ngược.
+    Hỗ trợ nhiều cách giải và tương thích ngược.
     """
     def __init__(self, type_name, entities, value=None, reason=None, parents=None, **kwargs):
         self.type = type_name
         self.entities = entities    # List ID
         self.value = value
         
-        # [FIX QUAN TRỌNG 1] TẠO ID NGAY ĐẦU TIÊN
-        # (Để hàm add_source bên dưới có thể truy cập self.id khi in log debug)
+        # TẠO ID NGAY ĐẦU TIÊN
         entity_str = ",".join(self.entities)
         val_str = str(self.value) if self.value is not None else "None"
         self.id = f"{type_name}:{entity_str}:{val_str}"
 
-        # [FIX QUAN TRỌNG 2] Gọi add_source SAU KHI đã có ID
+        # Gọi add_source SAU KHI đã có ID
         self.sources = [] 
         if reason:
             self.add_source(reason, parents)
@@ -48,7 +47,6 @@ class Fact:
         """Thêm một cách chứng minh mới."""
         for s in self.sources:
             if s["reason"] == reason: 
-                # Log debug giúp ta biết tại sao Rule 4 bị bỏ qua
                 print(f"DEBUG_KB: KHÔNG thêm source '{reason}' cho fact {self.id} vì ĐÃ TỒN TẠI.")
                 return False
         
@@ -71,7 +69,7 @@ class KnowledgeGraph:
     def register_object(self, obj):
         """
         Đăng ký đối tượng vào bản đồ ID.
-        [FIX] Tự động đăng ký đệ quy các điểm cấu thành (p1, p2, vertex...)
+        Tự động đăng ký đệ quy các điểm cấu thành (p1, p2, vertex...)
         để đảm bảo các điểm như tâm O (trong đoạn OA) được hệ thống nhận diện.
         """
         if hasattr(obj, 'canonical_id'):
@@ -79,8 +77,7 @@ class KnowledgeGraph:
             if obj.canonical_id not in self.id_map:
                 self.id_map[obj.canonical_id] = obj
 
-            # 2. [QUAN TRỌNG] Đăng ký các điểm thành phần (ví dụ: Điểm O, Điểm A)
-            # Nếu không có bước này, Rule 4 sẽ không tìm thấy điểm O trong danh sách all_points
+            # 2. Đăng ký các điểm thành phần (ví dụ: Điểm O, Điểm A)
             if hasattr(obj, "p1") and obj.p1: self.register_object(obj.p1)
             if hasattr(obj, "p2") and obj.p2: self.register_object(obj.p2)
             if hasattr(obj, "p3") and obj.p3: self.register_object(obj.p3)
@@ -132,7 +129,7 @@ class KnowledgeGraph:
         id1 = obj1.canonical_id
         id2 = obj2.canonical_id
         
-        # Đăng ký đối tượng (hàm register_object mới sẽ lo cả việc đăng ký O)
+        # Đăng ký đối tượng 
         self.register_object(obj1)
         self.register_object(obj2)
         

@@ -4,7 +4,11 @@ from core_solver.inference.engine import InferenceEngine
 # Import các luật
 from core_solver.theorems.basic import RuleDefinePolygonEdges, RuleTriangleAngleSum, RulePerpendicularToValue, RuleEqualityByValue
 from core_solver.theorems.triangles import RuleEquilateralTriangle, RuleAltitudeProperty, RuleRightTriangle
-from core_solver.theorems.quadrilaterals import RuleQuadSpecialProperties
+from core_solver.theorems.quadrilaterals import (
+    RuleExpandSpecialQuadProperties,  
+    RuleClassifyQuadrilaterals,       
+    RuleQuadWithTwoRightAngles
+)
 from core_solver.theorems.circles import RuleTangentProperty, RuleDiameterThales, RuleCircleRadii, RuleCircleAnglesRelations, RuleTangentChordTheorem
 from core_solver.theorems.parallel import RuleConsecutiveInteriorAngles
 from core_solver.theorems.advanced import RulePowerOfPoint, RuleMidlineTheorem, RuleTriangleSimilarity
@@ -31,7 +35,9 @@ def setup_system():
     engine.add_rule(RuleEquilateralTriangle())
     engine.add_rule(RuleAltitudeProperty())
     engine.add_rule(RuleRightTriangle())
-    engine.add_rule(RuleQuadSpecialProperties())
+    engine.add_rule(RuleClassifyQuadrilaterals())
+    engine.add_rule(RuleExpandSpecialQuadProperties())
+    engine.add_rule(RuleQuadWithTwoRightAngles())
     
     # Circles
     engine.add_rule(RuleTangentProperty())

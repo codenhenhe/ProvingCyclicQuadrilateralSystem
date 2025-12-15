@@ -89,125 +89,6 @@ class AutoGeometryPlotter(GeometryPlotter):
                   ordered_polygon=self.ordered_vertices,
                   extra_segments=list(segments_to_draw))
 
-    # =========================================================================
-    # LOGIC DỰNG HÌNH (ĐÃ NÂNG CẤP)
-    # =========================================================================
-    
-    def _construct_from_triangles(self):
-        """
-        Dựng đỉnh tam giác (Đều/Cân/Vuông) với logic định hướng thông minh.
-        """
-        count = 0
-        tasks = [] # List[(Target, Base1, Base2, Dist1, Dist2)]
-
-        # A. Tam giác đều (IS_EQUILATERAL)
-        if "IS_EQUILATERAL" in self.kb.properties:
-            for fact in self.kb.properties["IS_EQUILATERAL"]:
-                pts = fact.entities 
-                unknown = [p for p in pts if p not in self.points]
-                known = [p for p in pts if p in self.points]
-                if len(unknown) == 1 and len(known) == 2:
-                    p1, p2 = known[0], known[1]
-                    d = math.sqrt((self.points[p1][0]-self.points[p2][0])**2 + (self.points[p1][1]-self.points[p2][1])**2)
-                    tasks.append((unknown[0], p1, p2, d, d))
-
-        # B. Xử lý Tam giác Cân và Vuông (Trong TRIANGLE)
-        if "TRIANGLE" in self.kb.properties:
-            for fact in self.kb.properties["TRIANGLE"]:
-                props = getattr(fact, 'properties', [])
-                vertex = getattr(fact, 'vertex', None)
-                
-                if not vertex: continue
-                
-                # Tìm 2 điểm đáy
-                pts = fact.entities
-                others = [p for p in pts if p != vertex]
-                if len(others) != 2: continue
-                base1, base2 = others[0], others[1]
-                
-                # Chỉ xử lý nếu Đáy đã vẽ, Đỉnh chưa vẽ
-                if vertex not in self.points and base1 in self.points and base2 in self.points:
-                    d_base = math.sqrt((self.points[base1][0]-self.points[base2][0])**2 + (self.points[base1][1]-self.points[base2][1])**2)
-                    
-                    # CASE B1: Tam giác CÂN (ISOSCELES)
-                    if "ISOSCELES" in props:
-                        side_len = d_base * 1.2 # Mặc định cạnh bên dài hơn đáy chút
-                        tasks.append((vertex, base1, base2, side_len, side_len))
-                    
-                    # CASE B2: Tam giác VUÔNG (RIGHT) - [THÊM MỚI]
-                    elif "RIGHT" in props:
-                        # Thay vì vẽ vuông cân (khiến A trùng B), ta dùng tỷ lệ 3-4-5 hoặc ngẫu nhiên hóa
-                        # Sử dụng Hash của tên đỉnh để chọn tỷ lệ cố định nhưng khác nhau giữa các điểm
-                        # Điều này giúp A và B (tên khác nhau) sẽ có vị trí khác nhau trên cung tròn
-                        
-                        name_hash = sum(ord(c) for c in vertex)
-                        
-                        # Tạo tỷ lệ lệch (0.3 đến 0.7) thay vì 0.5 (cân)
-                        # ratio = r1 / (r1 + r2) trên cạnh huyền (xấp xỉ)
-                        # Thực tế ta cần r1^2 + r2^2 = d_base^2. 
-                        # Giả sử r1 = d_base * sin(alpha), r2 = d_base * cos(alpha)
-                        
-                        # Chọn góc alpha từ 30 đến 70 độ dựa trên tên điểm
-                        angle_deg = 30 + (name_hash % 5) * 10 # 30, 40, 50, 60, 70
-                        if angle_deg == 45: angle_deg = 55 # Tránh vuông cân nếu muốn
-                        
-                        rad = math.radians(angle_deg)
-                        r1 = d_base * math.sin(rad)
-                        r2 = d_base * math.cos(rad)
-                        
-                        tasks.append((vertex, base1, base2, r1, r2))
-
-        # 2. Thực hiện dựng hình với Logic hướng (Cyclic Check)
-        for target, p1, p2, r1, r2 in tasks:
-            if target in self.points: continue
-
-            same_side_point = None
-            opposite_point = None
-
-            # [SMART LOGIC] Kiểm tra quan hệ nội tiếp để định hướng
-            if "IS_CYCLIC" in self.kb.properties:
-                # Lấy Fact nội tiếp quan trọng nhất (thường là cái đầu tiên)
-                cyclic_fact = self.kb.properties["IS_CYCLIC"][0]
-                q_pts = cyclic_fact.entities # [A, B, C, D]
-                
-                # Nếu 3 điểm liên quan (Target, Base1, Base2) đều nằm trong tứ giác nội tiếp
-                if target in q_pts and p1 in q_pts and p2 in q_pts:
-                    # Tìm điểm thứ 4 làm tham chiếu
-                    ref_list = [p for p in q_pts if p not in [target, p1, p2]]
-                    
-                    if ref_list and ref_list[0] in self.points:
-                        ref_point = ref_list[0]
-                        
-                        # Lấy lý do chứng minh
-                        reason = getattr(cyclic_fact, 'reason', "")
-                        # Fallback tìm trong sources
-                        if not reason and hasattr(cyclic_fact, 'sources') and cyclic_fact.sources:
-                             for src in cyclic_fact.sources:
-                                 if "nhìn cạnh" in src['reason'] or "đối" in src['reason']:
-                                     reason = src['reason']; break
-
-                        # Logic quyết định hướng
-                        if "nhìn cạnh" in reason:
-                            # Cách 2: Phải nằm CÙNG PHÍA (Suy biến / Non-convex)
-                            same_side_point = ref_point
-                            # print(f"   [Smart] Dựng {target} cùng phía {ref_point} so với {p1}{p2}")
-                        
-                        elif "góc đối" in reason or "Góc ngoài" in reason:
-                            # Cách 1 & 3: Phải nằm KHÁC PHÍA (Tứ giác lồi)
-                            opposite_point = ref_point
-                            # print(f"   [Smart] Dựng {target} đối xứng {ref_point} qua {p1}{p2}")
-
-            # Gọi hàm dựng điểm
-            self.add_point_from_distances(p1, p2, target, r1, r2,
-                                          opposite_to=opposite_point,
-                                          same_side_as=same_side_point)
-            
-            if target in self.points:
-                count += 1
-                print(f"   [+] Dựng đỉnh tam giác: {target} (Base: {p1}{p2})")
-                
-        return count
-
     def _construct_from_distances(self):
         """Dựng điểm từ giao của 2 cung tròn (Biết độ dài)."""
         count = 0
@@ -301,205 +182,257 @@ class AutoGeometryPlotter(GeometryPlotter):
                             if fact.value > 10:
                                 self.add_angle_marker(v_name, p1_name, p3_name, value=fact.value)
     
+    # =========================================================================
+    # 1. CẬP NHẬT LOGIC VẼ KHUNG SƯỜN
+    # =========================================================================
     def _draw_anchor_shape(self):
         """
-        Chọn hình cơ sở để vẽ dựa trên độ ưu tiên (Heuristic Scoring).
-        Ưu tiên: Hình vuông/HCN > Tam giác đều > Hình thang cân > Tam giác vuông/cân > Tứ giác thường.
+        Vẽ hình cơ sở. Ưu tiên sử dụng GIÁ TRỊ GÓC/CẠNH đã tính được trong KB.
+        Đảm bảo hình vẽ tổng quát, tránh rơi vào hình đặc biệt nếu không có dữ kiện.
         """
-        from core_solver.core.entities import Point, Segment
-        
-        candidates = [] # List[(score, type, fact)]
+        candidates = [] 
 
         # 1. QUÉT TỨ GIÁC
         if "QUADRILATERAL" in self.kb.properties:
             for fact in self.kb.properties["QUADRILATERAL"]:
                 subtype = getattr(fact, 'subtype', "")
-                score = 20 # [SỬA] Giảm từ 40 xuống 20 (Thấp hơn Tam giác)
-                
+                score = 20
+                # Ưu tiên hình đặc biệt nếu đã được nhận diện
                 if subtype in ["SQUARE", "RECTANGLE"]: score = 100
                 elif subtype == "ISOSCELES_TRAPEZOID": score = 80
                 elif subtype in ["RIGHT_TRAPEZOID", "RHOMBUS", "PARALLELOGRAM"]: score = 60
                 
+                # Nếu là tứ giác nội tiếp (nhưng không phải loại trên), tăng nhẹ ưu tiên
+                is_cyclic = False
+                if "IS_CYCLIC" in self.kb.properties:
+                     for c_fact in self.kb.properties["IS_CYCLIC"]:
+                         if set(c_fact.entities) == set(fact.entities): is_cyclic = True; break
+                if is_cyclic and score == 20: score = 30
+
                 candidates.append((score, "QUAD", fact))
 
         # 2. QUÉT TAM GIÁC ĐỀU
         if "IS_EQUILATERAL" in self.kb.properties:
             for fact in self.kb.properties["IS_EQUILATERAL"]:
-                candidates.append((90, "TRI_EQUILATERAL", fact)) # Ưu tiên cao hơn thang cân, thấp hơn HV
+                candidates.append((90, "TRI_EQUILATERAL", fact))
 
-        # 3. QUÉT TAM GIÁC THƯỜNG (Check tính chất)
+        # 3. QUÉT TAM GIÁC THƯỜNG
         if "TRIANGLE" in self.kb.properties:
             for fact in self.kb.properties["TRIANGLE"]:
                 props = getattr(fact, 'properties', [])
-                score = 50 # [SỬA] Tăng từ 30 lên 50 (Cao hơn Tứ giác thường)
-                
-                # Các điểm cộng thêm vẫn giữ nguyên
+                score = 50 
                 if "RIGHT" in props and "ISOSCELES" in props: score = 75
                 elif "RIGHT" in props: score = 70
                 elif "ISOSCELES" in props: score = 60
-                
                 candidates.append((score, "TRI_GENERIC", fact))
 
-        # --- CHỌN HÌNH TỐT NHẤT ---
         if not candidates: return False
         
-        # Sắp xếp giảm dần theo Score
         candidates.sort(key=lambda x: x[0], reverse=True)
         best_score, best_type, fact = candidates[0]
         
-        # print(f"   [Debug] Chọn Anchor: {best_type} (Score: {best_score}) - {fact.entities}")
-
-        # --- THỰC HIỆN VẼ ---
-        
-        # CASE A: TỨ GIÁC (SQUARE, RECT, TRAPEZOID, GENERIC...)
+        # --- VẼ TỨ GIÁC ---
         if best_type == "QUAD":
             pA, pB, pC, pD = fact.entities
             subtype = getattr(fact, 'subtype', "")
             
-            # Neo A, B
+            # Neo A, B cố định làm đáy
             self.add_point(pA, 0, 0)
-            self.add_point(pB, 6, 0)
+            BASE_LEN = 6.0
+            self.add_point(pB, BASE_LEN, 0)
             
-            # 1. Lấy dữ liệu góc trực tiếp từ KB
-            # (Thứ tự gọi hàm _get_angle cần đúng để khớp với ID trong entities.py)
-            val_A = self._get_angle_from_kb(pD, pA, pB) # Góc DAB
-            val_B = self._get_angle_from_kb(pA, pB, pC) # Góc ABC
-            val_C = self._get_angle_from_kb(pB, pC, pD) # Góc BCD
-            val_D = self._get_angle_from_kb(pC, pD, pA) # Góc CDA
+            # Lấy góc từ KB (Nếu có)
+            val_A = self._get_angle_from_kb(pD, pA, pB)
+            val_B = self._get_angle_from_kb(pA, pB, pC)
             
-            # 2. [LOGIC MỚI] Suy luận góc cho Hình Thang (Nếu thiếu góc đáy A, B)
-            is_trapezoid = subtype in ["TRAPEZOID", "ISOSCELES_TRAPEZOID", "RIGHT_TRAPEZOID"]
-            
-            if is_trapezoid:
-                # Tính chất: Góc kề một cạnh bên bù nhau (A + D = 180, B + C = 180)
-                # Nếu chưa biết A nhưng biết D -> Tính A
-                if val_A is None and val_D is not None:
-                    val_A = 180 - val_D
-                
-                # Nếu chưa biết B nhưng biết C -> Tính B
-                if val_B is None and val_C is not None:
-                    val_B = 180 - val_C
+            # --- XỬ LÝ CÁC LOẠI HÌNH ĐẶC BIỆT ---
+            if subtype in ["SQUARE", "RECTANGLE"]:
+                height = BASE_LEN if subtype == "SQUARE" else BASE_LEN * 0.6
+                self.add_point(pD, 0, height)
+                self.add_point(pC, BASE_LEN, height)
+                self.drawn_points.update([pA, pB, pC, pD])
+                return True
 
-            # 3. Thiết lập tham số vẽ
-            angle_A = val_A if val_A is not None else 75
-            angle_B = val_B if val_B is not None else 75
+            elif subtype == "PARALLELOGRAM" or subtype == "RHOMBUS":
+                angle_A = val_A if val_A else 70.0
+                side_len = BASE_LEN if subtype == "RHOMBUS" else BASE_LEN * 0.7
+                rad_A = math.radians(angle_A)
+                xD = side_len * math.cos(rad_A)
+                yD = side_len * math.sin(rad_A)
+                self.add_point(pD, xD, yD)
+                self.add_point(pC, xD + BASE_LEN, yD) # Tịnh tiến DC = AB
+                self.drawn_points.update([pA, pB, pC, pD])
+                return True
+                
+            elif subtype == "ISOSCELES_TRAPEZOID":
+                angle_base = val_A if val_A else (val_B if val_B else 70.0)
+                side_len = BASE_LEN * 0.6
+                rad = math.radians(angle_base)
+                dx = side_len * math.cos(rad)
+                dy = side_len * math.sin(rad)
+                self.add_point(pD, dx, dy)
+                self.add_point(pC, BASE_LEN - dx, dy) # Đối xứng
+                self.drawn_points.update([pA, pB, pC, pD])
+                return True
+
+            # --- XỬ LÝ TỨ GIÁC THƯỜNG (BAO GỒM NỘI TIẾP THƯỜNG) ---
+            # Đây là phần sửa lỗi: Đảm bảo hình vẽ tổng quát.
             
-            # Tinh chỉnh mặc định cho các hình đặc biệt (nếu không có số liệu)
-            if subtype in ["SQUARE", "RECTANGLE", "RIGHT_TRAPEZOID"]:
-                if val_A is None: angle_A = 90
-                if subtype in ["SQUARE", "RECTANGLE"] and val_B is None: angle_B = 90
+            # 1. Quyết định góc A và B
+            angle_A = val_A if val_A is not None else 80.0
             
-            # 4. Tính toán tọa độ D
-            # Lưu ý: Math cos/sin dùng radian
+            # Heuristic chọn góc B: Nếu A tù, chọn B nhọn để hình trông "ổn"
+            if val_B is not None:
+                angle_B = val_B
+            elif angle_A > 90:
+                angle_B = 75.0 # Khác A để tránh hình thang cân
+            else:
+                angle_B = 85.0 # Góc khác để tạo sự không đối xứng
+                
+            # 2. Quyết định độ dài cạnh bên (QUAN TRỌNG: PHẢI KHÁC NHAU)
+            # Để tránh nhìn giống hình thang cân.
+            len_AD = BASE_LEN * 0.7  # Ví dụ: 4.2
+            len_BC = BASE_LEN * 0.9  # Ví dụ: 5.4
+            
+            # 3. Tính tọa độ D từ A
             rad_A = math.radians(angle_A)
-            len_AD = 6.0 if subtype == "SQUARE" else 4.0
-            
             xD = len_AD * math.cos(rad_A)
             yD = len_AD * math.sin(rad_A)
             self.add_point(pD, xD, yD)
             
-            # 5. Tính toán tọa độ C
-            if subtype in ["SQUARE", "RECTANGLE"]:
-                self.add_point(pC, xD + 6, yD)
-            
-            elif subtype == "ISOSCELES_TRAPEZOID":
-                # Hình thang cân: Đối xứng qua trung trực AB (x=3)
-                # Hoặc dùng logic góc B: xC = 6 + 4*cos(180-B), yC = 4*sin(180-B)
-                # Cách đơn giản nhất là đối xứng tọa độ D qua trục giữa
-                if val_A is None and val_B is None and val_C is None and val_D is None:
-                     self.add_point(pC, 6 - xD, yD) # Mặc định đối xứng
-                else:
-                     # Nếu có góc cụ thể, tính theo góc B
-                     rad_B = math.radians(angle_B)
-                     len_BC = 4.0 # Giả sử bằng AD
-                     # Vector BC hướng từ B(6,0) theo góc (180 - B)
-                     xC = 6 + len_BC * math.cos(math.radians(180 - angle_B))
-                     yC = len_BC * math.sin(math.radians(180 - angle_B))
-                     
-                     # Ép chiều cao bằng nhau (song song) để hình đẹp
-                     yC = yD 
-                     self.add_point(pC, xC, yC)
+            # 4. Tính tọa độ C từ B
+            # Lưu ý: Góc tại B tính từ trục dương Ox ngược chiều kim đồng hồ là (180 - angle_B)
+            rad_B_standard = math.radians(180 - angle_B)
+            xC = BASE_LEN + len_BC * math.cos(rad_B_standard)
+            yC = 0 + len_BC * math.sin(rad_B_standard)
+            self.add_point(pC, xC, yC)
 
-            elif subtype == "PARALLELOGRAM" or subtype == "RHOMBUS":
-                self.add_point(pC, 6 + xD, yD)
-                
-            else:
-                # Tứ giác thường / Hình thang thường
-                rad_B = math.radians(angle_B)
-                len_BC = 4.0
-                # Tọa độ C tính từ B: Góc tại B là angle_B. 
-                # Vector BC tạo với trục hoành góc (180 - angle_B)
-                xC = 6 + len_BC * math.cos(math.radians(180 - angle_B))
-                yC = len_BC * math.sin(math.radians(180 - angle_B))
-                
-                # Nếu là hình thang (có PARALLEL), ép yC = yD
-                is_parallel = is_trapezoid # Dùng luôn biến đã check
-                if not is_parallel and "PARALLEL" in self.kb.properties:
-                     # Check kỹ hơn nếu cần...
-                     pass
-                
-                if is_parallel: yC = yD
-                
-                self.add_point(pC, xC, yC)
-                
             self.drawn_points.update([pA, pB, pC, pD])
             return True
 
-        # CASE B: TAM GIÁC ĐỀU
+        # ... (Giữ nguyên phần vẽ TAM GIÁC ĐỀU và TAM GIÁC THƯỜNG bên dưới) ...
+        # --- VẼ TAM GIÁC ĐỀU ---
         elif best_type == "TRI_EQUILATERAL":
             names = fact.entities
             self.calculate_triangle_coordinates(names[0], names[1], names[2], angle_A=60, side_c=6, side_b=6)
             self.drawn_points.update(names)
             return True
 
-        # CASE C: TAM GIÁC GENERIC (Có check Vuông/Cân lại lần nữa để vẽ đúng shape)
+        # --- VẼ TAM GIÁC THƯỜNG ---
         elif best_type == "TRI_GENERIC":
-            names = fact.entities # [A, B, C]
-            
-            # Lấy thông tin từ Fact (do Parser nạp vào)
+            # ... (Copy lại y nguyên code cũ của phần này) ...
+            names = fact.entities
             props = getattr(fact, 'properties', [])
             vertex = getattr(fact, 'vertex', None)
             
-            # Logic sắp xếp đỉnh: Đưa đỉnh đặc biệt (Vertex) lên đầu danh sách để làm gốc (A)
-            # Mặc định: names[0] là đỉnh, names[1] bên trái, names[2] bên phải
-            ordered_names = list(names)
+            ordered = list(names)
             if vertex and vertex in names:
-                ordered_names.remove(vertex)
-                ordered_names.insert(0, vertex) # Đưa vertex lên đầu: [Vertex, B, C]
+                ordered.remove(vertex); ordered.insert(0, vertex)
             
-            pA, pB, pC = ordered_names[0], ordered_names[1], ordered_names[2]
-
-            # 1. TAM GIÁC VUÔNG CÂN
-            if "RIGHT" in props and "ISOSCELES" in props:
-                self.add_point(pA, 0, 0) # Góc vuông tại gốc
-                self.add_point(pB, 0, 5)
-                self.add_point(pC, 5, 0)
-                self.add_right_angle_marker(pA, pB, pC)
+            pA, pB, pC = ordered[0], ordered[1], ordered[2]
             
-            # 2. TAM GIÁC VUÔNG THƯỜNG
-            elif "RIGHT" in props:
-                self.add_point(pA, 0, 0) # Góc vuông tại gốc
-                self.add_point(pB, 0, 4) # Cạnh góc vuông ngắn
-                self.add_point(pC, 6, 0) # Cạnh góc vuông dài
-                self.add_right_angle_marker(pA, pB, pC)
-
-            # 3. TAM GIÁC CÂN (Thường)
-            elif "ISOSCELES" in props:
-                self.add_point(pB, 0, 0) # Đáy trái
-                self.add_point(pC, 6, 0) # Đáy phải
-                self.add_point(pA, 3, 5) # Đỉnh cân nằm giữa
+            val_B = self._get_angle_from_kb(pA, pB, pC)
+            val_C = self._get_angle_from_kb(pA, pC, pB)
             
-            # 4. TAM GIÁC NHỌN (Thường) - Default
+            self.add_point(pB, 0, 0)
+            self.add_point(pC, 6, 0)
+            
+            if val_B and val_C:
+                tan_B = math.tan(math.radians(val_B))
+                tan_C = math.tan(math.radians(180 - val_C))
+                if abs(tan_B - tan_C) > 1e-3:
+                    xA = (-6 * tan_C) / (tan_B - tan_C)
+                    yA = tan_B * xA
+                    self.add_point(pA, xA, yA)
+                else:
+                    self.add_point(pA, 3, 5)
             else:
-                # Vẽ lệch một chút để trông tự nhiên (không quá cân)
-                self.add_point(pB, 0, 0)
-                self.add_point(pC, 6, 0)
-                self.add_point(pA, 2, 5) 
+                if "RIGHT" in props:
+                    self.add_point(pA, 2, 4)
+                    if vertex == pA: self.add_point(pA, 3, 3)
+                elif "ISOSCELES" in props:
+                    self.add_point(pA, 3, 5)
+                else:
+                    self.add_point(pA, 2, 5)
 
             self.drawn_points.update(names)
             return True
             
         return False
+
+    # =========================================================================
+    # 2. CẬP NHẬT LOGIC DỰNG TAM GIÁC PHỤ - SỬ DỤNG LƯỢNG GIÁC
+    # =========================================================================
+    def _construct_from_triangles(self):
+        """Dựng đỉnh còn thiếu của tam giác dựa trên tính chất và giá trị góc."""
+        count = 0
+        if "TRIANGLE" not in self.kb.properties: return 0
+
+        for fact in self.kb.properties["TRIANGLE"]:
+            props = getattr(fact, 'properties', [])
+            vertex = getattr(fact, 'vertex', None)
+            pts = fact.entities
+            
+            # Tìm điểm chưa vẽ
+            unknown = [p for p in pts if p not in self.points]
+            known = [p for p in pts if p in self.points]
+            
+            # Chỉ xử lý khi biết đáy (2 điểm), cần tìm đỉnh (1 điểm)
+            if len(unknown) == 1 and len(known) == 2:
+                target = unknown[0]
+                p1, p2 = known[0], known[1] # Đáy
+                
+                # Tính vector đáy và độ dài
+                x1, y1 = self.points[p1]
+                x2, y2 = self.points[p2]
+                dx, dy = x2 - x1, y2 - y1
+                d_base = math.sqrt(dx**2 + dy**2)
+                angle_base = math.atan2(dy, dx) # Góc nghiêng của đáy
+                
+                # --- CASE 1: TAM GIÁC CÂN TẠI TARGET ---
+                if vertex == target and "ISOSCELES" in props:
+                    # Lấy góc ở đáy nếu biết (VD: 70 độ)
+                    base_angle_val = self._get_angle_from_kb(target, p1, p2)
+                    if not base_angle_val: base_angle_val = 60.0 # Mặc định
+                    
+                    # Chiều cao h = (d/2) * tan(angle)
+                    h = (d_base / 2) * math.tan(math.radians(base_angle_val))
+                    
+                    # Trung điểm đáy
+                    mx, my = (x1 + x2)/2, (y1 + y2)/2
+                    
+                    # Vector vuông góc (xoay 90 độ từ dx, dy) -> (-dy, dx)
+                    # Điểm target = M + h * unit_perp_vector
+                    # Cần xác định hướng (lên hay xuống?).
+                    # Heuristic: Chọn hướng y dương hoặc xa gốc tọa độ hơn
+                    perp_x, perp_y = -dy, dx
+                    target_x = mx + (perp_x / d_base) * h
+                    target_y = my + (perp_y / d_base) * h
+                    
+                    self.add_point(target, target_x, target_y)
+                    count += 1
+                    print(f"   [+] Dựng đỉnh cân {target} từ đáy {p1}{p2} (Góc đáy {base_angle_val})")
+
+                # --- CASE 2: TAM GIÁC VUÔNG TẠI TARGET ---
+                elif vertex == target and "RIGHT" in props:
+                    # Target nhìn p1, p2 dưới góc 90 -> Target thuộc đường tròn đk p1p2
+                    # Lấy thêm 1 góc nhọn để chốt vị trí (VD góc tại p1)
+                    ang_p1 = self._get_angle_from_kb(target, p1, p2)
+                    if not ang_p1: ang_p1 = 45.0 # Mặc định vuông cân
+                    
+                    # Cạnh góc vuông b = d * cos(ang_p1)
+                    b = d_base * math.cos(math.radians(ang_p1))
+                    
+                    # Xoay vector p1->p2 một góc ang_p1
+                    target_rad = angle_base + math.radians(ang_p1)
+                    target_x = x1 + b * math.cos(target_rad)
+                    target_y = y1 + b * math.sin(target_rad)
+                    
+                    self.add_point(target, target_x, target_y)
+                    count += 1
+                    print(f"   [+] Dựng đỉnh vuông {target} từ huyền {p1}{p2}")
+
+        return count
 
     def _construct_thales_circle_case(self):
         right_angles = self._find_right_angles_in_kb()
