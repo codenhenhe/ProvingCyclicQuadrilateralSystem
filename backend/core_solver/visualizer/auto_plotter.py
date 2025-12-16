@@ -1,7 +1,7 @@
 from core_solver.visualizer.geometry_plotter import GeometryPlotter
 from core_solver.core.knowledge_base import KnowledgeGraph
 from core_solver.utils.geometry_utils import is_close
-from core_solver.core.entities import Point, Angle, Segment
+from core_solver.visualizer.geometry_optimizer import GeometryOptimizer
 import math
 
 class AutoGeometryPlotter(GeometryPlotter):
@@ -12,9 +12,26 @@ class AutoGeometryPlotter(GeometryPlotter):
         self.ordered_vertices = None 
 
     def auto_draw(self, should_show=True):
-        print("--- BẮT ĐẦU VẼ HÌNH (SAFE MODE) ---")
+        print("--- BẮT ĐẦU VẼ HÌNH (SMART MODE) ---")
+        # print("\n[DEBUG DATA INSPECTION]")
+        # if "EQUALITY" in self.kb.properties:
+        #     print(f"Found {len(self.kb.properties['EQUALITY'])} EQUALITY facts:")
+        #     for i, f in enumerate(self.kb.properties["EQUALITY"]):
+        #         print(f"  Fact {i}: entities={f.entities}")
+        #         print(f"    - Attributes: {f.__dict__}")
+                
+        #         # Kiểm tra xem entities là ID hay tên
+        #         for ent in f.entities:
+        #             if isinstance(ent, str) and ent in self.kb.id_map:
+        #                 obj = self.kb.id_map[ent]
+        #                 print(f"    - Entity '{ent}' maps to object: {obj}")
+        #                 if hasattr(obj, 'p1'): print(f"      -> Segment endpoints: {obj.p1.name}, {obj.p2.name}")
+        # else:
+        #     print("NO EQUALITY FACTS FOUND.")
+        # print("[DEBUG END]\n")
+        # [DEBUG BLOCK END]
 
-        # 1. LẤY MỤC TIÊU
+        # 1. LẤY MỤC TIÊU VẼ
         self.ordered_vertices = None
         if "RENDER_ORDER" in self.kb.properties:
             fact = list(self.kb.properties["RENDER_ORDER"])[0]
@@ -23,67 +40,63 @@ class AutoGeometryPlotter(GeometryPlotter):
              fact = list(self.kb.properties["QUADRILATERAL"])[0]
              self.ordered_vertices = fact.entities 
 
-        # 2. VẼ KHUNG SƯỜN (ANCHOR)
+        # 2. VẼ PHÁC THẢO (HEURISTIC)
         anchor_drawn = False
         thales_mode = False
         
         has_altitude = "ALTITUDE" in self.kb.properties
         has_triangle = "TRIANGLE" in self.kb.properties or "IS_EQUILATERAL" in self.kb.properties
         
-        # [CASE 1] TAM GIÁC + ĐƯỜNG CAO (Ưu tiên)
         if has_triangle and has_altitude:
-            if self._draw_anchor_shape():
-                anchor_drawn = True
-                print("-> [Smart] Phát hiện bài toán Đường cao. Ưu tiên vẽ Tam giác cơ sở.")
-
-        # [CASE 2] TỨ GIÁC THALES (Đường tròn đường kính)
-        if not anchor_drawn:
-            if self._construct_thales_circle_case() > 0:
-                anchor_drawn = True
-                thales_mode = True
-                print("-> [Smart] Phát hiện mô hình Thales. Ưu tiên vẽ Đường tròn.")
+            if self._draw_anchor_shape(): anchor_drawn = True
         
-        # [CASE 3] VẼ MẶC ĐỊNH
+        if not anchor_drawn and self._construct_thales_circle_case() > 0:
+            anchor_drawn = True; thales_mode = True
+        
         if not anchor_drawn:
-            if self._draw_anchor_shape():
-                anchor_drawn = True
-                print("-> [Smart] Vẽ hình cơ sở mặc định.")
+            if self._draw_anchor_shape(): anchor_drawn = True
             else:
-                print("⚠️ Không tìm thấy hình cơ sở. Vẽ mặc định A, B.")
                 self.add_point('A', 0, 0); self.add_point('B', 6, 0)
                 self.drawn_points.update(['A', 'B'])
 
-        # 3. VẼ BỔ SUNG
+        # Vẽ bổ sung các điểm phụ thuộc
         if not thales_mode:
-            # Lặp lại vài lần để lan truyền tọa độ
             for _ in range(3): 
-                newly_added = 0
-                newly_added += self._construct_from_triangles()
-                newly_added += self._construct_from_distances()
-                newly_added += self._construct_from_angles()
-                if newly_added == 0: break
+                if self._construct_from_triangles() + \
+                   self._construct_from_distances() + \
+                   self._construct_from_angles() == 0: break
         
+        self._ensure_quad_points()
         self._construct_points_on_segments()
+        self._scan_and_seed_points()
 
-        # 4. HẬU XỬ LÝ
+        # ======================================================================
+        # 3. [MỚI] TỐI ƯU HÓA TỌA ĐỘ (THE CORRECTION STEP)
+        # ======================================================================
+        # Chỉ chạy optimizer nếu có đủ điểm để tạo hình
+        if len(self.points) >= 3:
+            try:
+                optimizer = GeometryOptimizer(self.kb)
+                # Input: Tọa độ nháp -> Output: Tọa độ chuẩn
+                optimized_points = optimizer.optimize(self.points)
+                self.points = optimized_points # Cập nhật lại tọa độ
+            except Exception as e:
+                print(f"⚠️ Lỗi Optimizer: {e}. Sử dụng tọa độ phác thảo.")
+        # ======================================================================
+
+        # 4. HẬU XỬ LÝ & VẼ CHI TIẾT (Giữ nguyên)
         self._draw_missing_points_logic()
         self._draw_altitudes_and_orthocenter()
-        self._construct_intersections() # [NEW] Vẽ giao điểm (H)
+        self._construct_intersections()
         self._construct_perpendiculars()
-        
-        # [NEW] Vẽ ký hiệu góc
         self._draw_known_angles()
-
-        # 5. KẾT QUẢ
+        self._draw_exterior_angles()
         self._draw_results()
         
-        # 6. HIỂN THỊ
         segments_to_draw = self._collect_segments()
-        
-        # Kiểm tra suy biến
         degenerate_msg = self.check_degenerate_polygon()
-        if degenerate_msg:
-            print(f"⚠️ CẢNH BÁO HÌNH HỌC: {degenerate_msg}")
+        if degenerate_msg: print(f"⚠️ CẢNH BÁO: {degenerate_msg}")
+
 
         self.draw(should_show=should_show, 
                   ordered_polygon=self.ordered_vertices,
@@ -120,6 +133,40 @@ class AutoGeometryPlotter(GeometryPlotter):
                     print(f"   [+] Dựng điểm {target} từ khoảng cách tới {ref1}, {ref2}")
         return count
 
+    def _draw_exterior_angles(self):
+        if "VALUE" in self.kb.properties:
+            for fact in self.kb.properties["VALUE"]:
+                if getattr(fact, 'subtype', None) == 'exterior_angle':
+                    vertex = getattr(fact, 'vertex', None)
+                    val = fact.value
+                    
+                    if vertex and vertex in self.points and self.ordered_vertices:
+                        try:
+                            idx = self.ordered_vertices.index(vertex)
+                            prev_p = self.ordered_vertices[idx-1]
+                            next_p = self.ordered_vertices[(idx+1)%4]
+                            
+                            p_v = self.points[vertex]; p_prev = self.points[prev_p]
+                            ux, uy = p_v[0] - p_prev[0], p_v[1] - p_prev[1]
+                            d = math.sqrt(ux**2 + uy**2)
+                            if d == 0: continue
+                            
+                            ext_len = 2.0 # Dài hơn chút cho dễ nhìn
+                            ext_x = p_v[0] + (ux/d) * ext_len
+                            ext_y = p_v[1] + (uy/d) * ext_len
+                            
+                            ext_name = f"Ext_{vertex}"
+                            self.add_point(ext_name, ext_x, ext_y)
+                            
+                            # [FIX] Thêm đường nối đứt nét từ Vertex -> Ext
+                            self.add_dashed_segment(vertex, ext_name)
+                            
+                            # Vẽ góc: Góc ngoài kề bù với góc trong (prev-vertex-next)
+                            # Nên góc ngoài là (next-vertex-ext)
+                            self.add_angle_marker(vertex, next_p, ext_name, value=val, color='red')
+                            
+                        except: continue
+
     def _construct_intersections(self):
         """Dựng điểm từ dữ kiện Giao điểm (INTERSECTION)."""
         if "INTERSECTION" in self.kb.properties:
@@ -140,56 +187,53 @@ class AutoGeometryPlotter(GeometryPlotter):
                             print(f"   [+] Dựng giao điểm {p_name}")
 
     def _draw_known_angles(self):
-        """
-        Vẽ ký hiệu cho TẤT CẢ các góc đã biết giá trị (trừ góc 90 độ).
-        [NÂNG CẤP] Cho phép vẽ cả góc suy luận được (không chỉ giả thiết).
-        """
+        def resolve_point_name(raw_item):
+            if hasattr(raw_item, 'name'): return raw_item.name
+            if isinstance(raw_item, str):
+                if raw_item in self.kb.id_map:
+                    obj = self.kb.id_map[raw_item]
+                    if hasattr(obj, 'name'): return obj.name
+                return raw_item
+            return str(raw_item)
+
         if "VALUE" in self.kb.properties:
             for fact in self.kb.properties["VALUE"]:
                 subtype = getattr(fact, 'subtype', None)
                 
-                # Chỉ xử lý subtype='angle', có giá trị, và KHÔNG phải 90 độ
-                # (Vì 90 độ đã được vẽ bằng ký hiệu vuông góc riêng)
-                if subtype == "angle" and fact.value and not is_close(fact.value, 90.0):
-                    
-                    p1_name, v_name, p3_name = None, None, None
-                    
-                    # LOGIC TRÍCH XUẤT TÊN ĐIỂM LINH HOẠT
+                is_valid_angle = (subtype == "angle" or subtype is None)
+                
+                if is_valid_angle and fact.value and not is_close(fact.value, 90.0):
+                    p1, v, p2 = None, None, None
                     try:
-                        # TRƯỜNG HỢP 1: Fact lưu ID của Angle Object (VD: entities=['Angle_ABC'])
-                        # Đây là chuẩn mới của hệ thống
                         if len(fact.entities) == 1:
-                            angle_obj = self.kb.id_map.get(fact.entities[0])
-                            if angle_obj and hasattr(angle_obj, 'vertex'):
-                                p1_name = angle_obj.p1.name
-                                v_name = angle_obj.vertex.name
-                                p3_name = angle_obj.p3.name
-                        
-                        # TRƯỜNG HỢP 2: Fact lưu 3 ID điểm rời rạc (VD: entities=['A', 'B', 'C'])
-                        # Hỗ trợ tương thích ngược
-                        elif len(fact.entities) == 3:
-                            p1_name = self.kb.id_map[fact.entities[0]].name
-                            v_name = self.kb.id_map[fact.entities[1]].name
-                            p3_name = self.kb.id_map[fact.entities[2]].name
-                            
-                    except Exception:
-                        continue
+                            raw = fact.entities[0]
+                            if hasattr(raw, 'vertex'): 
+                                p1, v, p2 = resolve_point_name(raw.p1), resolve_point_name(raw.vertex), resolve_point_name(raw.p3)
+                            elif isinstance(raw, str) and raw.startswith("Angle_"):
+                                s = raw.replace("Angle_", "")
+                                if len(s) == 3 and "EXT_" not in s: 
+                                    p1, v, p2 = s[0], s[1], s[2]
 
-                    # Vẽ nếu đủ thông tin và các điểm đã tồn tại trên hình
-                    if p1_name and v_name and p3_name:
-                        if {p1_name, v_name, p3_name}.issubset(self.points.keys()):
-                            # Chỉ vẽ nếu góc không quá nhỏ (< 10 độ vẽ sẽ bị rối)
-                            if fact.value > 10:
-                                self.add_angle_marker(v_name, p1_name, p3_name, value=fact.value)
+                        elif len(fact.entities) == 3:
+                            p1 = resolve_point_name(fact.entities[0])
+                            v  = resolve_point_name(fact.entities[1])
+                            p2 = resolve_point_name(fact.entities[2])
+
+                        # VẼ HÌNH
+                        if p1 and v and p2:
+                            # Kiểm tra điểm tồn tại trước khi vẽ
+                            if {p1, v, p2}.issubset(self.points.keys()):
+                                self.add_angle_marker(v, p1, p2, value=fact.value, color='red')
+                                print(f"   [Plotter] Đã vẽ góc {v} ({p1}-{v}-{p2}) = {fact.value}")
+                    
+                    except Exception as e:
+                        print(f"⚠️ Lỗi vẽ góc {getattr(fact, 'entities', '?')}: {e}")
+                        continue
     
     # =========================================================================
     # 1. CẬP NHẬT LOGIC VẼ KHUNG SƯỜN
     # =========================================================================
     def _draw_anchor_shape(self):
-        """
-        Vẽ hình cơ sở. Ưu tiên sử dụng GIÁ TRỊ GÓC/CẠNH đã tính được trong KB.
-        Đảm bảo hình vẽ tổng quát, tránh rơi vào hình đặc biệt nếu không có dữ kiện.
-        """
         candidates = [] 
 
         # 1. QUÉT TỨ GIÁC
@@ -197,12 +241,10 @@ class AutoGeometryPlotter(GeometryPlotter):
             for fact in self.kb.properties["QUADRILATERAL"]:
                 subtype = getattr(fact, 'subtype', "")
                 score = 20
-                # Ưu tiên hình đặc biệt nếu đã được nhận diện
                 if subtype in ["SQUARE", "RECTANGLE"]: score = 100
                 elif subtype == "ISOSCELES_TRAPEZOID": score = 80
                 elif subtype in ["RIGHT_TRAPEZOID", "RHOMBUS", "PARALLELOGRAM"]: score = 60
                 
-                # Nếu là tứ giác nội tiếp (nhưng không phải loại trên), tăng nhẹ ưu tiên
                 is_cyclic = False
                 if "IS_CYCLIC" in self.kb.properties:
                      for c_fact in self.kb.properties["IS_CYCLIC"]:
@@ -236,16 +278,42 @@ class AutoGeometryPlotter(GeometryPlotter):
             pA, pB, pC, pD = fact.entities
             subtype = getattr(fact, 'subtype', "")
             
-            # Neo A, B cố định làm đáy
             self.add_point(pA, 0, 0)
             BASE_LEN = 6.0
             self.add_point(pB, BASE_LEN, 0)
+
+            # [LOGIC MỚI] Kiểm tra tam giác đặc biệt để nhường quyền
+            has_special_tri = False
+            if "TRIANGLE" in self.kb.properties:
+                quad_pts = {pA, pB, pC, pD}
+                for t_fact in self.kb.properties["TRIANGLE"]:
+                    if set(t_fact.entities).issubset(quad_pts):
+                        props = getattr(t_fact, 'properties', [])
+                        if any(p in props for p in ["EQUILATERAL", "ISOSCELES", "RIGHT"]):
+                            has_special_tri = True
+                            break
             
-            # Lấy góc từ KB (Nếu có)
+            if has_special_tri:
+                print("   [Smart Draw] Phát hiện tam giác đặc biệt, nhường quyền dựng hình.")
+                self.drawn_points.update([pA, pB])
+                return True
+
+            # Logic vẽ góc thông minh
+            def get_smart_angle(v, p_prev, p_next):
+                val = self._get_angle_from_kb(p_prev, v, p_next)
+                if val: return val
+                if "VALUE" in self.kb.properties:
+                    for f in self.kb.properties["VALUE"]:
+                        if getattr(f, 'subtype', None) == 'exterior_angle':
+                             v_fact = getattr(f, 'vertex', None)
+                             if v_fact == v and f.value:
+                                 return 180.0 - f.value
+                return None
+            
             val_A = self._get_angle_from_kb(pD, pA, pB)
             val_B = self._get_angle_from_kb(pA, pB, pC)
             
-            # --- XỬ LÝ CÁC LOẠI HÌNH ĐẶC BIỆT ---
+            # Xử lý các hình đặc biệt
             if subtype in ["SQUARE", "RECTANGLE"]:
                 height = BASE_LEN if subtype == "SQUARE" else BASE_LEN * 0.6
                 self.add_point(pD, 0, height)
@@ -253,14 +321,14 @@ class AutoGeometryPlotter(GeometryPlotter):
                 self.drawn_points.update([pA, pB, pC, pD])
                 return True
 
-            elif subtype == "PARALLELOGRAM" or subtype == "RHOMBUS":
+            elif subtype in ["PARALLELOGRAM", "RHOMBUS"]:
                 angle_A = val_A if val_A else 70.0
                 side_len = BASE_LEN if subtype == "RHOMBUS" else BASE_LEN * 0.7
                 rad_A = math.radians(angle_A)
                 xD = side_len * math.cos(rad_A)
                 yD = side_len * math.sin(rad_A)
                 self.add_point(pD, xD, yD)
-                self.add_point(pC, xD + BASE_LEN, yD) # Tịnh tiến DC = AB
+                self.add_point(pC, xD + BASE_LEN, yD)
                 self.drawn_points.update([pA, pB, pC, pD])
                 return True
                 
@@ -271,37 +339,24 @@ class AutoGeometryPlotter(GeometryPlotter):
                 dx = side_len * math.cos(rad)
                 dy = side_len * math.sin(rad)
                 self.add_point(pD, dx, dy)
-                self.add_point(pC, BASE_LEN - dx, dy) # Đối xứng
+                self.add_point(pC, BASE_LEN - dx, dy)
                 self.drawn_points.update([pA, pB, pC, pD])
                 return True
 
-            # --- XỬ LÝ TỨ GIÁC THƯỜNG (BAO GỒM NỘI TIẾP THƯỜNG) ---
-            # Đây là phần sửa lỗi: Đảm bảo hình vẽ tổng quát.
-            
-            # 1. Quyết định góc A và B
+            # Xử lý Tứ giác thường
             angle_A = val_A if val_A is not None else 80.0
-            
-            # Heuristic chọn góc B: Nếu A tù, chọn B nhọn để hình trông "ổn"
-            if val_B is not None:
-                angle_B = val_B
-            elif angle_A > 90:
-                angle_B = 75.0 # Khác A để tránh hình thang cân
-            else:
-                angle_B = 85.0 # Góc khác để tạo sự không đối xứng
+            if val_B is not None: angle_B = val_B
+            elif angle_A > 90: angle_B = 75.0 
+            else: angle_B = 180 - angle_A - 10
                 
-            # 2. Quyết định độ dài cạnh bên (QUAN TRỌNG: PHẢI KHÁC NHAU)
-            # Để tránh nhìn giống hình thang cân.
-            len_AD = BASE_LEN * 0.7  # Ví dụ: 4.2
-            len_BC = BASE_LEN * 0.9  # Ví dụ: 5.4
+            len_AD = BASE_LEN * 0.6
+            len_BC = BASE_LEN * 0.85
             
-            # 3. Tính tọa độ D từ A
             rad_A = math.radians(angle_A)
             xD = len_AD * math.cos(rad_A)
             yD = len_AD * math.sin(rad_A)
             self.add_point(pD, xD, yD)
             
-            # 4. Tính tọa độ C từ B
-            # Lưu ý: Góc tại B tính từ trục dương Ox ngược chiều kim đồng hồ là (180 - angle_B)
             rad_B_standard = math.radians(180 - angle_B)
             xC = BASE_LEN + len_BC * math.cos(rad_B_standard)
             yC = 0 + len_BC * math.sin(rad_B_standard)
@@ -310,61 +365,50 @@ class AutoGeometryPlotter(GeometryPlotter):
             self.drawn_points.update([pA, pB, pC, pD])
             return True
 
-        # ... (Giữ nguyên phần vẽ TAM GIÁC ĐỀU và TAM GIÁC THƯỜNG bên dưới) ...
-        # --- VẼ TAM GIÁC ĐỀU ---
+        # VẼ TAM GIÁC ĐỀU
         elif best_type == "TRI_EQUILATERAL":
             names = fact.entities
             self.calculate_triangle_coordinates(names[0], names[1], names[2], angle_A=60, side_c=6, side_b=6)
             self.drawn_points.update(names)
             return True
 
-        # --- VẼ TAM GIÁC THƯỜNG ---
+        # VẼ TAM GIÁC THƯỜNG
         elif best_type == "TRI_GENERIC":
-            # ... (Copy lại y nguyên code cũ của phần này) ...
             names = fact.entities
             props = getattr(fact, 'properties', [])
             vertex = getattr(fact, 'vertex', None)
-            
             ordered = list(names)
-            if vertex and vertex in names:
-                ordered.remove(vertex); ordered.insert(0, vertex)
-            
+            if vertex and vertex in names: ordered.remove(vertex); ordered.insert(0, vertex)
             pA, pB, pC = ordered[0], ordered[1], ordered[2]
             
             val_B = self._get_angle_from_kb(pA, pB, pC)
             val_C = self._get_angle_from_kb(pA, pC, pB)
             
-            self.add_point(pB, 0, 0)
-            self.add_point(pC, 6, 0)
+            self.add_point(pB, 0, 0); self.add_point(pC, 6, 0)
             
             if val_B and val_C:
                 tan_B = math.tan(math.radians(val_B))
                 tan_C = math.tan(math.radians(180 - val_C))
                 if abs(tan_B - tan_C) > 1e-3:
-                    xA = (-6 * tan_C) / (tan_B - tan_C)
-                    yA = tan_B * xA
+                    xA = (-6 * tan_C) / (tan_B - tan_C); yA = tan_B * xA
                     self.add_point(pA, xA, yA)
-                else:
-                    self.add_point(pA, 3, 5)
+                else: self.add_point(pA, 3, 5)
             else:
                 if "RIGHT" in props:
                     self.add_point(pA, 2, 4)
                     if vertex == pA: self.add_point(pA, 3, 3)
-                elif "ISOSCELES" in props:
-                    self.add_point(pA, 3, 5)
-                else:
-                    self.add_point(pA, 2, 5)
-
+                elif "ISOSCELES" in props: 
+                    self.add_point(pA, 3, 5.196) 
+                else: self.add_point(pA, 2, 5)
             self.drawn_points.update(names)
             return True
-            
         return False
 
     # =========================================================================
     # 2. CẬP NHẬT LOGIC DỰNG TAM GIÁC PHỤ - SỬ DỤNG LƯỢNG GIÁC
     # =========================================================================
     def _construct_from_triangles(self):
-        """Dựng đỉnh còn thiếu của tam giác dựa trên tính chất và giá trị góc."""
+        """Dựng đỉnh còn thiếu của tam giác dựa trên tính chất (Cân/Đều/Vuông)."""
         count = 0
         if "TRIANGLE" not in self.kb.properties: return 0
 
@@ -373,27 +417,40 @@ class AutoGeometryPlotter(GeometryPlotter):
             vertex = getattr(fact, 'vertex', None)
             pts = fact.entities
             
-            # Tìm điểm chưa vẽ
+            # Tìm điểm chưa vẽ (Unknown) và đã vẽ (Known)
             unknown = [p for p in pts if p not in self.points]
             known = [p for p in pts if p in self.points]
             
             # Chỉ xử lý khi biết đáy (2 điểm), cần tìm đỉnh (1 điểm)
             if len(unknown) == 1 and len(known) == 2:
                 target = unknown[0]
-                p1, p2 = known[0], known[1] # Đáy
+                p1, p2 = known[0], known[1] # Đáy đã biết
                 
-                # Tính vector đáy và độ dài
+                # Tính toán thông số đáy
                 x1, y1 = self.points[p1]
                 x2, y2 = self.points[p2]
                 dx, dy = x2 - x1, y2 - y1
                 d_base = math.sqrt(dx**2 + dy**2)
-                angle_base = math.atan2(dy, dx) # Góc nghiêng của đáy
+                angle_base = math.atan2(dy, dx)
                 
-                # --- CASE 1: TAM GIÁC CÂN TẠI TARGET ---
-                if vertex == target and "ISOSCELES" in props:
-                    # Lấy góc ở đáy nếu biết (VD: 70 độ)
-                    base_angle_val = self._get_angle_from_kb(target, p1, p2)
-                    if not base_angle_val: base_angle_val = 60.0 # Mặc định
+                # Check tính chất
+                is_equilateral = "EQUILATERAL" in props or "IS_EQUILATERAL" in props
+                is_isosceles = "ISOSCELES" in props or is_equilateral
+                is_right = "RIGHT" in props
+
+                # --- CASE 1: TAM GIÁC CÂN HOẶC ĐỀU ---
+                # Nếu là đều, hoặc cân mà chưa rõ đỉnh -> Coi điểm chưa biết (target) là đỉnh
+                effective_vertex = vertex
+                if effective_vertex is None and is_isosceles:
+                    effective_vertex = target
+                
+                if effective_vertex == target and is_isosceles:
+                    # Xác định góc ở đáy
+                    if is_equilateral:
+                        base_angle_val = 60.0
+                    else:
+                        base_angle_val = self._get_angle_from_kb(target, p1, p2)
+                        if not base_angle_val: base_angle_val = 60.0 # Fallback
                     
                     # Chiều cao h = (d/2) * tan(angle)
                     h = (d_base / 2) * math.tan(math.radians(base_angle_val))
@@ -401,29 +458,43 @@ class AutoGeometryPlotter(GeometryPlotter):
                     # Trung điểm đáy
                     mx, my = (x1 + x2)/2, (y1 + y2)/2
                     
-                    # Vector vuông góc (xoay 90 độ từ dx, dy) -> (-dy, dx)
-                    # Điểm target = M + h * unit_perp_vector
-                    # Cần xác định hướng (lên hay xuống?).
-                    # Heuristic: Chọn hướng y dương hoặc xa gốc tọa độ hơn
-                    perp_x, perp_y = -dy, dx
-                    target_x = mx + (perp_x / d_base) * h
-                    target_y = my + (perp_y / d_base) * h
+                    # Tính 2 vị trí ứng viên (Cùng chiều kim đồng hồ và Ngược chiều)
+                    ux, uy = -dy / d_base, dx / d_base # Vector đơn vị vuông góc
                     
-                    self.add_point(target, target_x, target_y)
-                    count += 1
-                    print(f"   [+] Dựng đỉnh cân {target} từ đáy {p1}{p2} (Góc đáy {base_angle_val})")
+                    # Ứng viên 1 & 2
+                    cand1 = (mx + ux * h, my + uy * h)
+                    cand2 = (mx - ux * h, my - uy * h)
+                    
+                    chosen_pos = cand1 # Mặc định
+                    
+                    # Đây là logic để ép D trùng vào A
+                    found_coincidence = False
+                    for px, py in self.points.values():
+                        if math.hypot(cand1[0]-px, cand1[1]-py) < 0.1:
+                            chosen_pos = cand1; found_coincidence = True; break
+                        if math.hypot(cand2[0]-px, cand2[1]-py) < 0.1:
+                            chosen_pos = cand2; found_coincidence = True; break
+                    
+                    # Nếu không trùng điểm nào, chọn điểm gần trọng tâm hình hơn (để hình gọn)
+                    if not found_coincidence and len(self.points) > 2:
+                        cx = sum(p[0] for p in self.points.values()) / len(self.points)
+                        cy = sum(p[1] for p in self.points.values()) / len(self.points)
+                        if math.hypot(cand2[0]-cx, cand2[1]-cy) < math.hypot(cand1[0]-cx, cand1[1]-cy):
+                            chosen_pos = cand2
 
-                # --- CASE 2: TAM GIÁC VUÔNG TẠI TARGET ---
-                elif vertex == target and "RIGHT" in props:
-                    # Target nhìn p1, p2 dưới góc 90 -> Target thuộc đường tròn đk p1p2
-                    # Lấy thêm 1 góc nhọn để chốt vị trí (VD góc tại p1)
+                    self.add_point(target, chosen_pos[0], chosen_pos[1])
+                    
+                    count += 1
+                    type_str = "Đều" if is_equilateral else "Cân"
+                    print(f"   [+] Dựng đỉnh {target} ({type_str}) từ đáy {p1}{p2}")
+
+                # --- CASE 2: TAM GIÁC VUÔNG ---
+                elif (vertex == target or (vertex is None and target not in self.points)) and is_right:
+                    # Giả sử vuông tại target
                     ang_p1 = self._get_angle_from_kb(target, p1, p2)
-                    if not ang_p1: ang_p1 = 45.0 # Mặc định vuông cân
+                    if not ang_p1: ang_p1 = 45.0
                     
-                    # Cạnh góc vuông b = d * cos(ang_p1)
                     b = d_base * math.cos(math.radians(ang_p1))
-                    
-                    # Xoay vector p1->p2 một góc ang_p1
                     target_rad = angle_base + math.radians(ang_p1)
                     target_x = x1 + b * math.cos(target_rad)
                     target_y = y1 + b * math.sin(target_rad)
@@ -471,96 +542,102 @@ class AutoGeometryPlotter(GeometryPlotter):
 
     def _construct_perpendiculars(self):
         """
-        Vẽ ký hiệu vuông góc (Đã tối ưu hóa việc khử trùng lặp).
+        Vẽ ký hiệu vuông góc (Đã nâng cấp logic parse tên điểm an toàn).
         """
-        # Map: Vertex -> List of drawn directions (unit vector pairs)
         drawn_map = {}
+
+        # --- Helper an toàn để lấy tên điểm ---
+        def resolve_name(raw):
+            if hasattr(raw, 'name'): return raw.name # Là object Point
+            if isinstance(raw, str):
+                if raw in self.kb.id_map: # Là ID
+                    obj = self.kb.id_map[raw]
+                    if hasattr(obj, 'name'): return obj.name
+                return raw # Là tên trực tiếp (VD: "A")
+            return str(raw)
 
         def get_vec(p_from, p_to):
             if p_from not in self.points or p_to not in self.points: return None
-            x1, y1 = self.points[p_from]
-            x2, y2 = self.points[p_to]
+            x1, y1 = self.points[p_from]; x2, y2 = self.points[p_to]
             d = math.sqrt((x2-x1)**2 + (y2-y1)**2)
-            # Nếu điểm trùng nhau (d ~ 0), không tính được vector -> Trả về None
             return ((x2-x1)/d, (y2-y1)/d) if d > 1e-6 else None
 
-        def is_vector_parallel(v1, v2):
-            # Hai vector song song nếu tích vô hướng ~ 1 (cùng chiều) hoặc ~ -1 (ngược chiều)
-            # Dot product: x1*x2 + y1*y2
-            dot = v1[0]*v2[0] + v1[1]*v2[1]
-            return abs(dot) > 0.99
-
         def check_and_record(vertex, p1, p2):
-            """Trả về True nếu CẦN VẼ (chưa trùng), False nếu ĐÃ CÓ."""
-            v_dir1 = get_vec(vertex, p1)
-            v_dir2 = get_vec(vertex, p2)
-            
-            # Nếu không tính được vector (do thiếu điểm hoặc điểm trùng), vẫn cho vẽ (fallback)
-            # để tránh mất hình, dù ký hiệu có thể bị lỗi nhỏ.
-            if not v_dir1 or not v_dir2: 
-                return True 
-
-            if vertex not in drawn_map:
-                drawn_map[vertex] = []
-            
-            # Kiểm tra xem đã có ký hiệu nào trùng phương chưa
-            for (exist_v1, exist_v2) in drawn_map[vertex]:
-                # Case 1: p1 trùng phương exist1 VÀ p2 trùng phương exist2
-                match1 = is_vector_parallel(v_dir1, exist_v1) and is_vector_parallel(v_dir2, exist_v2)
-                # Case 2: p1 trùng phương exist2 VÀ p2 trùng phương exist1 (đổi chỗ)
-                match2 = is_vector_parallel(v_dir1, exist_v2) and is_vector_parallel(v_dir2, exist_v1)
+            v1 = get_vec(vertex, p1); v2 = get_vec(vertex, p2)
+            if not v1 or not v2: return True 
+            if vertex not in drawn_map: drawn_map[vertex] = []
+            for (ev1, ev2) in drawn_map[vertex]:
+                dot1 = v1[0]*ev1[0] + v1[1]*ev1[1]
+                dot2 = v2[0]*ev2[0] + v2[1]*ev2[1]
+                if abs(dot1) > 0.99 and abs(dot2) > 0.99: return False
                 
-                if match1 or match2:
-                    return False # Đã tồn tại -> KHÔNG VẼ
+                dot1_cross = v1[0]*ev2[0] + v1[1]*ev2[1]
+                dot2_cross = v2[0]*ev1[0] + v2[1]*ev1[1]
+                if abs(dot1_cross) > 0.99 and abs(dot2_cross) > 0.99: return False
+            drawn_map[vertex].append((v1, v2)); return True
 
-            # Chưa có -> Ghi lại và cho phép vẽ
-            drawn_map[vertex].append((v_dir1, v_dir2))
-            return True
-
-        # --- BƯỚC 1: THU THẬP ỨNG VIÊN ---
-        candidates = [] # List[(Vertex, P1, P2)]
+        candidates = []
 
         # Nguồn A: Fact PERPENDICULAR
         if "PERPENDICULAR" in self.kb.properties:
             for fact in self.kb.properties["PERPENDICULAR"]:
-                if len(fact.entities) == 5:
-                    p_at, l1a, l1b, l2a, l2b = fact.entities
+                try:
+                    if len(fact.entities) == 5:
+                        # Parse an toàn cho format 5 tham số
+                        p_at = resolve_name(fact.entities[0])
+                        l1a = resolve_name(fact.entities[1]); l1b = resolve_name(fact.entities[2])
+                        l2a = resolve_name(fact.entities[3]); l2b = resolve_name(fact.entities[4])
+                        
+                        if p_at not in self.points:
+                             src = l1b if p_at == l1a else (l1a if p_at == l1b else None)
+                             if src and src in self.points and l2a in self.points and l2b in self.points:
+                                  proj = self._get_projection(src, l2a, l2b)
+                                  if proj: self.add_point(p_at, proj[0], proj[1])
+                        
+                        if p_at in self.points:
+                            dir1 = l1a if l1a != p_at else l1b
+                            dir2 = l2a if l2a != p_at else l2b
+                            if dir1 in self.points and dir2 in self.points:
+                                candidates.append((p_at, dir1, dir2))
                     
-                    # Logic dựng điểm chiếu (Projection) nếu thiếu
-                    if p_at not in self.points:
-                        src = l1b if p_at == l1a else (l1a if p_at == l1b else None)
-                        if src and src in self.points and l2a in self.points and l2b in self.points:
-                             proj = self._get_projection(src, l2a, l2b)
-                             if proj: self.add_point(p_at, proj[0], proj[1])
-                    
-                    if p_at in self.points:
-                        dir1 = l1a if l1a != p_at else l1b
-                        dir2 = l2a if l2a != p_at else l2b
-                        if dir1 in self.points and dir2 in self.points:
-                            candidates.append((p_at, dir1, dir2))
+                    elif len(fact.entities) == 3:
+                        v = resolve_name(fact.entities[0])
+                        p1 = resolve_name(fact.entities[1])
+                        p2 = resolve_name(fact.entities[2])
+                        if v in self.points and p1 in self.points and p2 in self.points:
+                            candidates.append((v, p1, p2))
+                except: continue
 
         # Nguồn B: Fact VALUE = 90
         if "VALUE" in self.kb.properties:
             for fact in self.kb.properties["VALUE"]:
                 subtype = getattr(fact, 'subtype', None)
-                if subtype == "angle" and fact.value and is_close(fact.value, 90.0):
+                if (subtype == "angle" or subtype is None) and fact.value and is_close(fact.value, 90.0):
                     try:
                         p1, v, p2 = None, None, None
-                        # Xử lý 2 loại format ID
-                        if len(fact.entities) == 1: # ID Angle
-                            obj = self.kb.id_map.get(fact.entities[0])
-                            if obj: p1, v, p2 = obj.p1.name, obj.vertex.name, obj.p3.name
-                        elif len(fact.entities) == 3: # List Points
-                            # Lấy name từ ID map
-                            p1 = self.kb.id_map[fact.entities[0]].name
-                            v = self.kb.id_map[fact.entities[1]].name
-                            p2 = self.kb.id_map[fact.entities[2]].name
+                        
+                        # Case 1: ID Angle (VD: Angle_CAD)
+                        if len(fact.entities) == 1: 
+                            raw = fact.entities[0]
+                            # Thử tra ID map
+                            obj = self.kb.id_map.get(raw)
+                            if obj: 
+                                p1, v, p2 = obj.p1.name, obj.vertex.name, obj.p3.name
+                            elif isinstance(raw, str) and "Angle_" in raw:
+                                # Fallback: Parse string nếu không có trong ID map
+                                s = raw.replace("Angle_", "")
+                                if len(s) == 3: p1, v, p2 = s[0], s[1], s[2]
+
+                        # Case 2: List Points (VD: [D, A, C])
+                        elif len(fact.entities) == 3: 
+                            p1 = resolve_name(fact.entities[0])
+                            v = resolve_name(fact.entities[1])
+                            p2 = resolve_name(fact.entities[2])
                         
                         if v and p1 and p2 and {v, p1, p2}.issubset(self.points.keys()):
                             candidates.append((v, p1, p2))
                     except: continue
 
-        # --- BƯỚC 2: VẼ VÀ KHỬ TRÙNG ---
         for v, p1, p2 in candidates:
             if check_and_record(v, p1, p2):
                 self.add_right_angle_marker(v, p1, p2)
@@ -813,3 +890,74 @@ class AutoGeometryPlotter(GeometryPlotter):
                             center_name = fact.center
                     self.add_point(center_name, c[0], c[1])
                     self.draw_circle(center_name, av[0])
+
+    def _ensure_quad_points(self):
+        """Vẽ nốt các điểm tứ giác còn thiếu nếu bước dựng tam giác không phủ hết."""
+        if not self.ordered_vertices or len(self.ordered_vertices) != 4: return
+        
+        pA, pB, pC, pD = self.ordered_vertices
+        # Nếu A, B đã có nhưng C hoặc D thiếu -> Dùng heuristic vẽ nốt
+        if pA in self.points and pB in self.points:
+            missing_C = pC not in self.points
+            missing_D = pD not in self.points
+            
+            if missing_C or missing_D:
+                print("   [Fallback] Vẽ bổ sung các đỉnh tứ giác còn thiếu.")
+                BASE_LEN = 6.0
+                # Heuristic cũ
+                angle_A = 80.0
+                angle_B = 75.0
+                len_AD = BASE_LEN * 0.6
+                len_BC = BASE_LEN * 0.85
+                
+                if missing_D:
+                    rad_A = math.radians(angle_A)
+                    xD = self.points[pA][0] + len_AD * math.cos(rad_A)
+                    yD = self.points[pA][1] + len_AD * math.sin(rad_A)
+                    self.add_point(pD, xD, yD)
+                
+                if missing_C:
+                    rad_B = math.radians(180 - angle_B)
+                    xC = self.points[pB][0] + len_BC * math.cos(rad_B)
+                    yC = self.points[pB][1] + len_BC * math.sin(rad_B)
+                    self.add_point(pC, xC, yC)
+
+    def _scan_and_seed_points(self):
+        """Tìm và khởi tạo các điểm quan trọng (như tâm O) chưa được vẽ."""
+        # 1. Tìm tâm đường tròn
+        if "CIRCLE" in self.kb.properties:
+            for f in self.kb.properties["CIRCLE"]:
+                if getattr(f, 'center', None):
+                    c = f.center
+                    if c not in self.points:
+                         xs = [p[0] for p in self.points.values()]
+                         ys = [p[1] for p in self.points.values()]
+                         mx = sum(xs)/len(xs) if xs else 3
+                         my = sum(ys)/len(ys) if ys else 3
+                         self.add_point(c, mx, my)
+                         print(f"   [+] Seed điểm tâm {c} vào Optimizer")
+
+        # 2. Tìm điểm trong EQUALITY (Ví dụ: OA=OB => Cần có O)
+        if "EQUALITY" in self.kb.properties:
+            for f in self.kb.properties["EQUALITY"]:
+                 # Chấp nhận subtype là 'segment' HOẶC None
+                 subtype = getattr(f, 'subtype', None)
+                 if subtype == 'segment' or subtype is None:
+                     candidates = []
+                     
+                     if hasattr(f, 'points1') and hasattr(f, 'points2'):
+                         candidates.extend(f.points1 + f.points2)
+                     elif len(f.entities) == 2: 
+                         for ent_id in f.entities:
+                             obj = self.kb.id_map.get(ent_id)
+                             # [FIX QUAN TRỌNG] Chỉ xử lý nếu object có p1, p2 (Segment) và KHÔNG có vertex (tránh Angle)
+                             if hasattr(obj, 'p1') and hasattr(obj, 'p2') and not hasattr(obj, 'vertex'):
+                                 candidates.extend([obj.p1.name, obj.p2.name])
+                     elif len(f.entities) == 4:
+                         candidates.extend(f.entities)
+
+                     for p_name in candidates:
+                         p_name = str(p_name)
+                         if p_name not in self.points:
+                              self.add_point(p_name, 3, 3)
+                              print(f"   [+] Seed điểm {p_name} (từ Equality) vào Optimizer")

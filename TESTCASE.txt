@@ -1,0 +1,107 @@
+METHOD 1 – TỔNG HAI GÓC ĐỐI BẰNG 180 ĐỘ
+
+    [Bài 1 – Dễ]
+    Cho tứ giác ABCD. Biết góc A = 110 độ, góc C = 70 độ.
+    Chứng minh tứ giác ABCD nội tiếp.
+
+    [Bài 2 – Dễ]
+    Cho hình chữ nhật ABCD.
+    Chứng minh tứ giác ABCD nội tiếp.
+
+    [Bài 3 – Dễ]
+    Cho tứ giác ABCD. Biết góc B = 85 độ, góc D = 95 độ.
+    Chứng minh ABCD nội tiếp.
+
+    [Bài 4 – Trung bình]
+    Cho tứ giác ABCD có hai góc đối A và C đều là góc vuông.
+    Chứng minh tứ giác ABCD nội tiếp.
+
+    [Bài 5 – Trung bình]
+    Cho tam giác ABC nhọn. Lấy điểm D trên tia đối của BC sao cho góc A + góc D = 180 độ.
+    Chứng minh tứ giác ABCD nội tiếp.
+
+    [Bài 6 – Trung bình]
+    Cho tứ giác ABCD. Biết góc A + góc C = 180 độ.
+    Chứng minh tứ giác ABCD nội tiếp.
+
+==================================================
+METHOD 2 – HAI GÓC CÙNG NHẬN MỘT ĐOẠN (CÙNG CHẮN MỘT CUNG)
+
+    [Bài 7 – Dễ]
+    Cho tứ giác ABCD. Biết góc ADB = 90 độ và góc ACB = 90 độ.
+    Chứng minh tứ giác ABCD nội tiếp.
+
+    [Bài 8 – Dễ]
+    Cho tam giác ABC vuông tại A. Lấy điểm D trên BC sao cho AD vuông góc với BC.
+    Chứng minh tứ giác ABCD nội tiếp.
+
+    [Bài 9 – Dễ]
+    Trong tam giác nhọn ABC, kẻ đường cao BD và CE.
+    Chứng minh tứ giác ADCE nội tiếp.
+
+    [Bài 10 – Trung bình]
+    Cho tam giác ABC cân tại A. Đường cao AH. Từ H kẻ HE vuông góc AB, HF vuông góc AC.
+    Chứng minh tứ giác AEHF nội tiếp.
+
+    [Bài 11 – Trung bình]
+    Cho tứ giác ABCD. Biết góc DAC = 90 độ và góc DBC = 90 độ.
+    Chứng minh tứ giác ABCD nội tiếp.
+
+    [Bài 12 – Trung bình]
+    Cho tam giác ABC nhọn. Đường cao BD và CE cắt nhau tại H.
+    Chứng minh tứ giác ADHE nội tiếp.
+
+==================================================
+METHOD 3 – GÓC NGOÀI BẰNG GÓC TRONG ĐỐI DIỆN
+
+    [Bài 13 – Dễ]
+    Cho tứ giác ABCD. Biết góc ngoài tại A bằng 60 độ và góc C bằng 60 độ.
+    Chứng minh tứ giác ABCD nội tiếp.
+
+    [Bài 14 – Dễ]
+    Cho tứ giác ABCD. Biết góc ngoài tại B bằng góc D.
+    Chứng minh ABCD nội tiếp.
+
+    [Bài 15 – Dễ]
+    Cho tứ giác ABCD. Biết góc ngoài tại D bằng góc B.
+    Chứng minh tứ giác ABCD nội tiếp.
+
+    [Bài 16 – Trung bình]
+    Cho tam giác ABC nội tiếp đường tròn (O). Các đường cao BD và CE cắt nhau tại H.
+    Kẻ tiếp tuyến Ax tại A của (O).
+    Chứng minh tứ giác ADHE nội tiếp.
+
+    [Bài 17 – Trung bình]
+    Cho tứ giác ABCD. Góc ngoài tại A bằng góc trong tại C.
+    Chứng minh tứ giác ABCD nội tiếp.
+
+    [Bài 18 – Trung bình]
+    Cho tam giác ABC nhọn. Mở rộng cạnh BC tại C. Biết góc ngoài tạo thành bằng góc A.
+    Chứng minh tứ giác tạo thành là tứ giác nội tiếp.
+
+==================================================
+METHOD 4 – TỒN TẠI ĐIỂM CÁCH ĐỀU 4 ĐỈNH
+
+    [Bài 19 – Dễ]
+    Cho điểm O và bốn điểm A, B, C, D sao cho OA = OB = OC = OD.
+    Chứng minh tứ giác ABCD nội tiếp đường tròn tâm O.
+
+    [Bài 20 – Dễ]
+    Cho đường tròn tâm O. Lấy bốn điểm A, B, C, D bất kỳ trên đường tròn.
+    Chứng minh ABCD là tứ giác nội tiếp.
+
+    [Bài 21 – Dễ]
+    Cho hình vuông ABCD.
+    Chứng minh tứ giác ABCD nội tiếp.
+
+    [Bài 22 – Trung bình]
+    Cho tứ giác ABCD. Biết tồn tại điểm O sao cho OA = OB = OC = OD.
+    Chứng minh tứ giác ABCD nội tiếp.
+
+    [Bài 23 – Trung bình]
+    Cho tam giác ABC. O là giao điểm các đường trung trực. Lấy điểm D sao cho OD = OA.
+    Chứng minh tứ giác ABCD nội tiếp.
+
+    [Bài 24 – Trung bình]
+    Cho tứ giác ABCD có tâm ngoại tiếp O và OA = OB = OC = OD = R.
+    Chứng minh tứ giác ABCD nội tiếp.

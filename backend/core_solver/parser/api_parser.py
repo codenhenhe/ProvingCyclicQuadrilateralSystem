@@ -14,8 +14,8 @@ class LLMParser:
         self.kb = kb
         
         # 1. CẤU HÌNH API KEY
-        api_key = os.getenv("GOOGLE_API_KEY_v4")
-        modelName = os.getenv("GEMINI_MODEL_v2")
+        api_key = os.getenv("GOOGLE_API_KEY_v2")
+        modelName = os.getenv("GEMINI_MODEL")
         if not api_key:
             print("CẢNH BÁO: Chưa có GOOGLE_API_KEY_v2 trong file .env")
         

@@ -174,32 +174,65 @@ class RuleCyclicMethod2(GeometricRule):
     @property
     def description(self): return "Hai đỉnh kề nhau cùng nhìn cạnh đối diện dưới một góc bằng nhau."
 
+    def _is_circular_logic(self, fact):
+        if not fact: return False
+        # Kiểm tra đệ quy 1 cấp
+        sources = getattr(fact, 'sources', [])
+        for src in sources:
+            r = src.get('reason', '').lower()
+            if any(k in r for k in ["nội tiếp", "chắn cung", "thuộc đường tròn", "circle"]): return True
+            # Check parents của source này
+            for p in src.get('parents', []):
+                 if hasattr(p, 'type') and p.type == "POINT_LOCATION": return True
+        return False
+
     def apply(self, kb) -> bool:
         changed = False
         if "QUADRILATERAL" not in kb.properties: return False
+        
         for q_fact in kb.properties["QUADRILATERAL"]:
             try: pts = [kb.id_map[n] for n in q_fact.entities]
             except KeyError: continue
             pA, pB, pC, pD = pts
             configs = [(pA, pB, pD, pC), (pB, pC, pA, pD), (pC, pD, pB, pA), (pD, pA, pC, pB)]
+            
             for v1, v2, base1, base2 in configs:
                 ang1 = Angle(base1, v1, base2); ang2 = Angle(base1, v2, base2)
+                
+                # Thu thập bằng chứng tiềm năng
+                potential_parents = []
+                
+                # 1. Equality Facts
+                is_eq_fact, _ = kb.check_equality(ang1, ang2)
+                if is_eq_fact:
+                    eq_parents = kb.get_equality_parents(ang1, ang2)
+                    valid_eq = [p for p in eq_parents if not self._is_circular_logic(p)]
+                    potential_parents.extend(valid_eq)
+
+                # 2. Value Facts
+                f1 = kb._find_value_fact(ang1); f2 = kb._find_value_fact(ang2)
+                if f1 and not self._is_circular_logic(f1): potential_parents.append(f1)
+                if f2 and not self._is_circular_logic(f2): potential_parents.append(f2)
+
+                # [FIX QUAN TRỌNG] Nếu không có bằng chứng nào hợp lệ (do bị lọc hết vì circular logic) -> BỎ QUA
+                if not potential_parents: continue
+
+                # Logic kiểm tra giá trị số (để hiện thị đẹp)
                 val1 = kb.get_angle_value(ang1); val2 = kb.get_angle_value(ang2)
                 is_eq_val = (val1 and val2 and is_close(val1, val2))
-                is_eq_fact, _ = kb.check_equality(ang1, ang2)
+
                 if is_eq_val or is_eq_fact:
                     disp = val1 if val1 else (val2 if val2 else 0)
                     if disp == 0: 
-                        for f in kb.properties.get("VALUE", []): 
-                            if f.value==90: disp=90; break
+                         for f in kb.properties.get("VALUE", []): 
+                             if f.value == 90: disp = 90; break
                     val_str = f"{int(disp)}°" if disp > 0 else "bằng nhau"
+                    
                     reason = f"Hai đỉnh kề {v1.name}, {v2.name} cùng nhìn cạnh {base1.name}{base2.name} dưới góc {val_str}"
-                    parents = [q_fact]
-                    if is_eq_fact: parents.extend(kb.get_equality_parents(ang1, ang2))
-                    f1=kb._find_value_fact(ang1); f2=kb._find_value_fact(ang2)
-                    if f1: parents.append(f1)
-                    if f2: parents.append(f2)
-                    if kb.add_property("IS_CYCLIC", q_fact.entities, reason, parents=list(set(parents))): changed = True
+                    
+                    final_parents = [q_fact] + potential_parents
+                    if kb.add_property("IS_CYCLIC", q_fact.entities, reason, parents=list(set(final_parents))): 
+                        changed = True
         return changed
 
 # ==============================================================================
@@ -355,13 +388,48 @@ class RuleCyclicMethod3(GeometricRule):
         return changed
 
 # ==============================================================================
-# CÁCH 4: TÂM CÁCH ĐỀU (GIỮ NGUYÊN)
+# CÁCH 4: TÂM CÁCH ĐỀU
 # ==============================================================================
+#
 class RuleCyclicMethod4(GeometricRule):
     @property
     def name(self): return "Tứ Giác Nội Tiếp (Tâm cách đều)"
     @property
     def description(self): return "Bốn đỉnh cách đều một điểm."
+
+    def _get_evidence_for_equality(self, kb, s1, s2):
+        """Tìm Fact EQUALITY tương ứng với s1 = s2."""
+        # 1. Thử lấy parents (nếu là derived fact)
+        parents = kb.get_equality_parents(s1, s2)
+        if parents: return parents
+
+        # 2. Tìm trong KB (Giả thiết)
+        if "EQUALITY" in kb.properties:
+            p1_names = {s1.p1.name, s1.p2.name}
+            p2_names = {s2.p1.name, s2.p2.name}
+
+            # Helper: Kiểm tra ID đoạn thẳng có khớp với cặp điểm không
+            def match_seg_id(seg_id, target_points):
+                obj = kb.id_map.get(seg_id)
+                if isinstance(obj, Segment):
+                    return {obj.p1.name, obj.p2.name} == target_points
+                return False
+
+            for f in kb.properties["EQUALITY"]:
+                # Fact EQUALITY thường chứa 2 ID [seg1, seg2]
+                if len(f.entities) == 2:
+                    id1, id2 = f.entities
+                    
+                    # Kiểm tra thuận (id1==s1, id2==s2)
+                    m1 = match_seg_id(id1, p1_names) and match_seg_id(id2, p2_names)
+                    if m1: return [f]
+                    
+                    # Kiểm tra nghịch (id1==s2, id2==s1)
+                    m2 = match_seg_id(id1, p2_names) and match_seg_id(id2, p1_names)
+                    if m2: return [f]
+                    
+        return []
+
     def apply(self, kb) -> bool:
         changed = False
         if "QUADRILATERAL" not in kb.properties: return False
@@ -377,10 +445,22 @@ class RuleCyclicMethod4(GeometricRule):
                 sOA, sOB = Segment(center, qs[0]), Segment(center, qs[1])
                 sOC, sOD = Segment(center, qs[2]), Segment(center, qs[3])
                 
-                if (kb.check_equality(sOA, sOB)[0] and kb.check_equality(sOB, sOC)[0] and kb.check_equality(sOC, sOD)[0]):
+                # Check 3 cặp: OA=OB, OB=OC, OC=OD
+                eq1, _ = kb.check_equality(sOA, sOB)
+                eq2, _ = kb.check_equality(sOB, sOC)
+                eq3, _ = kb.check_equality(sOC, sOD)
+
+                if eq1 and eq2 and eq3:
                     reason = f"Bốn đỉnh cách đều điểm {center.name}"
-                    parents_to_add = [q_fact]
-                    if kb.add_property("IS_CYCLIC", quad_entity_ids, reason, parents=parents_to_add):
+                    
+                    # [FIX] Dùng hàm helper mới để lấy bằng chứng giả thiết
+                    ps1 = self._get_evidence_for_equality(kb, sOA, sOB)
+                    ps2 = self._get_evidence_for_equality(kb, sOB, sOC)
+                    ps3 = self._get_evidence_for_equality(kb, sOC, sOD)
+                    
+                    all_parents = [q_fact] + ps1 + ps2 + ps3
+                    
+                    if kb.add_property("IS_CYCLIC", quad_entity_ids, reason, parents=all_parents):
                         changed = True
                         if "CIRCLE" not in kb.properties:
                             kb.add_property("CIRCLE", [center.name, qs[0].name], "Tâm cách đều", center=center.name)

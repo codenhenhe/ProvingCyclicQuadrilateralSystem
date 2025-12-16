@@ -238,50 +238,50 @@ class RuleExpandSpecialQuadProperties(GeometricRule):
 # ==============================================================================
 # RULE 3: HAI GÓC ĐỐI VUÔNG (Dành cho Tứ giác thường)
 # ==============================================================================
-class RuleQuadWithTwoRightAngles(GeometricRule):
-    @property
-    def name(self): return "Tứ Giác (Hai góc đối vuông)"
-    @property
-    def description(self): return "Phát hiện tứ giác nội tiếp nhờ 2 góc đối vuông (Tổng 180)."
+# class RuleQuadWithTwoRightAngles(GeometricRule):
+#     @property
+#     def name(self): return "Tứ Giác (Hai góc đối vuông)"
+#     @property
+#     def description(self): return "Phát hiện tứ giác nội tiếp nhờ 2 góc đối vuông (Tổng 180)."
 
-    def apply(self, kb) -> bool:
-        changed = False
-        if "QUADRILATERAL" not in kb.properties: return False
+#     def apply(self, kb) -> bool:
+#         changed = False
+#         if "QUADRILATERAL" not in kb.properties: return False
 
-        for q_fact in kb.properties["QUADRILATERAL"]:
-            try: pts = [kb.id_map[n] for n in q_fact.entities]
-            except KeyError: continue
+#         for q_fact in kb.properties["QUADRILATERAL"]:
+#             try: pts = [kb.id_map[n] for n in q_fact.entities]
+#             except KeyError: continue
             
-            # 4 góc: A, B, C, D
-            angles_of_quad = [
-                (pts[0], Angle(pts[3], pts[0], pts[1])), # A
-                (pts[1], Angle(pts[0], pts[1], pts[2])), # B
-                (pts[2], Angle(pts[1], pts[2], pts[3])), # C
-                (pts[3], Angle(pts[2], pts[3], pts[0]))  # D
-            ]
+#             # 4 góc: A, B, C, D
+#             angles_of_quad = [
+#                 (pts[0], Angle(pts[3], pts[0], pts[1])), # A
+#                 (pts[1], Angle(pts[0], pts[1], pts[2])), # B
+#                 (pts[2], Angle(pts[1], pts[2], pts[3])), # C
+#                 (pts[3], Angle(pts[2], pts[3], pts[0]))  # D
+#             ]
             
-            right_indices = []
-            for i, (v, ang) in enumerate(angles_of_quad):
-                val = kb.get_angle_value(ang)
-                if val is not None and is_close(val, 90.0):
-                    right_indices.append(i)
+#             right_indices = []
+#             for i, (v, ang) in enumerate(angles_of_quad):
+#                 val = kb.get_angle_value(ang)
+#                 if val is not None and is_close(val, 90.0):
+#                     right_indices.append(i)
 
-            if len(right_indices) >= 2:
-                for k in range(len(right_indices)):
-                    for m in range(k + 1, len(right_indices)):
-                        idx1, idx2 = right_indices[k], right_indices[m]
+#             if len(right_indices) >= 2:
+#                 for k in range(len(right_indices)):
+#                     for m in range(k + 1, len(right_indices)):
+#                         idx1, idx2 = right_indices[k], right_indices[m]
                         
-                        # Chỉ xét góc đối (Hiệu index = 2, ví dụ A(0) và C(2))
-                        if abs(idx1 - idx2) == 2:
-                            v1, ang1 = angles_of_quad[idx1]
-                            v2, ang2 = angles_of_quad[idx2]
+#                         # Chỉ xét góc đối (Hiệu index = 2, ví dụ A(0) và C(2))
+#                         if abs(idx1 - idx2) == 2:
+#                             v1, ang1 = angles_of_quad[idx1]
+#                             v2, ang2 = angles_of_quad[idx2]
                             
-                            parents = [q_fact]
-                            f1 = kb._find_value_fact(ang1); f2 = kb._find_value_fact(ang2)
-                            if f1: parents.append(f1)
-                            if f2: parents.append(f2)
+#                             parents = [q_fact]
+#                             f1 = kb._find_value_fact(ang1); f2 = kb._find_value_fact(ang2)
+#                             if f1: parents.append(f1)
+#                             if f2: parents.append(f2)
                             
-                            reason = f"Hai góc đối vuông: ∠{v1.name} = ∠{v2.name} = 90°"
-                            if kb.add_property("IS_CYCLIC", q_fact.entities, reason, parents=parents):
-                                changed = True
-        return changed
+#                             reason = f"Hai góc đối vuông: ∠{v1.name} = ∠{v2.name} = 90°"
+#                             if kb.add_property("IS_CYCLIC", q_fact.entities, reason, parents=parents):
+#                                 changed = True
+#         return changed

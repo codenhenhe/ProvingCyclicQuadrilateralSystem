@@ -6,8 +6,7 @@ from core_solver.theorems.basic import RuleDefinePolygonEdges, RuleTriangleAngle
 from core_solver.theorems.triangles import RuleEquilateralTriangle, RuleAltitudeProperty, RuleRightTriangle
 from core_solver.theorems.quadrilaterals import (
     RuleExpandSpecialQuadProperties,  
-    RuleClassifyQuadrilaterals,       
-    RuleQuadWithTwoRightAngles
+    RuleClassifyQuadrilaterals
 )
 from core_solver.theorems.circles import RuleTangentProperty, RuleDiameterThales, RuleCircleRadii, RuleCircleAnglesRelations, RuleTangentChordTheorem
 from core_solver.theorems.parallel import RuleConsecutiveInteriorAngles
@@ -37,7 +36,6 @@ def setup_system():
     engine.add_rule(RuleRightTriangle())
     engine.add_rule(RuleClassifyQuadrilaterals())
     engine.add_rule(RuleExpandSpecialQuadProperties())
-    engine.add_rule(RuleQuadWithTwoRightAngles())
     
     # Circles
     engine.add_rule(RuleTangentProperty())
