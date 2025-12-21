@@ -66,7 +66,7 @@ async def solve_problem(request: ProblemRequest):
         # 3. Chạy suy luận
         engine.solve()
         
-        # 4. Vẽ hình (Chạy trước để lấy thông tin tọa độ)
+        # 4. Vẽ hình
         plotter = AutoGeometryPlotter(kb)
         plotter.auto_draw(should_show=False)
         
@@ -75,27 +75,21 @@ async def solve_problem(request: ProblemRequest):
         status = "success"
         proof_gen = ProofGenerator(kb)
         
-        # --- ƯU TIÊN 1: LỖI HÌNH HỌC (VẼ) ---
         degenerate_msg = plotter.check_degenerate_polygon()
         if degenerate_msg:
             status = "contradiction"
             solutions.append(f"⚠️ LỖI HÌNH HỌC: {degenerate_msg}")
             solutions.append("Hình vẽ bị suy biến (đỉnh trùng nhau), bài toán không tồn tại.")
 
-        # --- ƯU TIÊN 2: MÂU THUẪN LOGIC (DIAGNOSTICS) ---
         elif "CONTRADICTION" in kb.properties:
             status = "contradiction"
             solutions.append("⚠️ PHÁT HIỆN MÂU THUẪN TRONG ĐỀ BÀI:")
             for fact in kb.properties["CONTRADICTION"]:
                 solutions.append(f"- {fact.reason}")
 
-        # --- ƯU TIÊN 3: THÀNH CÔNG (CÓ LỜI GIẢI) ---
         elif "IS_CYCLIC" in kb.properties:
-            # [FIX] Lấy ngay Fact đầu tiên tìm được để đảm bảo trả về kết quả
-            # (Hệ thống thường chỉ chứng minh 1 tứ giác chính theo đề bài)
             target_fact = kb.properties["IS_CYCLIC"][0]
             
-            # Nếu muốn ưu tiên theo RENDER_ORDER (nếu có nhiều tứ giác nội tiếp khác nhau)
             if "RENDER_ORDER" in kb.properties:
                 render_fact = list(kb.properties["RENDER_ORDER"])[0]
                 target_set = set(render_fact.entities)
@@ -105,10 +99,8 @@ async def solve_problem(request: ProblemRequest):
                         target_fact = f
                         break
             
-            # In debug để kiểm tra
             print(f"DEBUG_MAIN: Chọn Target Fact: {target_fact.id} với {len(target_fact.sources)} cách giải.")
 
-            # Kiểm tra chéo với tọa độ thực tế
             overlap_error = check_coordinate_overlap(target_fact.entities, plotter.points)
             
             if overlap_error:
@@ -124,13 +116,11 @@ async def solve_problem(request: ProblemRequest):
                 else:
                     solutions.append(target_fact.reason)
 
-        # --- ƯU TIÊN 4: KHÔNG TÌM THẤY LỜI GIẢI (WARNING) ---
         else:
             status = "warning"
             solutions.append("⚠️ KHÔNG TÌM THẤY LỜI GIẢI.")
             solutions.append("Hệ thống đã phân tích các dữ kiện sau nhưng chưa đủ để kết luận:")
             
-            # --- TỪ ĐIỂN DỊCH ---
             SUBTYPE_MAP = {
                 "TRAPEZOID": "Hình thang thường",
                 "ISOSCELES_TRAPEZOID": "Hình thang cân",
@@ -156,7 +146,7 @@ async def solve_problem(request: ProblemRequest):
 
             solutions.append("➤ Gợi ý: Kiểm tra lại đề bài (chính tả, dữ kiện thiếu).")
 
-        # 6. Xuất hình ảnh
+        # Xuất hình ảnh
         image_base64 = plot_to_base64(plotter)
         
         return {

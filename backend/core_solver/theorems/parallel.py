@@ -1,5 +1,5 @@
 from core_solver.inference.base_rule import GeometricRule
-from core_solver.core.entities import Point, Angle, Segment
+from core_solver.core.entities import Point, Angle
 
 class RuleConsecutiveInteriorAngles(GeometricRule):
     """Góc trong cùng phía bù nhau."""

@@ -43,7 +43,6 @@ class GeometryOptimizer:
             self.ref_points[p_name] = (flat_coords[2*i], flat_coords[2*i+1])
         loss = 0.0
 
-        # Helper parse tên an toàn (giống bên Plotter)
         def resolve_name(raw):
             if hasattr(raw, 'name'): return raw.name
             if isinstance(raw, str):
@@ -85,7 +84,6 @@ class GeometryOptimizer:
                                 s = raw.replace("Angle_", "")
                                 if "EXT_" not in s and len(s) == 3: p1, v, p2 = s[0], s[1], s[2]
                         elif len(fact.entities) == 3:
-                             # [FIX] Dùng resolve_name thay vì truy cập trực tiếp .name
                              p1 = resolve_name(fact.entities[0])
                              v = resolve_name(fact.entities[1])
                              p2 = resolve_name(fact.entities[2])
@@ -100,25 +98,21 @@ class GeometryOptimizer:
 
         if "EQUALITY" in self.kb.properties:
             for fact in self.kb.properties["EQUALITY"]:
-                # [FIX QUAN TRỌNG] Chấp nhận subtype là 'segment' HOẶC None (do lỗi parser bị mất nhãn)
                 subtype = getattr(fact, 'subtype', None)
                 if subtype == "segment" or subtype is None:
                     try:
                         p1, p2, p3, p4 = None, None, None, None
                         
-                        # [ƯU TIÊN 1] Lấy từ thuộc tính points1, points2 (nếu có)
                         if hasattr(fact, 'points1') and hasattr(fact, 'points2'):
                             p1 = resolve_name(fact.points1[0])
                             p2 = resolve_name(fact.points1[1])
                             p3 = resolve_name(fact.points2[0])
                             p4 = resolve_name(fact.points2[1])
 
-                        # [ƯU TIÊN 2] Format 2 IDs Segment trong entities (như trong log của bạn)
                         elif len(fact.entities) == 2:
                             obj1 = self.kb.id_map.get(fact.entities[0])
                             obj2 = self.kb.id_map.get(fact.entities[1])
                             
-                            # Kiểm tra kỹ xem obj có phải là đoạn thẳng không (có p1, p2)
                             if obj1 and hasattr(obj1, 'p1') and hasattr(obj1, 'p2') and \
                                obj2 and hasattr(obj2, 'p1') and hasattr(obj2, 'p2'):
                                 p1 = resolve_name(obj1.p1)
@@ -126,7 +120,6 @@ class GeometryOptimizer:
                                 p3 = resolve_name(obj2.p1)
                                 p4 = resolve_name(obj2.p2)
 
-                        # [ƯU TIÊN 3] Format 4 Tên điểm trực tiếp
                         elif len(fact.entities) == 4:
                             p1 = resolve_name(fact.entities[0])
                             p2 = resolve_name(fact.entities[1])
@@ -137,7 +130,6 @@ class GeometryOptimizer:
                         if p1 and p2 and p3 and p4 and {p1, p2, p3, p4}.issubset(self.ref_points):
                             d1 = self._dist(self.ref_points[p1], self.ref_points[p2])
                             d2 = self._dist(self.ref_points[p3], self.ref_points[p4])
-                            # Weight cao (5000) để ép bằng nhau
                             loss += (d1 - d2)**2 * 5000
                     except: continue
 
@@ -167,7 +159,6 @@ class GeometryOptimizer:
 
         return loss
     
-    # --- HELPERS ---
     def _find_neighbors_in_quad(self, vertex):
         """Tìm 2 điểm kề của vertex trong tứ giác."""
         if "QUADRILATERAL" in self.kb.properties:
@@ -209,3 +200,4 @@ class GeometryOptimizer:
         center = (Ux, Uy)
         R = math.sqrt((Ux-x1)**2 + (Uy-y1)**2)
         return center, R
+    

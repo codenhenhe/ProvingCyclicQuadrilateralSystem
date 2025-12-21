@@ -14,7 +14,6 @@ class ProofGenerator:
 
         all_proofs_list = []
         
-        # --- LỌC TRÙNG PHƯƠNG PHÁP ---
         unique_method_sources = []
         seen_methods = set()
 
@@ -51,7 +50,6 @@ class ProofGenerator:
             seen_methods.add(m_type)
             unique_method_sources.append(src)
 
-        # --- DUYỆT QUA CÁC CÁCH GIẢI ---
         for i, source in enumerate(unique_method_sources):
             self.visited_facts = set()
             self.steps = [] 
@@ -92,21 +90,15 @@ class ProofGenerator:
         parents = source['parents']
         reason = source['reason']
 
-        # --- XỬ LÝ VALUE (Góc/Cạnh) ---
         if fact.type == "VALUE":
             if fact.value == 90: return f"{reason} ➜ {stmt}"
             return f"{stmt} ({reason})"
 
-        # --- FORMAT CHO TỨ GIÁC NỘI TIẾP ---
         if fact.type == "IS_CYCLIC":
             quad_name = "".join([self._clean_name(e) for e in fact.entities])
             proofs = []
             
             for p in parents:
-                # [LOGIC MỚI] 
-                # Bình thường ta ẩn dòng "Tứ giác ABCD...", 
-                # NHƯNG nếu phương pháp là "Tính chất" (Definition) thì BẮT BUỘC phải hiện dòng này 
-                # để chứng minh nó là Hình chữ nhật/Hình vuông.
                 is_definition_method = ("Tính chất" in reason) or ("luôn" in reason)
                 
                 if p.type == "TRIANGLE": continue
@@ -114,17 +106,14 @@ class ProofGenerator:
                 
                 p_stmt = self._format_statement(p)
                 
-                # Logic xác định note
                 is_given = True
                 if hasattr(p, 'sources') and p.sources:
                      if p.sources[0]['parents']: is_given = False
                 
                 note = "(giả thiết)" if is_given else "(chứng minh trên)"
                 
-                # Format dòng chứng minh
                 proofs.append(f"    + {p_stmt} {note}")
 
-                # [Logic chèn dòng kề bù - Giữ nguyên code cũ]
                 if "Tổng" in reason and getattr(p, 'subtype', None) == 'exterior_angle':
                     vertex = getattr(p, 'vertex', None)
                     if vertex and vertex in fact.entities:
@@ -143,7 +132,6 @@ class ProofGenerator:
 
             unique_proofs = sorted(list(set(proofs)))
             
-            # [Logic bước trung gian - Giữ nguyên code cũ]
             intermediate_line = ""
             val_parents = [p for p in parents if p.type == "VALUE" and getattr(p, 'subtype', 'angle') in ['angle', 'exterior_angle']]
             if len(val_parents) == 2 and "Tổng" not in reason:
@@ -179,12 +167,9 @@ class ProofGenerator:
         """Làm sạch tên biến và thay thế điểm ảo."""
         if not text: return ""
         text = str(text)
-        # Loại bỏ prefix của hệ thống
         text = re.sub(r'^(Quad_|Tri_|Angle_|Seg_)', '', text)
         text = text.replace("Quadrilateral", "").replace("Triangle", "")
         
-        # [FIXED] Thay thế điểm ảo: EXT_A -> x
-        # Point tự động upper() nên phải bắt "EXT_" thay vì "Ext_"
         if "EXT_" in text:
             text = re.sub(r'EXT_[A-Z0-9]+', 'x', text)
             
@@ -209,18 +194,15 @@ class ProofGenerator:
         if fact.type == "IS_CYCLIC": return f"Tứ giác {''.join(entities)} nội tiếp"
         
         if fact.type == "VALUE":
-            # 1. Ưu tiên hiển thị "Góc ngoài..." nếu có subtype
             if getattr(fact, 'subtype', None) == 'exterior_angle':
                 vertex = getattr(fact, 'vertex', None)
                 val_str = str(fact.value).replace('.0', '')
                 if vertex: return f"Góc ngoài tại đỉnh {vertex} = {val_str}°"
             
-            # 2. Hiển thị góc thường (đã được clean EXT -> x)
             raw_id = fact.entities[0]
             if "Angle" in str(raw_id) or len(entities) == 3:
                 v_name = "".join(entities) if len(entities) > 1 else entities[0]
                 
-                # Nếu vẫn còn sót EXT_ (do logic nào đó), clean lần nữa cho chắc
                 if "EXT_" in v_name: v_name = re.sub(r'EXT_[A-Z0-9]+', 'x', v_name)
                 
                 return f"∠{v_name} = {str(fact.value).replace('.0', '')}°"

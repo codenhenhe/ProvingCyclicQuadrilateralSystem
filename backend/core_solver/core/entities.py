@@ -30,7 +30,6 @@ class Segment(Entity):
 
     @property
     def canonical_id(self):
-        # Sắp xếp tên điểm để AB trùng với BA
         names = sorted([self.p1.name, self.p2.name])
         return f"Seg_{names[0]}{names[1]}"
     
@@ -46,7 +45,6 @@ class Angle(Entity):
 
     @property
     def canonical_id(self):
-        # Góc ABC trùng với Góc CBA -> Sắp xếp 2 điểm chân
         names = sorted([self.p1.name, self.p3.name])
         return f"Angle_{names[0]}{self.vertex.name}{names[1]}"
     
@@ -62,7 +60,6 @@ class Triangle(Entity):
 
     @property
     def canonical_id(self):
-        # Tam giác ABC trùng BCA, CAB -> Sắp xếp cả 3 điểm
         names = sorted([self.p1.name, self.p2.name, self.p3.name])
         return f"Tri_{names[0]}{names[1]}{names[2]}"
     
@@ -71,8 +68,6 @@ class Triangle(Entity):
 
 class Quadrilateral(Entity):
     def __init__(self, p1, p2, p3, p4):
-        # Lưu nguyên xi thứ tự người dùng nhập vào
-        # Ví dụ: nhập A, D, H, E -> lưu [A, D, H, E]
         self.points = [p1, p2, p3, p4]
 
     @property
@@ -85,18 +80,18 @@ class Quadrilateral(Entity):
         n = len(names)
         candidates = []
         
-        # 1. Xoay vòng (Rotation)
+        # 1. Xoay vòng
         for i in range(n):
             rotated = names[i:] + names[:i]
             candidates.append("".join(rotated))
             
-        # 2. Đảo chiều (Reflection)
+        # 2. Đảo chiều
         reversed_names = names[::-1]
         for i in range(n):
             rotated_rev = reversed_names[i:] + reversed_names[:i]
             candidates.append("".join(rotated_rev))
             
-        # Trả về ID chuẩn nhất (theo alphabet)
+        # Trả về ID theo alphabet
         return f"Quad_{min(candidates)}"
     
     def __repr__(self):

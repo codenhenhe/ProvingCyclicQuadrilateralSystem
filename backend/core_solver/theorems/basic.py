@@ -16,7 +16,7 @@ class RuleDefinePolygonEdges(GeometricRule):
                 segments = [Segment(pts[0], pts[1]), Segment(pts[1], pts[2]), Segment(pts[2], pts[0])]
                 for seg in segments:
                     if seg.canonical_id not in kb.id_map:
-                        kb.register_object(seg) # Chỉ đăng ký object, không tạo Fact mới để tránh rác
+                        kb.register_object(seg) 
                         changed = True
         # Tứ giác
         if "QUADRILATERAL" in kb.properties:
@@ -27,6 +27,83 @@ class RuleDefinePolygonEdges(GeometricRule):
                     if seg.canonical_id not in kb.id_map:
                         kb.register_object(seg)
                         changed = True
+        return changed
+
+class RuleAngleBisector(GeometricRule):
+    """
+    Luật: Đường phân giác chia góc thành 2 góc nhỏ bằng nhau.
+    """
+    @property
+    def name(self): return "Tính chất Phân giác"
+    @property
+    def description(self): return "Phân giác AD của góc BAC => Góc BAD = Góc CAD = 1/2 BAC."
+
+    def apply(self, kb) -> bool:
+        changed = False
+        if "BISECTOR" not in kb.properties: return False
+
+        for f in kb.properties["BISECTOR"]:
+
+            if len(f.entities) == 4:
+                pD, pA, pB, pC = [kb.id_map[n] for n in f.entities]
+                
+                ang1 = Angle(pB, pA, pD) 
+                ang2 = Angle(pC, pA, pD) 
+                ang_big = Angle(pB, pA, pC) 
+                
+                reason = f"Tính chất tia phân giác {pA.name}{pD.name}"
+                
+                # 1. Hai góc nhỏ bằng nhau
+                if kb.add_equality(ang1, ang2, reason, parents=[f]):
+                    changed = True
+                
+                val_big = kb.get_angle_value(ang_big)
+                if val_big is not None:
+                    if kb.add_property("VALUE", [ang1], reason, value=val_big/2, parents=[f]): changed = True
+                    if kb.add_property("VALUE", [ang2], reason, value=val_big/2, parents=[f]): changed = True
+
+        return changed
+
+class RuleSymmetry(GeometricRule):
+    """
+    Luật: Xử lý đối xứng tâm và đối xứng trục.
+    """
+    @property
+    def name(self): return "Tính chất Đối xứng"
+    @property
+    def description(self): return "Đối xứng tâm -> Trung điểm; Đối xứng trục -> Vuông góc & Trung điểm."
+
+    def apply(self, kb) -> bool:
+        changed = False
+        if "SYMMETRY" not in kb.properties: return False
+
+        for f in kb.properties["SYMMETRY"]:
+            subtype = getattr(f, 'subtype', 'CENTRAL')
+            
+            if subtype == "CENTRAL" and len(f.entities) == 3:
+                pA, pA_prime, pO = [kb.id_map[n] for n in f.entities]
+                
+                reason = f"Tính chất đối xứng tâm {pO.name}"
+                if kb.add_property("MIDPOINT", [pO, pA, pA_prime], reason, parents=[f]):
+                    changed = True
+                    
+            elif subtype == "AXIAL" and len(f.entities) == 4:
+                pA, pA_prime, L1, L2 = [kb.id_map[n] for n in f.entities]
+                
+                reason = f"Tính chất đối xứng trục {L1.name}{L2.name}"
+                
+                if kb.add_property("PERPENDICULAR", [pA, pA_prime, L1, L2], reason, parents=[f]):
+                    changed = True
+                
+                if "INTERSECTION" in kb.properties:
+                    for int_f in kb.properties["INTERSECTION"]:
+                        lines = getattr(int_f, 'lines', [])
+                        flat = [p for l in lines for p in l]
+                        if pA.name in flat and pA_prime.name in flat and L1.name in flat and L2.name in flat:
+                             pH = kb.id_map[int_f.point]
+                             if kb.add_property("MIDPOINT", [pH, pA, pA_prime], reason, parents=[f]):
+                                 changed = True
+
         return changed
 
 class RuleTriangleAngleSum(GeometricRule):
@@ -49,7 +126,6 @@ class RuleTriangleAngleSum(GeometricRule):
                 (Angle(pA, pB, pC), "B")
             ]
             
-            # Tìm các góc đã biết giá trị và Fact nguồn của nó
             known_facts = []
             known_sum = 0
             unknown_angle = None
@@ -66,7 +142,6 @@ class RuleTriangleAngleSum(GeometricRule):
                 if not found:
                     unknown_angle = ang
             
-            # Nếu biết đúng 2 góc
             if len(known_facts) == 2 and unknown_angle:
                 new_val = 180 - known_sum
                 if new_val > 0:
@@ -91,7 +166,6 @@ class RulePerpendicularToValue(GeometricRule):
             try: entities = [kb.id_map[n] for n in p_names]
             except KeyError: continue
             
-            # Case 5 điểm (có điểm giao cụ thể)
             if len(entities) == 5:
                 p_at, l1a, l1b, l2a, l2b = entities
                 neighbors_1 = [p for p in [l1a, l1b] if p != p_at]
@@ -101,17 +175,14 @@ class RulePerpendicularToValue(GeometricRule):
                     for n2 in neighbors_2:
                         ang = Angle(n1, p_at, n2)
                         reason = f"{l1a.name}{l1b.name} ⊥ {l2a.name}{l2b.name} tại {p_at.name}"
-                        # [FIX] Thêm subtype="angle"
                         if kb.add_property("VALUE", [ang], reason, value=90, parents=[fact], subtype="angle"):
                             changed = True
 
-            # Case 4 điểm (mặc định)
             elif len(entities) == 4:
                 p1, p2, b1, b2 = entities
                 ang1 = Angle(p1, p2, b1)
                 ang2 = Angle(p1, p2, b2)
                 reason = f"{p1.name}{p2.name} ⊥ {b1.name}{b2.name}"
-                # [FIX] Thêm subtype="angle"
                 if kb.add_property("VALUE", [ang1], reason, value=90, parents=[fact], subtype="angle"): changed = True
                 if kb.add_property("VALUE", [ang2], reason, value=90, parents=[fact], subtype="angle"): changed = True
                 
@@ -148,9 +219,8 @@ class RuleEqualityByValue(GeometricRule):
                     
                     if obj1 and obj2 and isinstance(obj1, Angle) and isinstance(obj2, Angle):
                         reason = f"Cả hai góc đều bằng {int(value)}°"
-                        parents = [f1, f2] # Tiền đề là 2 Fact VALUE
+                        parents = [f1, f2] 
                         
-                        # [QUAN TRỌNG] Phải gọi add_equality nhận parents
                         if kb.add_equality(obj1, obj2, reason, parents=parents):
                             changed = True
                             

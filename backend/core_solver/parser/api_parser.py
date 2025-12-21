@@ -6,7 +6,6 @@ from dotenv import load_dotenv
 from core_solver.core.entities import Point, Angle, Segment
 from core_solver.core.knowledge_base import KnowledgeGraph
 
-# Load môi trường ngay khi import
 load_dotenv()
 
 class LLMParser:
@@ -14,8 +13,8 @@ class LLMParser:
         self.kb = kb
         
         # 1. CẤU HÌNH API KEY
-        api_key = os.getenv("GOOGLE_API_KEY_v2")
-        modelName = os.getenv("GEMINI_MODEL")
+        api_key = os.getenv("GOOGLE_API_KEY")
+        modelName = os.getenv("GEMINI_MODEL_v2")
         if not api_key:
             print("CẢNH BÁO: Chưa có GOOGLE_API_KEY_v2 trong file .env")
         
@@ -35,19 +34,64 @@ class LLMParser:
         else:
             self.model = None
 
+    def _normalize_single_angles(self, items):
+        """
+        Tự động chuyển đổi góc 1 điểm (["A"]) thành góc 3 điểm (["D","A","B"])
+        dựa trên ngữ cảnh Tứ giác/Đa giác đã trích xuất được.
+        """
+        if not isinstance(items, list): items = [items]
+        
+        polygon_points = []
+        for item in items:
+            # Ưu tiên Tứ giác trước
+            if item.get("type") == "QUADRILATERAL":
+                polygon_points = item.get("points", [])
+                break
+            # Nếu không có Tứ giác thì tìm Tam giác 
+            elif item.get("type") == "TRIANGLE" and not polygon_points:
+                polygon_points = item.get("points", [])
+        
+        if not polygon_points: 
+            return items 
+
+        n = len(polygon_points)
+        
+        # 2. Duyệt và sửa các góc bị thiếu điểm
+        for item in items:
+            if item.get("type") == "VALUE" and item.get("subtype") == "angle":
+                pts = item.get("points", [])
+                
+                if len(pts) == 1:
+                    vertex = pts[0]
+                    if vertex in polygon_points:
+                        try:
+                            idx = polygon_points.index(vertex)
+                            
+                            # Lấy điểm liền trước và liền sau (theo vòng tròn)
+                            # (idx - 1 + n) % n : Điểm trước
+                            # (idx + 1) % n     : Điểm sau
+                            prev_pt = polygon_points[(idx - 1 + n) % n]
+                            next_pt = polygon_points[(idx + 1) % n]
+                            
+                            # Cập nhật lại item thành 3 điểm chuẩn
+                            item["points"] = [prev_pt, vertex, next_pt]
+                            print(f"   [Auto-Fix] Chuẩn hóa góc đơn: {vertex} -> {prev_pt}{vertex}{next_pt}")
+                        except:
+                            pass
+                            
+        return items
+
     def parse(self, text: str):
         print(f"--- GỬI ĐỀ BÀI VÀO GEMINI API ({self.model_name}) ---\n'{text}'")
         
         if not self.model:
-            print("❌ Lỗi: Model chưa được khởi tạo do thiếu API Key.")
+            print("Lỗi: Model chưa được khởi tạo do thiếu API Key.")
             return
 
-        # Ghép Prompt hệ thống và Đề bài người dùng
         system_msg = self._get_system_prompt()
         full_prompt = f"{system_msg}\n\n=== ĐỀ BÀI ===\n{text}"
         
         try:
-            # 3. GỌI API
             response = self.model.generate_content(full_prompt)
             
             raw_content = response.text
@@ -58,26 +102,24 @@ class LLMParser:
             if json_data:
                 print("--- NHẬN ĐƯỢC JSON HỢP LỆ ---")
                 
-                # [MỚI] BƯỚC KIỂM TRA VÀ SỬA LỖI ẢO GIÁC
                 fixed_data = self._validate_and_fix_hallucinations(json_data, text)
+                fixed_data = self._normalize_single_angles(fixed_data)
                 
                 self._map_json_to_kb(fixed_data)
                 
-                # Fallback: Nếu LLM quên Render Order, dùng Regex tìm "tứ giác ..."
                 if "RENDER_ORDER" not in self.kb.properties:
                     match_quad = re.search(r'tứ giác\s+([A-Za-z]{4})', text, re.IGNORECASE)
                     if match_quad:
                         pts = [Point(c) for c in match_quad.group(1).upper()]
                         self.kb.add_property("RENDER_ORDER", pts, "Regex Fallback")
-                        # Thêm cả QUADRILATERAL nếu chưa có
                         self.kb.add_property("QUADRILATERAL", pts, "Regex Fallback")
                         print(f"   [Auto-Fix] Tìm thấy mục tiêu chứng minh: {match_quad.group(1).upper()}")
 
             else:
-                print("⚠️ Không tìm thấy JSON hợp lệ.")
+                print("Không tìm thấy JSON hợp lệ.")
 
         except Exception as e:
-            print(f"❌ Lỗi khi gọi Gemini API: {e}")
+            print(f"Lỗi khi gọi Gemini API: {e}")
 
     def _get_system_prompt(self):
         return """Bạn là chuyên gia dữ liệu hình học phẳng (Geometry Entity Extractor). 
@@ -92,6 +134,9 @@ Nhiệm vụ: Phân tích văn bản đề bài và trích xuất dữ liệu d�
   + "Tam giác ABC vuông tại A" -> `properties: ["RIGHT"]`, `vertex: "A"`.
   + "Hình thang cân ABCD (AB//CD)" -> `subtype: "ISOSCELES_TRAPEZOID"`, `lines: [["A","B"], ["C","D"]]`.
   + "Đường tròn đường kính AB" -> Tâm là trung điểm AB, bán kính = AB/2.
+  + "AD là phân giác của góc BAC" -> `type: "BISECTOR", entities: ["D", "A", "B", "C"]`
+  + "Lấy điểm D đối xứng với A qua M" -> `type: "SYMMETRY", subtype: "CENTRAL", entities: ["A", "D", "M"]`
+  + "Tia đối của tia AB là Ax" -> `type: "POINT_ON_LINE", point: "A", segment: ["x", "B"]` (Quan trọng cho góc ngoài)
 - **TƯ DUY ĐƯỜNG PHỤ (QUAN TRỌNG):** Nếu bài toán yêu cầu chứng minh nhưng thiếu kết nối, hãy tự động đề xuất trong `AUXILIARY`:
   + Gặp **Tiếp tuyến** -> Đề xuất nối **Tâm** với **Tiếp điểm** (để tạo góc 90).
   + Gặp **Hai đường tròn cắt nhau** -> Đề xuất nối **Dây chung**.
@@ -123,7 +168,14 @@ Nhiệm vụ: Phân tích văn bản đề bài và trích xuất dữ liệu d�
 - **Đường cao**: `{"type": "ALTITUDE", "top": "A", "foot": "H", "base": ["B", "C"]}`
 - **Trung điểm**: `{"type": "MIDPOINT", "point": "M", "segment": ["A", "B"]}`
 - **Tiếp tuyến**: `{"type": "TANGENT", "line": ["A", "x"], "contact": "A", "circle": "O"}`
+- **Tia đối**: `{"type": "POINT_ON_LINE", "point": "A", "segment": ["x", "B"]}` (Tia đối của tia AB là Ax)
 - **Điểm thuộc hình**: `{"type": "POINT_LOCATION", "point": "M", "circle": "O", "location": "ON"}`
+- **Phân giác**: {"type": "BISECTOR", "entities": ["D", "A", "B", "C"]} 
+  *(Ý nghĩa: AD là phân giác của góc BAC. Thứ tự: [Điểm cuối tia, Đỉnh góc, Cạnh 1, Cạnh 2])*
+- **Đối xứng tâm**: {"type": "SYMMETRY", "subtype": "CENTRAL", "entities": ["A", "B", "O"]}
+  *(Ý nghĩa: A và B đối xứng nhau qua tâm O)*
+- **Đối xứng trục**: {"type": "SYMMETRY", "subtype": "AXIAL", "entities": ["A", "B", "M", "N"]}
+  *(Ý nghĩa: A và B đối xứng nhau qua đường thẳng MN)*
 
 #### C. MỤC TIÊU (Quan trọng)
 - `{"type": "RENDER_ORDER", "points": ["A", "B", "C", "D"]}` (Thứ tự các điểm tạo nên hình cần chứng minh).
@@ -224,6 +276,16 @@ Nhiệm vụ: Phân tích văn bản đề bài và trích xuất dữ liệu d�
   {"type": "TRIANGLE", "points": ["A", "B", "C"]},
   {"type": "EQUALITY", "subtype": "angle", "points1": ["A", "B", "C"], "points2": ["A", "C", "B"]}
 ]
+
+**Ví dụ 8: Phân giác & Đối xứng**
+*Input:* "Cho tam giác ABC. Vẽ phân giác AD. Lấy điểm E đối xứng với D qua AB."
+*Output:*
+```json
+[
+  {"type": "TRIANGLE", "points": ["A", "B", "C"]},
+  {"type": "BISECTOR", "entities": ["D", "A", "B", "C"]},
+  {"type": "SYMMETRY", "subtype": "AXIAL", "entities": ["D", "E", "A", "B"]}
+]
 """
 
     def _extract_json(self, text):
@@ -232,7 +294,6 @@ Nhiệm vụ: Phân tích văn bản đề bài và trích xuất dữ liệu d�
             json_match = re.search(r'\[.*\]', text, re.DOTALL)
             if json_match: return json.loads(json_match.group(0))
             
-            # 2. Fallback: Tìm object đơn lẻ
             json_match_obj = re.search(r'\{.*\}', text, re.DOTALL)
             if json_match_obj:
                 data = json.loads(json_match_obj.group(0))
@@ -259,19 +320,15 @@ Nhiệm vụ: Phân tích văn bản đề bài và trích xuất dữ liệu d�
                 is_valid = False
                 current_set = set(points)
                 
-                # Check nếu tam giác này có trong text không
                 for real in real_triangles:
                     if set(real) == current_set:
                         is_valid = True
                         existing_tris.add("".join(sorted(real)))
                         break
                 
-                # Nếu không có trong text nhưng là Render Order thì giữ lại
                 if not is_valid:
-                    # Logic: Đôi khi LLM suy luận tam giác ẩn, ta tạm chấp nhận nếu không xung đột
-                    # Nhưng để an toàn cho Flash, ta báo cảnh báo
                     print(f"⚠️ Cảnh báo ảo giác: LLM sinh ra 'Tam giác {tri_name}' nhưng đề không có.")
-                    validated_items.append(item) # Tạm giữ lại để tránh mất dữ liệu quan trọng
+                    validated_items.append(item) 
                 else:
                     validated_items.append(item)
             else:
@@ -282,14 +339,12 @@ Nhiệm vụ: Phân tích văn bản đề bài và trích xuất dữ liệu d�
     def _map_json_to_kb(self, items):
         if not isinstance(items, list): items = [items]
 
-        # Sắp xếp ưu tiên: Xử lý Tứ giác/Tam giác trước để có thông tin đỉnh cho các logic sau
         items.sort(key=lambda x: 0 if x.get("type") in ["QUADRILATERAL", "TRIANGLE"] else 1)
 
         for item in items:
             try:
                 kind = item.get("type")
                 
-                # ... (GIỮ NGUYÊN CODE CŨ CỦA TRIANGLE, QUADRILATERAL, RENDER_ORDER...) ...
                 if kind in ["TRIANGLE", "QUADRILATERAL", "RENDER_ORDER", "IS_EQUILATERAL"]:
                     points = [Point(p) for p in item.get("points", [])]
                     if kind == "TRIANGLE":
@@ -299,7 +354,6 @@ Nhiệm vụ: Phân tích văn bản đề bài và trích xuất dữ liệu d�
                             fact.vertex = item.get("vertex")
                             fact.properties = item.get("properties", [])
                             
-                            # Xử lý thuộc tính con (Vuông, Cân...)
                             props = item.get("properties", [])
                             vertex = item.get("vertex")
                             if isinstance(props, str): props = [props]
@@ -324,24 +378,19 @@ Nhiệm vụ: Phân tích văn bản đề bài và trích xuất dữ liệu d�
                         if len(points) == 4 and "QUADRILATERAL" not in self.kb.properties:
                             self.kb.add_property("QUADRILATERAL", points, "Suy luận từ mục tiêu")
 
-                # 2. GIÁ TRỊ (VALUE) - [CẬP NHẬT LOGIC GÓC NGOÀI]
                 elif kind == "VALUE":
                     subtype = item.get("subtype", "angle")
                     val = item.get("value")
                     
-                    # --- XỬ LÝ GÓC NGOÀI (Logic mới) ---
                     if subtype == "exterior_angle" and val is not None:
                         vertex_name = item.get("vertex")
                         if vertex_name:
                             v_obj = Point(vertex_name)
-                            # Tạo một điểm ảo (Virtual Point) đại diện cho tia đối
-                            # VD: Góc ngoài tại A -> Tạo điểm Ext_A
                             ext_p_name = f"Ext_{vertex_name}" 
                             ext_p = Point(ext_p_name)
-                            self.kb.register_object(ext_p) # Đăng ký điểm ảo
+                            self.kb.register_object(ext_p) 
                             
                             # Tìm một điểm hàng xóm để tạo cạnh góc
-                            # (Cần tìm trong các Fact Tứ giác đã nạp)
                             neighbor = None
                             if "QUADRILATERAL" in self.kb.properties:
                                 for f in self.kb.properties["QUADRILATERAL"]:
@@ -361,12 +410,11 @@ Nhiệm vụ: Phân tích văn bản đề bài và trích xuất dữ liệu d�
                             else:
                                 print(f"   [!] Không tìm thấy hàng xóm cho góc ngoài tại {vertex_name}")
 
-                    # --- XỬ LÝ GÓC THƯỜNG ---
                     elif subtype == "angle":
                         pts = item.get("points", [])
                         if len(pts) == 3 and val is not None:
-                            if "?" in pts: # Xử lý trường hợp thiếu điểm
-                                pass # (Logic cũ giữ nguyên hoặc bỏ qua)
+                            if "?" in pts: 
+                                pass 
                             else:
                                 p1, v, p3 = [Point(p) for p in pts]
                                 ang = Angle(p1, v, p3)
@@ -380,16 +428,12 @@ Nhiệm vụ: Phân tích văn bản đề bài và trích xuất dữ liệu d�
                             seg = Segment(p1, p2)
                             self.kb.add_property("VALUE", [seg], f"Cạnh {p1.name}{p2.name}={val}", value=float(val))
 
-                # ... (GIỮ NGUYÊN CODE CŨ CỦA EQUALITY, PARALLEL, ALTITUDE, PERPENDICULAR...) ...
-                # (Bạn copy lại phần logic bên dưới từ file cũ, không có gì thay đổi)
                 elif kind == "EQUALITY":
-                    # ... [Code cũ]
                     subtype = item.get("subtype", "segment")
                     pts1 = item.get("points1") or item.get("pair1", [])
                     pts2 = item.get("points2") or item.get("pair2", [])
                     
                     if len(pts2) == 1 and isinstance(pts2[0], (int, float)):
-                        # ... [Logic convert to VALUE]
                         val = float(pts2[0])
                         if subtype == "angle" and len(pts1) == 3:
                             p1, v, p3 = [Point(p) for p in pts1]
@@ -489,6 +533,35 @@ Nhiệm vụ: Phân tích văn bản đề bài và trích xuất dữ liệu d�
                             for c_fact in self.kb.properties["CIRCLE"]:
                                 if getattr(c_fact, 'center', None) == circle:
                                     if pt not in c_fact.entities: c_fact.entities.append(pt) 
+
+                # Xử lý PHÂN GIÁC
+                elif kind == "BISECTOR":
+                    entities = item.get("entities", [])
+                    if len(entities) == 4:
+                        pts = [Point(e) for e in entities]
+                        self.kb.add_property("BISECTOR", pts, "Giả thiết (LLM): Phân giác")
+
+                # Xử lý ĐỐI XỨNG (Tâm & Trục)
+                elif kind == "SYMMETRY":
+                    subtype = item.get("subtype", "CENTRAL")
+                    entities = item.get("entities", [])
+                    
+                    # Đối xứng tâm: [A, A', O]
+                    if subtype == "CENTRAL" and len(entities) == 3:
+                        pts = [Point(e) for e in entities]
+                        self.kb.add_property("SYMMETRY", pts, "Giả thiết (LLM): Đối xứng tâm", subtype="CENTRAL")
+                        
+                    # Đối xứng trục: [A, A', M, N]
+                    elif subtype == "AXIAL" and len(entities) == 4:
+                        pts = [Point(e) for e in entities]
+                        self.kb.add_property("SYMMETRY", pts, "Giả thiết (LLM): Đối xứng trục", subtype="AXIAL")
+
+                elif kind == "POINT_ON_LINE":
+                    pt = item.get("point")
+                    seg = item.get("segment", [])
+                    if pt and len(seg) == 2:
+                        pts = [Point(seg[0]), Point(pt), Point(seg[1])]
+                        self.kb.add_property("POINT_ON_LINE", pts, "Giả thiết (LLM): Thẳng hàng/Tia đối")
 
                 elif kind == "AUXILIARY":
                     action = item.get("action")

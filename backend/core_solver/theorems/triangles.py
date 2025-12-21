@@ -1,5 +1,5 @@
 from core_solver.inference.base_rule import GeometricRule
-from core_solver.core.entities import Point, Angle, Segment
+from core_solver.core.entities import Angle, Segment
 
 # ==============================================================================
 # LUẬT 1: TAM GIÁC ĐỀU
@@ -14,7 +14,6 @@ class RuleEquilateralTriangle(GeometricRule):
         changed = False
         if "IS_EQUILATERAL" in kb.properties:
             for fact in kb.properties["IS_EQUILATERAL"]:
-                # entities: ['A', 'B', 'C']
                 try:
                     pts = [kb.id_map[n] for n in fact.entities]
                 except KeyError: continue
@@ -80,7 +79,7 @@ class RuleRightTriangle(GeometricRule):
         return changed
 
 # ==============================================================================
-# LUẬT 3: ĐƯỜNG CAO (ĐÃ NÂNG CẤP - FIX LỖI GIAO ĐIỂM)
+# LUẬT 3: ĐƯỜNG CAO
 # ==============================================================================
 class RuleAltitudeProperty(GeometricRule):
     @property
@@ -114,7 +113,116 @@ class RuleAltitudeProperty(GeometricRule):
                         ang2 = Angle(p, foot, b2)
                         reason = f"Đường cao {top.name}{foot.name} (điểm {p.name}) ⊥ {b1.name}{b2.name}"
                         
-                        # [FIX QUAN TRỌNG] Thêm subtype="angle"
                         if kb.add_property("VALUE", [ang1], reason, value=90, parents=[fact], subtype="angle"): changed = True
                         if kb.add_property("VALUE", [ang2], reason, value=90, parents=[fact], subtype="angle"): changed = True
+        return changed
+
+# ==============================================================================
+# LUẬT 4: TÍNH CHẤT TAM GIÁC CÂN
+# ==============================================================================
+class RuleIsoscelesLineCoincidence(GeometricRule):
+    """
+    Luật: Trong tam giác cân, đường trung tuyến đồng thời là đường cao, phân giác.
+    Ngược lại: Đường cao đồng thời là trung tuyến...
+    """
+    @property
+    def name(self): return "Đường đặc biệt trong Tam giác cân"
+    @property
+    def description(self): return "Tam giác cân: Trung tuyến <=> Đường cao <=> Phân giác."
+
+    def apply(self, kb) -> bool:
+        changed = False
+        if "TRIANGLE" not in kb.properties: return False
+
+        for tri_fact in kb.properties["TRIANGLE"]:
+            props = getattr(tri_fact, 'properties', [])
+            vertex_name = getattr(tri_fact, 'vertex', None)
+            
+            if ("ISOSCELES" in props or "EQUILATERAL" in props) and vertex_name:
+                try:
+                    pA = kb.id_map[vertex_name] 
+                    others = [kb.id_map[n] for n in tri_fact.entities if n != vertex_name]
+                    if len(others) != 2: continue
+                    pB, pC = others
+                except KeyError: continue
+
+                if "MIDPOINT" in kb.properties:
+                    for m_fact in kb.properties["MIDPOINT"]:
+                        # M là trung điểm BC
+                        if len(m_fact.entities) >= 3:
+                            pM = kb.id_map[m_fact.entities[0]]
+                            seg_pts = {m_fact.entities[1], m_fact.entities[2]}
+                            
+                            if seg_pts == {pB.name, pC.name}:
+                                # Có trung tuyến AM
+                                ang1 = Angle(pA, pM, pB)
+                                ang2 = Angle(pA, pM, pC)
+                                reason = f"Tam giác cân tại {pA.name} có trung tuyến {pA.name}{pM.name} => Đường cao"
+                                
+                                # Suy ra góc 90 độ
+                                if kb.add_property("VALUE", [ang1], reason, value=90, parents=[tri_fact, m_fact], subtype="angle"): changed = True
+                                if kb.add_property("VALUE", [ang2], reason, value=90, parents=[tri_fact, m_fact], subtype="angle"): changed = True
+                                
+                                # Suy ra phân giác (Góc đỉnh)
+                                ang_v1 = Angle(pB, pA, pM)
+                                ang_v2 = Angle(pC, pA, pM)
+                                if kb.add_equality(ang_v1, ang_v2, reason + " => Phân giác"): changed = True
+
+                if "ALTITUDE" in kb.properties:
+                    for alt_fact in kb.properties["ALTITUDE"]:
+                        top, foot = alt_fact.entities[0], alt_fact.entities[1]
+                        if top == pA.name and {alt_fact.entities[2], alt_fact.entities[3]} == {pB.name, pC.name}:
+                            pFoot = kb.id_map[foot]
+                            reason = f"Tam giác cân tại {pA.name} có đường cao {pA.name}{pFoot.name} => Trung tuyến"
+                            
+                            if kb.add_property("MIDPOINT", [pFoot, pB, pC], reason, parents=[tri_fact, alt_fact]):
+                                changed = True
+
+        return changed
+    
+class RuleMedianInRightTriangle(GeometricRule):
+    """
+    Luật: Trong tam giác vuông, đường trung tuyến ứng với cạnh huyền bằng nửa cạnh huyền.
+    Hệ quả: Tâm đường tròn ngoại tiếp là trung điểm cạnh huyền.
+    """
+    @property
+    def name(self): return "Trung tuyến tam giác vuông"
+    @property
+    def description(self): return "Trung tuyến ứng cạnh huyền = 1/2 cạnh huyền => 3 đỉnh thuộc đường tròn."
+
+    def apply(self, kb) -> bool:
+        changed = False
+        if "TRIANGLE" not in kb.properties: return False
+
+        for tri_fact in kb.properties["TRIANGLE"]:
+            # 1. Kiểm tra tam giác vuông
+            props = getattr(tri_fact, 'properties', [])
+            vertex = getattr(tri_fact, 'vertex', None)
+            
+            if "RIGHT" in props and vertex:
+                try:
+                    pA = kb.id_map[vertex] 
+                    others = [kb.id_map[n] for n in tri_fact.entities if n != vertex]
+                    if len(others) != 2: continue
+                    pB, pC = others 
+                except KeyError: continue
+                
+                if "MIDPOINT" in kb.properties:
+                    for m_fact in kb.properties["MIDPOINT"]:
+                        seg_pts = m_fact.entities[1:] 
+                        if set(seg_pts) == {pB.name, pC.name}:
+                            pM = kb.id_map[m_fact.entities[0]]
+                            
+                            sMA = Segment(pM, pA)
+                            sMB = Segment(pM, pB)
+                            sMC = Segment(pM, pC)
+                            
+                            reason = f"Trung tuyến ứng với cạnh huyền ({pM.name} là trung điểm {pB.name}{pC.name})"
+                            
+                            if kb.add_equality(sMA, sMB, reason, parents=[tri_fact, m_fact]): changed = True
+                            if kb.add_equality(sMA, sMC, reason, parents=[tri_fact, m_fact]): changed = True
+                            
+                            if kb.add_property("CIRCLE", [pM.name, pA.name], reason, center=pM.name):
+                                changed = True
+
         return changed

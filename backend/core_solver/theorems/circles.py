@@ -24,28 +24,65 @@ class RuleCircleRadii(GeometricRule):
                 for entity_id in fact.entities:
                     if entity_id == center_name: continue
                     
-                    # [FIX ĐỔI LỖI] Lấy đối tượng từ ID chuỗi
                     entity = kb.id_map.get(entity_id) 
                     
                     if entity is None: 
-                        # Nếu entity là chuỗi (VD: 'A') nhưng chưa được ánh xạ (chưa là Point object)
-                        # Tạo Point object và đăng ký nó
                         entity = Point(entity_id)
                         kb.register_object(entity)
                         
                     if isinstance(entity, Point):
                         on_circle_points.append(entity)
                 
-                # Tạo các đoạn thẳng bán kính
                 radii = [Segment(p_center, p) for p in on_circle_points]
                 
-                # Khai báo bằng nhau: OA = OB = OC...
                 if len(radii) >= 2:
                     for i in range(len(radii) - 1):
                         reason = f"Bán kính đường tròn ({p_center.name})"
                         if kb.add_equality(radii[i], radii[i+1], reason):
                             changed = True
                             
+        return changed
+
+class RuleChordMidpoint(GeometricRule):
+    """
+    [MỚI] Luật: Đường kính đi qua trung điểm của một dây cung thì vuông góc với dây ấy.
+    """
+    @property
+    def name(self): return "Quan hệ Đường kính và Dây cung"
+    @property
+    def description(self): return "Đường kính đi qua trung điểm dây cung => Vuông góc."
+
+    def apply(self, kb) -> bool:
+        changed = False
+        if "MIDPOINT" not in kb.properties or "CIRCLE" not in kb.properties: 
+            return False
+
+        for m_fact in kb.properties["MIDPOINT"]:
+            if len(m_fact.entities) < 3: continue
+            try:
+                pM, pB, pC = [kb.id_map[n] for n in m_fact.entities]
+            except KeyError: continue
+            
+            for c_fact in kb.properties["CIRCLE"]:
+                center_name = getattr(c_fact, 'center', None)
+                if not center_name: continue
+                
+                if pB.name not in c_fact.entities or pC.name not in c_fact.entities:
+                    continue
+                
+                if pM.name == center_name: continue
+                
+                pO = kb.id_map[center_name]
+                
+                ang1 = Angle(pO, pM, pB)
+                ang2 = Angle(pO, pM, pC)
+                reason = f"Đường kính đi qua trung điểm dây cung {pB.name}{pC.name}"
+                
+                if kb.add_property("VALUE", [ang1], reason, value=90, parents=[m_fact, c_fact], subtype="angle"):
+                    changed = True
+                if kb.add_property("VALUE", [ang2], reason, value=90, parents=[m_fact, c_fact], subtype="angle"):
+                    changed = True
+                    
         return changed
 
 class RuleTangentProperty(GeometricRule):
@@ -56,7 +93,6 @@ class RuleTangentProperty(GeometricRule):
 
     def apply(self, kb) -> bool:
         changed = False
-        # Fact TANGENT: [Point_Contact, Point_On_Line, Center]
         if "TANGENT" in kb.properties:
             for fact in kb.properties["TANGENT"]:
                 if len(fact.entities) < 3: continue
@@ -72,7 +108,6 @@ class RuleTangentProperty(GeometricRule):
 # 2. CÁC ĐỊNH LÝ VỀ GÓC (Góc ở tâm, Góc nội tiếp, Góc tiếp tuyến)
 # ==============================================================================
 
-# Trong file circles.py
 class RuleCircleAnglesRelations(GeometricRule):
     @property
     def name(self): return "Quan hệ Góc trong đường tròn"
@@ -88,7 +123,6 @@ class RuleCircleAnglesRelations(GeometricRule):
             if not center_name or center_name not in kb.id_map: continue
             p_center = kb.id_map[center_name]
             
-            # Lấy danh sách điểm trên đường tròn (Chỉ lấy Point)
             points = []
             for entity_id in c_fact.entities:
                 if entity_id == center_name: continue
@@ -99,23 +133,19 @@ class RuleCircleAnglesRelations(GeometricRule):
             n = len(points)
             if n < 3: continue
             
-            # Duyệt qua mọi cặp điểm (A, B) để tạo thành CUNG AB
             for i in range(n):
                 for j in range(i + 1, n):
                     pA = points[i]
                     pB = points[j]
                     
-                    # 1. Xác định GÓC Ở TÂM (AOB)
                     central_angle = Angle(pA, p_center, pB)
                     
-                    # Tìm tất cả các GÓC NỘI TIẾP chắn cung AB (Góc AMB)
                     inscribed_angles = []
                     for k in range(n):
                         if k == i or k == j: continue
                         pM = points[k]
                         inscribed_angles.append(Angle(pA, pM, pB))
 
-                    # LOGIC 1: QUAN HỆ GÓC Ở TÂM - GÓC NỘI TIẾP (Giá trị)
                     val_central = kb.get_angle_value(central_angle)
                     
                     for ang_inscr in inscribed_angles:
@@ -133,7 +163,6 @@ class RuleCircleAnglesRelations(GeometricRule):
                             if kb.add_property("VALUE", [central_angle], reason, value=new_val, parents=[c_fact]):
                                 changed = True
 
-                    # LOGIC 2: CÁC GÓC NỘI TIẾP CÙNG CHẮN CUNG THÌ BẰNG NHAU (Equality)
                     if len(inscribed_angles) >= 2:
                         for idx in range(len(inscribed_angles) - 1):
                             a1 = inscribed_angles[idx]
@@ -154,40 +183,25 @@ class RuleTangentChordTheorem(GeometricRule):
     def apply(self, kb) -> bool:
         changed = False
         if "TANGENT" not in kb.properties: return False
-        
-        # Cần tìm mối liên hệ giữa Tangent và Circle
-        # Fact TANGENT: [Contact(B), Outer(A), Center(O)] -> Tiếp tuyến AB tại B
+
         for t_fact in kb.properties["TANGENT"]:
             p_contact, p_outer, p_center = [kb.id_map[n] for n in t_fact.entities]
             
-            # Góc tạo bởi tiếp tuyến và dây cung: Góc(A, B, C) với C là điểm bất kỳ trên đường tròn
-            # Cần tìm các dây cung xuất phát từ B (tiếp điểm)
-            # Duyệt các tam giác chứa B để tìm điểm C
             if "TRIANGLE" in kb.properties:
                 for tri_fact in kb.properties["TRIANGLE"]:
                     if p_contact.name in tri_fact.entities:
-                        # Tìm điểm C (khác B)
                         pts = [kb.id_map[n] for n in tri_fact.entities]
-                        # Giả sử tam giác là BCD (D là điểm thứ 3) -> Dây BC hoặc BD
-                        # Lấy điểm C thuộc đường tròn (Heuristic: các đỉnh tam giác thường thuộc đường tròn trong bài toán này)
-                        
-                        # Lọc ra điểm C và D còn lại
+
                         others = [p for p in pts if p != p_contact]
                         for pC in others:
                             # Có dây cung BC.
-                            # Góc tạo bởi tiếp tuyến AB và dây BC là: Góc ABC (Angle(p_outer, p_contact, pC))
                             tangent_angle = Angle(p_outer, p_contact, pC)
                             
-                            # Góc nội tiếp chắn cung BC là góc tại điểm còn lại của tam giác (Góc D)
-                            # Nhưng để chính xác, ta cần tìm điểm D trên đường tròn.
-                            # Trong ngữ cảnh đơn giản: Nếu tam giác BCD nội tiếp, thì góc BDC chắn cung BC.
-                            # Ta tìm điểm pD trong others (nếu có 3 điểm)
                             pD_list = [p for p in others if p != pC]
                             if pD_list:
                                 pD = pD_list[0]
-                                inscribed_angle = Angle(pC, pD, p_contact) # Góc CDB
+                                inscribed_angle = Angle(pC, pD, p_contact)
                                 
-                                # Gán 2 góc này bằng nhau
                                 reason = f"Góc tạo bởi tiếp tuyến và dây cung {p_contact.name}{pC.name}"
                                 if kb.add_equality(tangent_angle, inscribed_angle, reason):
                                     changed = True

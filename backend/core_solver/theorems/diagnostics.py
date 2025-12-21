@@ -78,19 +78,13 @@ class RuleCheckCoincidentVertices(GeometricRule):
                 # Nếu chung nhau 2 điểm (chung 1 cạnh)
                 if len(common_points) == 2:
                     # Tìm 2 điểm riêng biệt còn lại
-                    diff1 = list(pts1 - common_points)[0] # VD: A
-                    diff2 = list(pts2 - common_points)[0] # VD: D
-                    
-                    # Nếu đề bài khai báo Tứ giác chứa cả 2 điểm này (ABCD)
-                    # Thì đây là dấu hiệu suy biến cực cao (A trùng D hoặc A đối xứng D qua BC)
-                    # Trong bài toán tứ giác lồi thông thường, điều này dẫn đến mâu thuẫn hoặc hình kite/thoi đặc biệt
-                    
-                    # Kiểm tra xem có tứ giác nào chứa cả 2 điểm này không
+                    diff1 = list(pts1 - common_points)[0] 
+                    diff2 = list(pts2 - common_points)[0] 
+   
                     if "QUADRILATERAL" in kb.properties:
                         for q_fact in kb.properties["QUADRILATERAL"]:
                             q_entities = q_fact.entities
                             if diff1 in q_entities and diff2 in q_entities:
-                                # Tạo thông báo lỗi Logic
                                 reason = (
                                     f"Mâu thuẫn cấu trúc: Hai điểm {diff1} và {diff2} "
                                     f"cùng tạo tam giác đều với cạnh {''.join(common_points)}. "
@@ -98,7 +92,6 @@ class RuleCheckCoincidentVertices(GeometricRule):
                                 )
                                 
                                 parents = [q_fact, fact1, fact2]
-                                # Thêm Fact CONTRADICTION vào KB
                                 if kb.add_property("CONTRADICTION", q_entities, reason, parents=parents):
                                     changed = True
                                     

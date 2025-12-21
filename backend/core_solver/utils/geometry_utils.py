@@ -1,9 +1,6 @@
-# Hàm tính toán số học (nếu cần), chuẩn hóa tên...
-
 import math
 from typing import List, Any, Optional
 
-# --- CẤU HÌNH HỆ THỐNG ---
 TOLERANCE = 1e-5  # Độ sai số cho phép khi so sánh số thực
 
 def is_close(val1: float, val2: float) -> bool:

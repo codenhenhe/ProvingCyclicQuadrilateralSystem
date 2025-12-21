@@ -3,7 +3,7 @@ from core_solver.core.entities import Point, Angle, Quadrilateral, Segment
 from core_solver.utils.geometry_utils import is_close
 
 # ==============================================================================
-# HELPER: KIỂM TRA TIA TRÙNG NHAU (DÙNG CHUNG CHO MỌI METHOD)
+# HELPER: KIỂM TRA TIA TRÙNG NHAU
 # ==============================================================================
 def check_ray_overlap(kb, vertex, p1, p2):
     """
@@ -12,7 +12,6 @@ def check_ray_overlap(kb, vertex, p1, p2):
     """
     if p1 == p2: return True
     
-    # 1. Dựa trên Đường cao (Mạnh cho bài toán trực tâm H)
     if "ALTITUDE" in kb.properties:
         for f in kb.properties["ALTITUDE"]:
             top, foot, b1, b2 = f.entities
@@ -26,7 +25,6 @@ def check_ray_overlap(kb, vertex, p1, p2):
                                 ray_points.add(int_f.point)
                 if p1 in ray_points and p2 in ray_points: return True
     
-    # 2. Dựa trên Giao điểm (Mạnh cho điểm nằm giữa cạnh)
     if "INTERSECTION" in kb.properties:
         for f in kb.properties["INTERSECTION"]:
             mid = f.point
@@ -35,7 +33,6 @@ def check_ray_overlap(kb, vertex, p1, p2):
                         other = line[1] if line[0] == vertex else line[0]
                         if p2 == other: return True
     
-    # 3. Dựa trên tính thẳng hàng tổng quát (POINT_ON_LINE)
     if "POINT_ON_LINE" in kb.properties:
         for f in kb.properties["POINT_ON_LINE"]:
             try:
@@ -48,7 +45,7 @@ def check_ray_overlap(kb, vertex, p1, p2):
     return False
 
 # ==============================================================================
-# HELPER: TÌM GIÁ TRỊ GÓC VÀ PARSE THÔNG TIN
+# TÌM GIÁ TRỊ GÓC VÀ PARSE THÔNG TIN
 # ==============================================================================
 def parse_angle_info(kb, f):
     """Trả về (vertex_name, [leg1_name, leg2_name]) từ Fact."""
@@ -103,15 +100,11 @@ class RuleCyclicMethod1(GeometricRule):
         if "VALUE" in kb.properties:
             for f in kb.properties["VALUE"]:
                 
-                # --- 1. [MỚI] CHECK GÓC NGOÀI TRƯỚC (Subtype = exterior_angle) ---
                 # Nếu biết góc ngoài, suy ra góc trong = 180 - góc ngoài
                 if getattr(f, 'subtype', None) == 'exterior_angle' and getattr(f, 'vertex', None) == vertex:
                     if f.value is not None:
-                        # Trả về: (Giá trị bù 180), (Fact gốc), (Thông tin giả lập để tạo tên góc đẹp)
-                        # Info giả lập: [Prev, Vertex, Next] để in ra là ∠BAD thay vì "góc"
                         return 180.0 - f.value, f, [neighbor_prev, vertex, neighbor_next]
 
-                # --- 2. CHECK GÓC TRONG THƯỜNG (Logic cũ) ---
                 cand_v, legs = parse_angle_info(kb, f)
                 if cand_v != vertex or not legs: continue
 
@@ -149,9 +142,7 @@ class RuleCyclicMethod1(GeometricRule):
                 if v1 and v2 and is_close(v1 + v2, 180.0):
                     name1 = get_angle_name_from_info(kb, i1_info)
                     name2 = get_angle_name_from_info(kb, i2_info)
-                    
-                    # Logic tạo reason thông minh
-                    # Nếu nguồn là góc ngoài, chú thích thêm phép tính
+
                     calc_note = ""
                     if getattr(f1, 'subtype', None) == 'exterior_angle':
                         calc_note += f" (∠{names[i1]} = 180° - {int(f1.value)}°)"
@@ -166,7 +157,7 @@ class RuleCyclicMethod1(GeometricRule):
         return changed
 
 # ==============================================================================
-# CÁCH 2: HAI ĐỈNH KỀ CÙNG NHÌN CẠNH (GIỮ NGUYÊN)
+# CÁCH 2: HAI ĐỈNH KỀ CÙNG NHÌN CẠNH
 # ==============================================================================
 class RuleCyclicMethod2(GeometricRule):
     @property
@@ -199,7 +190,6 @@ class RuleCyclicMethod2(GeometricRule):
             for v1, v2, base1, base2 in configs:
                 ang1 = Angle(base1, v1, base2); ang2 = Angle(base1, v2, base2)
                 
-                # Thu thập bằng chứng tiềm năng
                 potential_parents = []
                 
                 # 1. Equality Facts
@@ -214,10 +204,8 @@ class RuleCyclicMethod2(GeometricRule):
                 if f1 and not self._is_circular_logic(f1): potential_parents.append(f1)
                 if f2 and not self._is_circular_logic(f2): potential_parents.append(f2)
 
-                # [FIX QUAN TRỌNG] Nếu không có bằng chứng nào hợp lệ (do bị lọc hết vì circular logic) -> BỎ QUA
                 if not potential_parents: continue
 
-                # Logic kiểm tra giá trị số (để hiện thị đẹp)
                 val1 = kb.get_angle_value(ang1); val2 = kb.get_angle_value(ang2)
                 is_eq_val = (val1 and val2 and is_close(val1, val2))
 
@@ -236,88 +224,14 @@ class RuleCyclicMethod2(GeometricRule):
         return changed
 
 # ==============================================================================
-# CÁCH 3: GÓC NGOÀI BẰNG GÓC ĐỐI TRONG (DÙNG CHUNG HELPER)
+# CÁCH 3: GÓC NGOÀI BẰNG GÓC ĐỐI TRONG
 # ==============================================================================
-# class RuleCyclicMethod3(GeometricRule):
-#     @property
-#     def name(self): return "Tứ Giác Nội Tiếp (Góc ngoài)"
-#     @property
-#     def description(self): return "Góc ngoài tại một đỉnh bằng góc trong của đỉnh đối diện."
 
-#     def apply(self, kb) -> bool:
-#         changed = False
-#         if "QUADRILATERAL" not in kb.properties: return False
-
-#         for q_fact in kb.properties["QUADRILATERAL"]:
-#             try: pts = [kb.id_map[n] for n in q_fact.entities]
-#             except KeyError: continue
-            
-#             names = [p.name for p in pts] 
-#             pairs = [(0, 2), (1, 3), (2, 0), (3, 1)]
-            
-#             for i_inner, i_opp in pairs:
-#                 v_inner = names[i_inner] 
-#                 v_opp = names[i_opp]    
-#                 n_prev = names[(i_inner - 1) % 4] 
-#                 n_next = names[(i_inner + 1) % 4]
-                
-#                 # 1. Lấy giá trị góc đối (Dùng hàm của Method 1 cho tiện)
-#                 # Lưu ý: Ta cần lấy GIÁ TRỊ góc đối, không nhất thiết phải là nội giác chuẩn
-#                 # nhưng tốt nhất là nội giác chuẩn để tránh sai sót.
-#                 # Tuy nhiên để đơn giản và tái sử dụng code Helper ở trên thì hơi khó vì helper nằm trong class.
-#                 # Nên ta dùng lại cách cũ nhưng dùng hàm parse_angle_info
-                
-#                 # Tìm target là góc đối
-#                 val_opp = None; f_opp = None; info_opp = None
-#                 if "VALUE" in kb.properties:
-#                     for f in kb.properties["VALUE"]:
-#                          cand_v, legs = parse_angle_info(kb, f)
-#                          if cand_v == v_opp:
-#                              val_opp = f.value; f_opp = f; info_opp = f.entities[0] if len(f.entities)==1 else f.entities
-#                              break # Lấy đại diện
-                
-#                 if val_opp is None: continue
-#                 target = val_opp 
-                
-#                 # 2. Tìm góc tại v_inner
-#                 if "VALUE" in kb.properties:
-#                     for f in kb.properties["VALUE"]:
-#                         cand_v, legs = parse_angle_info(kb, f)
-#                         if cand_v != v_inner or not legs: continue
-                        
-#                         if f.value and is_close(f.value, target):
-#                             # LOGIC RAY CHECK
-#                             match1 = check_ray_overlap(kb, v_inner, legs[0], n_prev) or \
-#                                      check_ray_overlap(kb, v_inner, legs[0], n_next) or \
-#                                      (legs[0] == n_prev or legs[0] == n_next)
-                                     
-#                             match2 = check_ray_overlap(kb, v_inner, legs[1], n_prev) or \
-#                                      check_ray_overlap(kb, v_inner, legs[1], n_next) or \
-#                                      (legs[1] == n_prev or legs[1] == n_next)
-                            
-#                             # Matches = 1 -> GÓC NGOÀI
-#                             if (1 if match1 else 0) + (1 if match2 else 0) != 1: continue
-
-#                             parents = [q_fact]
-#                             if f_opp: parents.append(f_opp)
-#                             parents.append(f)
-                            
-#                             ext_name = get_angle_name_from_info(kb, f.entities[0] if len(f.entities)==1 else f.entities)
-#                             opp_name = get_angle_name_from_info(kb, info_opp)
-#                             reason = f"Góc ngoài {ext_name} ({int(target)}°) bằng góc đối trong {opp_name}"
-                            
-#                             if kb.add_property("IS_CYCLIC", q_fact.entities, reason, parents=parents):
-#                                 changed = True
-#         return changed
-
-# ==============================================================================
-# CÁCH 3: GÓC NGOÀI BẰNG GÓC ĐỐI TRONG (OUTPUT CHUẨN SGK)
-# ==============================================================================
 class RuleCyclicMethod3(GeometricRule):
     @property
     def name(self): return "Tứ Giác Nội Tiếp (Góc ngoài)"
     @property
-    def description(self): return "Góc ngoài tại một đỉnh bằng góc trong của đỉnh đối diện."
+    def description(self): return "Góc ngoài = Góc đối trong (Dùng cả Giá trị và Đẳng thức)."
 
     def apply(self, kb) -> bool:
         changed = False
@@ -328,63 +242,65 @@ class RuleCyclicMethod3(GeometricRule):
             except KeyError: continue
             
             names = [p.name for p in pts] 
+            # Duyệt các cặp: (Đỉnh Góc Ngoài, Đỉnh Đối)
             pairs = [(0, 2), (1, 3), (2, 0), (3, 1)]
             
             for i_inner, i_opp in pairs:
-                v_inner = names[i_inner] 
-                v_opp = names[i_opp]    
+                v_inner = names[i_inner] # Đỉnh có góc ngoài (VD: A)
+                v_opp = names[i_opp]     # Đỉnh đối diện (VD: C)
+                
                 n_prev = names[(i_inner - 1) % 4] 
                 n_next = names[(i_inner + 1) % 4]
-                
-                # 1. Tìm góc đối (Target)
-                val_opp = None; f_opp = None; info_opp = None
-                if "VALUE" in kb.properties:
-                    for f in kb.properties["VALUE"]:
-                         cand_v, legs = parse_angle_info(kb, f)
-                         if cand_v == v_opp:
-                             val_opp = f.value; f_opp = f; info_opp = f.entities[0] if len(f.entities)==1 else f.entities
-                             break 
-                
-                if val_opp is None: continue
-                target = val_opp 
-                
-                # 2. Tìm góc tại v_inner
-                if "VALUE" in kb.properties:
-                    for f in kb.properties["VALUE"]:
-                        cand_v, legs = parse_angle_info(kb, f)
-                        if cand_v != v_inner or not legs: continue
-                        
-                        if f.value and is_close(f.value, target):
-                            # LOGIC RAY CHECK
-                            match1 = check_ray_overlap(kb, v_inner, legs[0], n_prev) or \
-                                     check_ray_overlap(kb, v_inner, legs[0], n_next) or \
-                                     (legs[0] == n_prev or legs[0] == n_next)
-                                     
-                            match2 = check_ray_overlap(kb, v_inner, legs[1], n_prev) or \
-                                     check_ray_overlap(kb, v_inner, legs[1], n_next) or \
-                                     (legs[1] == n_prev or legs[1] == n_next)
-                            
-                            # Matches = 1 -> GÓC NGOÀI
-                            if (1 if match1 else 0) + (1 if match2 else 0) != 1: continue
 
-                            # --- TẠO LỜI GIẢI ---
-                            ext_name = get_angle_name_from_info(kb, f.entities[0] if len(f.entities)==1 else f.entities)
-                            opp_name = get_angle_name_from_info(kb, info_opp)
+                # HƯỚNG 1: KIỂM TRA DỰA TRÊN GIÁ TRỊ 
+                val_opp = None; f_opp = None
+                if "VALUE" in kb.properties:
+                    for f in kb.properties["VALUE"]:
+                        cand_v, _ = parse_angle_info(kb, f)
+                        if cand_v == v_opp and f.value is not None:
+                            val_opp = f.value; f_opp = f; break
+                
+                # Nếu có giá trị, tìm xem góc ngoài có giá trị tương ứng không
+                if val_opp is not None:
+                    if "VALUE" in kb.properties:
+                        for f in kb.properties["VALUE"]:
+                            cand_v, legs = parse_angle_info(kb, f)
+                            if cand_v == v_inner and legs and is_close(f.value, val_opp):
+                                # Kiểm tra xem có phải tia đối không (tạo thành góc ngoài)
+                                match1 = check_ray_overlap(kb, v_inner, legs[0], n_prev) or check_ray_overlap(kb, v_inner, legs[0], n_next)
+                                match2 = check_ray_overlap(kb, v_inner, legs[1], n_prev) or check_ray_overlap(kb, v_inner, legs[1], n_next)
+                                # Góc ngoài có 1 cạnh trùng cạnh tứ giác, 1 cạnh là tia đối
+                                if (1 if match1 else 0) + (1 if match2 else 0) == 1:
+                                    ext_name = get_angle_name_from_info(kb, f.entities[0] if len(f.entities)==1 else f.entities)
+                                    reason = f"Góc ngoài {ext_name} bằng góc đối trong ({int(val_opp)}°)"
+                                    if kb.add_property("IS_CYCLIC", q_fact.entities, reason, parents=[q_fact, f, f_opp]):
+                                        changed = True
+
+                # HƯỚNG 2: KIỂM TRA DỰA TRÊN ĐẲNG THỨC 
+                if "EQUALITY" in kb.properties:
+                    for eq_fact in kb.properties["EQUALITY"]:
+                        if len(eq_fact.entities) != 2: continue
+                        
+                        obj1 = kb.id_map.get(eq_fact.entities[0])
+                        obj2 = kb.id_map.get(eq_fact.entities[1])
+                        
+                        if not isinstance(obj1, Angle) or not isinstance(obj2, Angle): continue
+                        
+                        # Kiểm tra xem cặp góc này có phải là (Góc Ngoài, Góc Đối) không
+                        for (a_ext, a_int) in [(obj1, obj2), (obj2, obj1)]:
                             
-                            # Format đúng ý bạn: "Góc ngoài... bằng góc trong..." (Không cần hiện số ở đây)
-                            reason_str = (f"Góc ngoài tại đỉnh {v_inner} ({ext_name}) "
-                                          f"bằng góc trong tại đỉnh đối diện {v_opp} ({opp_name})")
+                            is_interior_opp = (a_int.vertex.name == v_opp)
                             
-                            # NẠP TRỰC TIẾP FACTS (KHÔNG QUA EQUALITY)
-                            # Để ProofGenerator tự liệt kê:
-                            # + Fact 1 -> ...
-                            # + Fact 2 -> ...
-                            parents = [q_fact]
-                            parents.append(f)      # Góc ngoài (VD: AIH = 90)
-                            if f_opp: parents.append(f_opp) # Góc đối (VD: HKM = 90)
-                            
-                            if kb.add_property("IS_CYCLIC", q_fact.entities, reason_str, parents=parents):
-                                changed = True
+                            if is_interior_opp and a_ext.vertex.name == v_inner:
+                                leg1, leg2 = a_ext.p1.name, a_ext.p3.name
+                                m1 = check_ray_overlap(kb, v_inner, leg1, n_prev) or check_ray_overlap(kb, v_inner, leg1, n_next) or (leg1 in [n_prev, n_next])
+                                m2 = check_ray_overlap(kb, v_inner, leg2, n_prev) or check_ray_overlap(kb, v_inner, leg2, n_next) or (leg2 in [n_prev, n_next])
+                                
+                                if (1 if m1 else 0) + (1 if m2 else 0) == 1:
+                                    reason = f"Góc ngoài ({a_ext.vertex.name}) bằng góc đối trong ({a_int.vertex.name}) (Giả thiết)"
+                                    if kb.add_property("IS_CYCLIC", q_fact.entities, reason, parents=[q_fact, eq_fact]):
+                                        changed = True
+
         return changed
 
 # ==============================================================================
@@ -399,16 +315,13 @@ class RuleCyclicMethod4(GeometricRule):
 
     def _get_evidence_for_equality(self, kb, s1, s2):
         """Tìm Fact EQUALITY tương ứng với s1 = s2."""
-        # 1. Thử lấy parents (nếu là derived fact)
         parents = kb.get_equality_parents(s1, s2)
         if parents: return parents
 
-        # 2. Tìm trong KB (Giả thiết)
         if "EQUALITY" in kb.properties:
             p1_names = {s1.p1.name, s1.p2.name}
             p2_names = {s2.p1.name, s2.p2.name}
 
-            # Helper: Kiểm tra ID đoạn thẳng có khớp với cặp điểm không
             def match_seg_id(seg_id, target_points):
                 obj = kb.id_map.get(seg_id)
                 if isinstance(obj, Segment):
@@ -416,15 +329,12 @@ class RuleCyclicMethod4(GeometricRule):
                 return False
 
             for f in kb.properties["EQUALITY"]:
-                # Fact EQUALITY thường chứa 2 ID [seg1, seg2]
                 if len(f.entities) == 2:
                     id1, id2 = f.entities
                     
-                    # Kiểm tra thuận (id1==s1, id2==s2)
                     m1 = match_seg_id(id1, p1_names) and match_seg_id(id2, p2_names)
                     if m1: return [f]
                     
-                    # Kiểm tra nghịch (id1==s2, id2==s1)
                     m2 = match_seg_id(id1, p2_names) and match_seg_id(id2, p1_names)
                     if m2: return [f]
                     
@@ -453,7 +363,6 @@ class RuleCyclicMethod4(GeometricRule):
                 if eq1 and eq2 and eq3:
                     reason = f"Bốn đỉnh cách đều điểm {center.name}"
                     
-                    # [FIX] Dùng hàm helper mới để lấy bằng chứng giả thiết
                     ps1 = self._get_evidence_for_equality(kb, sOA, sOB)
                     ps2 = self._get_evidence_for_equality(kb, sOB, sOC)
                     ps3 = self._get_evidence_for_equality(kb, sOC, sOD)

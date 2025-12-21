@@ -1,107 +1,141 @@
-METHOD 1 – TỔNG HAI GÓC ĐỐI BẰNG 180 ĐỘ
+================================================================================
+BỘ DỮ LIỆU KIỂM THỬ: CHỨNG MINH TỨ GIÁC NỘI TIẾP (24 TESTCASES)
+================================================================================
 
-    [Bài 1 – Dễ]
-    Cho tứ giác ABCD. Biết góc A = 110 độ, góc C = 70 độ.
-    Chứng minh tứ giác ABCD nội tiếp.
+--------------------------------------------------------------------------------
+PHƯƠNG PHÁP 1: TỔNG HAI GÓC ĐỐI BẰNG 180 ĐỘ
+--------------------------------------------------------------------------------
 
-    [Bài 2 – Dễ]
-    Cho hình chữ nhật ABCD.
-    Chứng minh tứ giác ABCD nội tiếp.
+[Bài 1 - Dễ]
+Đề bài: Cho tứ giác ABCD biết góc A = 60 độ, góc C = 120 độ. Chứng minh tứ giác ABCD nội tiếp.
+Nguồn: Bài 1
+Link: https://giasutrithuc.net/cach-giai-bai-tap-chung-minh-tu-giac-noi-tiep-lop-9-chi-tiet-de-hieu/
 
-    [Bài 3 – Dễ]
-    Cho tứ giác ABCD. Biết góc B = 85 độ, góc D = 95 độ.
-    Chứng minh ABCD nội tiếp.
+[Bài 2 - Dễ]
+Đề bài: Cho hình thang cân ABCD (AB song song CD). Chứng minh ABCD là tứ giác nội tiếp.
+Nguồn: Vietjack
+Link: https://vietjack.com/sbt-toan-9-ct/bai-14-trang-89-sbt-toan-9-tap-2.jsp
 
-    [Bài 4 – Trung bình]
-    Cho tứ giác ABCD có hai góc đối A và C đều là góc vuông.
-    Chứng minh tứ giác ABCD nội tiếp.
+[Bài 3 - Dễ]
+Đề bài: Cho tam giác ABC nhọn, đường cao BM và CN cắt nhau tại H. Chứng minh các tứ giác AMHN là tứ giác nội tiếp đường tròn.
+Nguồn: Bài 4
+Link: https://hoctot.hocmai.vn/bai-tap-chung-minh-tu-giac-noi-tiep.html
 
-    [Bài 5 – Trung bình]
-    Cho tam giác ABC nhọn. Lấy điểm D trên tia đối của BC sao cho góc A + góc D = 180 độ.
-    Chứng minh tứ giác ABCD nội tiếp.
+[Bài 4 - Trung bình]
+Đề bài: Cho tam giác nhọn ABC. Các đường cao BD, CE cắt nhau tại H. Chứng minh tứ giác ADHE nội tiếp.
+Nguồn: Vietjack
+Link: https://khoahoc.vietjack.com/question/488041/cho-tam-giac-abc-nhon-duong-cao-bd-va-ce-cat-nhau-tai-h-chung-minh
 
-    [Bài 6 – Trung bình]
-    Cho tứ giác ABCD. Biết góc A + góc C = 180 độ.
-    Chứng minh tứ giác ABCD nội tiếp.
+[Bài 5 - Trung bình]
+Đề bài: Cho tam giác ABC vuông tại A, đường cao AH. Kẻ HE vuông góc AB, HF vuông góc AC. Chứng minh tứ giác AEHF nội tiếp.
+Nguồn: hoc24
+Link: https://hoc24.vn/cau-hoi/cho-abc-vuong-tai-a-duong-cao-ah-tu-h-ke-hevuong-goc-voi-ab-hf-vuong-goc-voi-ac-e-thuoc-ab-f-thuoc-aca-tu-giac-aehf-la-hinh-gi-vi-saob-ve.9361302959501
 
-==================================================
-METHOD 2 – HAI GÓC CÙNG NHẬN MỘT ĐOẠN (CÙNG CHẮN MỘT CUNG)
+[Bài 6 - Trung bình]
+Đề bài: Cho tam giác nhọn ABC (AB > AC) nội tiếp đường tròn tâm O. Các đường cao BD và CE cắt nhau tại H (D thuộc AC, E thuộc AB). Gọi M, N lần lượt là trung điểm của các cạnh AB và AC. Chứng minh các tứ giác AMON nội tiếp.
+Nguồn: Đề tuyển sinh 10 Cần Thơ 2019
+Link: https://thi.tuyensinh247.com/dap-an-mon-toan-thi-vao-lop-10-tinh-can-tho-2019-c29a45474.html
 
-    [Bài 7 – Dễ]
-    Cho tứ giác ABCD. Biết góc ADB = 90 độ và góc ACB = 90 độ.
-    Chứng minh tứ giác ABCD nội tiếp.
+--------------------------------------------------------------------------------
+PHƯƠNG PHÁP 2: HAI ĐỈNH KỀ CÙNG NHÌN CẠNH (QUỸ TÍCH CUNG CHỨA GÓC)
+--------------------------------------------------------------------------------
 
-    [Bài 8 – Dễ]
-    Cho tam giác ABC vuông tại A. Lấy điểm D trên BC sao cho AD vuông góc với BC.
-    Chứng minh tứ giác ABCD nội tiếp.
+[Bài 7 - Dễ]
+Đề bài: Cho tứ giác ABCD có góc DAC vuông và góc DBC vuông. Chứng minh tứ giác ABCD nội tiếp.
+Nguồn: hỏi đáp
+Link: https://lazi.vn/edu/exercise/1789198/cho-tu-giac-abcd-co-goc-dac-vuong-va-goc-dbc-vuong-chung-minh-4-diem-a-b-c-d-cung-thuoc-mot-duong-tron
 
-    [Bài 9 – Dễ]
-    Trong tam giác nhọn ABC, kẻ đường cao BD và CE.
-    Chứng minh tứ giác ADCE nội tiếp.
+[Bài 8 - Dễ]
+Đề bài: Cho tam giác nhọn ABC, hai đường cao BD và CE cắt nhau tại H. Chứng minh tứ giác BEDC nội tiếp.
+Nguồn: hỏi đáp
+Link: https://olm.vn/cau-hoi/cho-tam-giac-abc-nhon-duong-cao-bd-va-ce-cat-nhau-tai-h-chung-minh-rangb-tu-giac-bedc-noi-tiep.280500371340?mon=8
 
-    [Bài 10 – Trung bình]
-    Cho tam giác ABC cân tại A. Đường cao AH. Từ H kẻ HE vuông góc AB, HF vuông góc AC.
-    Chứng minh tứ giác AEHF nội tiếp.
+[Bài 9 - Dễ]
+Đề bài: Cho đường tròn (O) và điểm M nằm ngoài đường tròn. Vẽ tiếp tuyến MA (A là tiếp điểm) và cát tuyến MBC (O nằm trong góc AMC). Gọi I là trung điểm của dây BC. Chứng minh tứ giác MAOI nội tiếp.
+Nguồn: hỏi đáp
+Link: https://tuyensinh247.com/bai-tap-307175.html#:~:text=Qua%20%C4%91i%E1%BB%83m%20M%20k%E1%BA%BB%20ti%E1%BA%BFp%20tuy%E1%BA%BFn%20MA%20v%C3%A0%20c%C3%A1t,-C%C3%A2u%20h%E1%BB%8Fi%20s%E1%BB%91&text=h%E1%BB%8Fi%20s%E1%BB%91%20307175:-,Cho%20%C4%91%C6%B0%E1%BB%9Dng%20tr%C3%B2n%20(O)%20v%C3%A0%20%C4%91i%E1%BB%83m%20M%20n%E1%BA%B1m%20ngo%C3%A0i%20%C4%91%C6%B0%E1%BB%9Dng,M%20C%20.&text=a)%20Ch%E1%BB%A9ng%20minh%20MAOE%20l%C3%A0%20t%E1%BB%A9%20gi%C3%A1c%20n%E1%BB%99i%20ti%E1%BA%BFp.&text=Do%20MA%20l%C3%A0%20ti%E1%BA%BFp%20tuy%E1%BA%BFn,b)%20T%C3%ADnh
 
-    [Bài 11 – Trung bình]
-    Cho tứ giác ABCD. Biết góc DAC = 90 độ và góc DBC = 90 độ.
-    Chứng minh tứ giác ABCD nội tiếp.
+[Bài 10 - Trung bình]
+Đề bài: Cho tam giác ABC (AB < AC) có ba góc nhọn và nội tiếp đường tròn (O). Các đường cao AD, BE và CF của tam giác ABC cắt nhau tại điểm H. Chứng minh các tứ giác BCEF nội tiếp.
+Nguồn: Đề thi tuyển sinh vào 10 Cần Thơ 2020
+Link: https://laodong.vn/giao-duc/dap-an-mon-toan-thi-lop-10-tpcan-tho-day-du-chinh-xac-nhat-917060.ldo
 
-    [Bài 12 – Trung bình]
-    Cho tam giác ABC nhọn. Đường cao BD và CE cắt nhau tại H.
-    Chứng minh tứ giác ADHE nội tiếp.
+[Bài 11 - Trung bình]
+Đề bài: Cho tam giác nhọn ABC (AB > AC) nội tiếp đường tròn tâm O. Các đường cao BD và CE cắt nhau tại H (D thuộc AC, E thuộc AB). Gọi M, N lần lượt là trung điểm của các cạnh AB và AC.
+Chứng minh tứ giác BCDE nội tiếp.
+Nguồn: Đề thi tuyển sinh vào 10 Cần Thơ 2019
+Link: https://thi.tuyensinh247.com/dap-an-mon-toan-thi-vao-lop-10-tinh-can-tho-2019-c29a45474.html
 
-==================================================
-METHOD 3 – GÓC NGOÀI BẰNG GÓC TRONG ĐỐI DIỆN
+[Bài 12 - Trung bình]
+Đề bài: Cho tam giác nhọn ABC (AB < AC) nội tiếp đường tròn tâm O. Các đường cao AD, BE và CF (D thuộc BC, E thuộc AC và F thuộc AB) cắt nhau tại H. Chứng minh BCEF là tứ giác nội tiếp.
+Nguồn: Đề thi tuyển sinh vào 10 Nghệ An 2021
+Link: https://laodong.vn/giao-duc/cap-nhat-dap-an-de-thi-vao-10-mon-toan-tinh-nghe-an-916730.ldo
 
-    [Bài 13 – Dễ]
-    Cho tứ giác ABCD. Biết góc ngoài tại A bằng 60 độ và góc C bằng 60 độ.
-    Chứng minh tứ giác ABCD nội tiếp.
+--------------------------------------------------------------------------------
+PHƯƠNG PHÁP 3: GÓC NGOÀI BẰNG GÓC TRONG ĐỐI DIỆN
+--------------------------------------------------------------------------------
 
-    [Bài 14 – Dễ]
-    Cho tứ giác ABCD. Biết góc ngoài tại B bằng góc D.
-    Chứng minh ABCD nội tiếp.
+[Bài 13 - Dễ]
+Đề bài: Cho tứ giác ABCD. Tia đối của tia AB là Ax. Biết góc DAx = góc C. Chứng minh tứ giác ABCD nội tiếp.
+Nguồn: vietjack
+Link: https://khoahoc.vietjack.com/question/1210994/cho-tu-giac-abcd-co-goc-dab-bcd-abc-cda-ke-tia-ax-la-tia-doi-cua-tia-ab-chung-minh
 
-    [Bài 15 – Dễ]
-    Cho tứ giác ABCD. Biết góc ngoài tại D bằng góc B.
-    Chứng minh tứ giác ABCD nội tiếp.
+[Bài 14 - Dễ]
+Đề bài: Cho hình thang cân ABCD (AB // CD). Chứng minh tứ giác ABCD nội tiếp được đường tròn.
+Nguồn: vietjack
+Link: https://khoahoc.vietjack.com/question/1492705/cho-hinh-thang-can-abcd-co-ab-cd-chung-minh-abcd-la-tu-giac-noi-tiep
 
-    [Bài 16 – Trung bình]
-    Cho tam giác ABC nội tiếp đường tròn (O). Các đường cao BD và CE cắt nhau tại H.
-    Kẻ tiếp tuyến Ax tại A của (O).
-    Chứng minh tứ giác ADHE nội tiếp.
+[Bài 15 - Dễ]
+Đề bài: Cho tứ giác ABCD. Góc BCD = 60 độ và góc ngoài tại đỉnh A bằng 60 độ. Chứng minh tứ giác ABCD nội tiếp.
+Nguồn: Vietjack
+Link: https://khoahoc.vietjack.com/question/1212285/tu-giac-abcd-co-goc-a-100-do-goc-ngoai-tai-dinh-b-bang-110-goc-c-75-do-tinh-so-do-goc-d
 
-    [Bài 17 – Trung bình]
-    Cho tứ giác ABCD. Góc ngoài tại A bằng góc trong tại C.
-    Chứng minh tứ giác ABCD nội tiếp.
+[Bài 16 - Trung bình]
+Đề bài: Cho tam giác ABC. Các đường phân giác trong của góc B và C cắt nhau tại I, các đường phân giác ngoài của góc B và C cắt nhau tại K. Chứng minh tứ giác BICK nội tiếp.
+Nguồn: vietjack
+Link: https://khoahoc.vietjack.com/question/351941/cho-tam-giac-abc-cac-duong-phan-giac-trong-cua-goc-b-va-goc-c-cat
 
-    [Bài 18 – Trung bình]
-    Cho tam giác ABC nhọn. Mở rộng cạnh BC tại C. Biết góc ngoài tạo thành bằng góc A.
-    Chứng minh tứ giác tạo thành là tứ giác nội tiếp.
+[Bài 17 - Trung bình]
+Đề bài: Cho tam giác ABC. Dựng ra phía ngoài hai tam giác đều ABD và ACE. Gọi M là giao điểm BE và CD. Chứng minh tứ giác ADME nội tiếp.
+Nguồn: OLM
+Link: https://olm.vn/hoi-dap/tim-kiem?q=Cho+tam+h%E1%BB%8Dn+ABC.+V%E1%BA%BD+ra+ph%C3%ADa+ngo%C3%A0i+tam+gi%C3%A1c+ABC+c%C3%A1c+tam+gi%C3%A1c+%C4%91%E1%BB%81u+ABD+v%C3%A0+ACE.+G%E1%BB%8Di+M+l%C3%A0+giao+%C4%91i%E1%BB%83m+c%E1%BB%A7a+DC+v%C3%A0+BE.+Ch%E1%BB%A9ng+minh+r%E1%BA%B1nga,+Tam+gi%C3%A1c+ABE=tam+gi%C3%A1c+ADCb,G%C3%B3c+BMC=120+%C4%91%E1%BB%99+++++++++++++&id=75180
 
-==================================================
-METHOD 4 – TỒN TẠI ĐIỂM CÁCH ĐỀU 4 ĐỈNH
+[Bài 18 - Trung bình]
+Đề bài: Cho tam giác ABC. I là giao điểm 3 đường phân giác. Đường thẳng qua I vuông góc AI cắt AB, AC tại M, N. Chứng minh tứ giác BMNC nội tiếp.
+Nguồn: vietjack
+Link: https://khoahoc.vietjack.com/question/1194489/cho-tam-giac-abc-goi-i-la-giao-diem-3-duong-phan-giac-trong-qua-i-ve-duong-thang-vuong-goc-ai
 
-    [Bài 19 – Dễ]
-    Cho điểm O và bốn điểm A, B, C, D sao cho OA = OB = OC = OD.
-    Chứng minh tứ giác ABCD nội tiếp đường tròn tâm O.
 
-    [Bài 20 – Dễ]
-    Cho đường tròn tâm O. Lấy bốn điểm A, B, C, D bất kỳ trên đường tròn.
-    Chứng minh ABCD là tứ giác nội tiếp.
+--------------------------------------------------------------------------------
+PHƯƠNG PHÁP 4: BỐN ĐỈNH CÁCH ĐỀU MỘT ĐIỂM
+--------------------------------------------------------------------------------
 
-    [Bài 21 – Dễ]
-    Cho hình vuông ABCD.
-    Chứng minh tứ giác ABCD nội tiếp.
+[Bài 19 - Dễ]
+Đề bài: Cho hình chữ nhật ABCD có hai đường chéo AC và BD cắt nhau tại O. Chứng minh rằng bốn điểm A, B, C, D cùng thuộc một đường tròn.
+Nguồn: hỏi đáp
+Link: https://hoidap247.com/cau-hoi/4845685
 
-    [Bài 22 – Trung bình]
-    Cho tứ giác ABCD. Biết tồn tại điểm O sao cho OA = OB = OC = OD.
-    Chứng minh tứ giác ABCD nội tiếp.
+[Bài 20 - Dễ]
+Đề bài: Cho hình vuông ABCD, hai đường chéo cắt nhau tại O. Chứng minh A, B, C, D cùng thuộc đường tròn tâm O.
+Nguồn: vietjack
+Link: https://khoahoc.vietjack.com/question/634940/chung-minh-rang-hinh-chu-nhat-abcd-noi-tiep-duoc
 
-    [Bài 23 – Trung bình]
-    Cho tam giác ABC. O là giao điểm các đường trung trực. Lấy điểm D sao cho OD = OA.
-    Chứng minh tứ giác ABCD nội tiếp.
+[Bài 21 - Dễ]
+Đề bài: Cho tam giác ABC nội tiếp đường tròn tâm O. Gọi D là điểm đối xứng với A qua tâm O. Chứng minh rằng bốn điểm A, B, C, D cùng thuộc đường tròn tâm O (hay tứ giác ABDC nội tiếp).
+Nguồn: hỏi đáp
+Link: https://hoc24.vn/cau-hoi/cho-tam-giac-abc-noi-tiep-duong-tron-tam-o-goi-d-la-diem-doi-xung-voi-a-qua-o-goi-i-la-truc-tam-cua-tam-giac-abc-cm-vecto-bi-vecto-dc-vecto-ic.189054957877
 
-    [Bài 24 – Trung bình]
-    Cho tứ giác ABCD có tâm ngoại tiếp O và OA = OB = OC = OD = R.
-    Chứng minh tứ giác ABCD nội tiếp.
+[Bài 22 - Trung bình]
+Đề bài: Cho tam giác ABC. Các đường cao BD và CE cắt nhau tại H. Chứng minh rằng bốn điểm B, E, D, C cùng nằm trên một đường tròn.
+Nguồn: vietjack
+Link: https://khoahoc.vietjack.com/question/1254444/cho-tam-giac-abc-cac-duong-cao-bd-va-ce-chung-minh-rang-a-bon-diem-b-e-d-c-cung-thuoc-mot-duong-tron
+
+[Bài 23 - Trung bình] 
+Đề bài: Cho hình thang cân ABCD (AB song song CD, AB lớn hơn CD). Kẻ các đường trung trực của AB và CD, chúng cắt nhau tại O. Chứng minh rằng bốn điểm A, B, C, D cùng thuộc một đường tròn tâm O.
+Nguồn: Bài 39 trang 106 - Sách Bài Tập Toán 9 Tập 2
+Link: https://loigiaihay.com/giai-bai-39-trang-106-sbt-toan-9-tap-2-a62716.html
+
+[Bài 24 - Trung bình] Giao hai đường tròn (Đối xứng trục)
+Đề bài: Cho tam giác ABC có các đường cao BD và CE. Đường thẳng DE cắt đường tròn ngoại tiếp tam giác tại hai điểm M và N. Chứng minh tứ giác BEDC nội tiếp. .
+Nguồn: Bài 3 trang 100 - Sách Bài Tập Toán 9 Tập 2.
+Link: https://hoidap247.com/cau-hoi/1631924

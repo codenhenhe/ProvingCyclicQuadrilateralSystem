@@ -7,15 +7,13 @@ class Fact:
     """
     def __init__(self, type_name, entities, value=None, reason=None, parents=None, **kwargs):
         self.type = type_name
-        self.entities = entities    # List ID
+        self.entities = entities   
         self.value = value
         
-        # TẠO ID NGAY ĐẦU TIÊN
         entity_str = ",".join(self.entities)
         val_str = str(self.value) if self.value is not None else "None"
         self.id = f"{type_name}:{entity_str}:{val_str}"
 
-        # Gọi add_source SAU KHI đã có ID
         self.sources = [] 
         if reason:
             self.add_source(reason, parents)
@@ -50,7 +48,6 @@ class Fact:
                 print(f"DEBUG_KB: KHÔNG thêm source '{reason}' cho fact {self.id} vì ĐÃ TỒN TẠI.")
                 return False
         
-        # In ra lý do được thêm mới
         print(f"DEBUG_KB: Đã thêm source MỚI '{reason}' cho fact {self.id}.")
         
         self.sources.append({
@@ -82,13 +79,12 @@ class KnowledgeGraph:
             if hasattr(obj, "p2") and obj.p2: self.register_object(obj.p2)
             if hasattr(obj, "p3") and obj.p3: self.register_object(obj.p3)
             if hasattr(obj, "vertex") and obj.vertex: self.register_object(obj.vertex)
-            if hasattr(obj, "points"): # Cho đa giác
+            if hasattr(obj, "points"): 
                 for p in obj.points: self.register_object(p)
 
     def add_property(self, type_name, entities, reason="Given", value=None, parents=None, **kwargs):
         entity_ids = []
         for e in entities:
-            # register_object sẽ tự động lo việc đăng ký điểm
             if hasattr(e, 'canonical_id'):
                 self.register_object(e)
                 entity_ids.append(e.canonical_id)
@@ -129,7 +125,6 @@ class KnowledgeGraph:
         id1 = obj1.canonical_id
         id2 = obj2.canonical_id
         
-        # Đăng ký đối tượng 
         self.register_object(obj1)
         self.register_object(obj2)
         
